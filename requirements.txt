@@ -1,0 +1,9 @@
+boto3
+botocore
+Flask
+Flask-API
+Flask-Cors
+pg8000
+requests
+pandas
+PyYAML
