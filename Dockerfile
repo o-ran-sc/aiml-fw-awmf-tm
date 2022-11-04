@@ -20,16 +20,14 @@ FROM python:3.8
 
 # location in the container
 ENV TA_DIR /home/app/
+WORKDIR ${TA_DIR}
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     python3-pip
 RUN apt-get install -y apt-utils
 
-
 # Copy sources into the container
-COPY tm/ ${TA_DIR}/tm
-COPY tm/requirements.txt ${TA_DIR}
-WORKDIR ${TA_DIR}
+COPY . .
 
 RUN pip3 install .
 RUN pip3 install -r requirements.txt
