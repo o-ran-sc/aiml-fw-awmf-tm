@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ecb228f6_8ea89879",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001940
+      },
+      "writtenOn": "2022-11-04T07:21:47Z",
+      "side": 1,
+      "message": "Repo Dockerfile for build purpose",
+      "revId": "9c3b13ea1bffb8890776bee51b0e5af32cef1688",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
