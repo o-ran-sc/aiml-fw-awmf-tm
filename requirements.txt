@@ -7,3 +7,4 @@ pg8000
 requests
 pandas
 PyYAML
+kubernetes

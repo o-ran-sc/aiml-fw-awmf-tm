@@ -29,6 +29,14 @@ RUN apt-get install -y apt-utils
 # Copy sources into the container
 COPY . .
 
+RUN git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/feature-store"
+RUN git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/model-storage"
+RUN mkdir -p /SDK/featurestoresdk_main/
+RUN mkdir -p /SDK/modelmetricssdk_main/
+RUN cp -R feature-store/. /SDK/featurestoresdk_main/.
+RUN cp -R model-storage/. /SDK/modelmetricssdk_main/.
+RUN pip3 install /SDK/featurestoresdk_main/.
+RUN pip3 install /SDK/modelmetricssdk_main/.
 RUN pip3 install .
 RUN pip3 install -r requirements.txt
 
