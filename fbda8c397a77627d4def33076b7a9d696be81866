@@ -33,6 +33,23 @@
       "message": "https://jira.linuxfoundation.org/plugins/servlet/desk/portal/2/IT-24860\nWaiting for this ticket to get resolved.",
       "revId": "fbda8c397a77627d4def33076b7a9d696be81866",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ee65a536_5cc815d8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000113
+      },
+      "writtenOn": "2022-11-18T18:07:09Z",
+      "side": 1,
+      "message": "recheck",
+      "revId": "fbda8c397a77627d4def33076b7a9d696be81866",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
