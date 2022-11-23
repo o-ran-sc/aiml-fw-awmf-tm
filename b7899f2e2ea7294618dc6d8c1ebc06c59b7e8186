@@ -16,6 +16,23 @@
       "message": "Looks Good",
       "revId": "b7899f2e2ea7294618dc6d8c1ebc06c59b7e8186",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d6a76495_287a4149",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001940
+      },
+      "writtenOn": "2022-11-23T11:09:15Z",
+      "side": 1,
+      "message": "jjb-deploy aiml-fw-awmf-tm*",
+      "revId": "b7899f2e2ea7294618dc6d8c1ebc06c59b7e8186",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
