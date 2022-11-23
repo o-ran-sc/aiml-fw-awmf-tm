@@ -25,11 +25,21 @@ tm
 |setup.py
 
 
-# Prerequisite to run the test cases
-Install training manager as python package
+## Prerequisite to run the test cases
+Install training manager itself as python package
 pip3 install .
 
-Example to run test cases.
+## Install modelmetricsdk and featurestoresdk as python packages
+git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/feature-store"
+git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/model-storage"
+
+pip3 install feature-store/.
+pip3 install model-storage/.
+
+## Install all python dependecy packages
+pip3 install -r requirements_test.txt
+
+# Example to run test cases.
 
 # Generate test report
 sudo python3 -m pytest -rA . --capture=tee-sys --cov-report term-missing --cov-report xml:coverage.xml   --cov-report html:htmlcov --junitxml test-reports/junit.xml --cov=./
