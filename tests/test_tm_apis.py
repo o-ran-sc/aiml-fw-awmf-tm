@@ -29,7 +29,7 @@ from flask_api import status
 from dotenv import load_dotenv
 from trainingmgr import trainingmgr_main 
 from trainingmgr.common.tmgr_logger import TMLogger
-trainingmgr_main.LOGGER = TMLogger("./trainingmgr/common/conf_log.yaml").logger
+trainingmgr_main.LOGGER = TMLogger("./tests/common/conf_log.yaml").logger
 trainingmgr_main.LOCK = Lock()
 trainingmgr_main.DATAEXTRACTION_JOBS_CACHE = {}
 class Test_training_main:
