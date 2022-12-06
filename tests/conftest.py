@@ -16,39 +16,10 @@
 #
 # ==================================================================================
 #
-[tox]
-envlist = code
-skipsdist = true
+import pytest
 
-# basic test and coverage job
-[testenv:code]
-basepython = python3.8
-deps=
-  pytest
-  coverage
-  pytest-cov
-  connexion
-  mock
-  boto3
-  botocore
-  Flask
-  Flask-API
-  Flask-Cors
-  requests
-  pandas
-  PyYAML
-  python-dotenv
-  kubernetes
-  pg8000
+from trainingmgr.common.tmgr_logger import TMLogger
 
-setenv = cd  = {toxinidir}/tests
-commands =
-  pip3 install {toxinidir}
+def pytest_configure():
+    pytest.logger = TMLogger("tests/common/conf_log.yaml").logger
 
-  git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/feature-store" /tmp/fssdk/
-  git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/model-storage" /tmp/modelsdk/
-
-  pip3 install /tmp/fssdk/.
-  pip3 install /tmp/modelsdk/.
-  pytest --cov {toxinidir}/trainingmgr --cov-report xml --cov-report term-missing --cov-report html --cov-fail-under=10 --junitxml=/tmp/tests.xml
-  coverage xml -i
