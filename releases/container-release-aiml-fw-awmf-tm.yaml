@@ -1,0 +1,10 @@
+---
+distribution_type: container
+container_release_tag: 1.0.0
+container_pull_registry: nexus3.o-ran-sc.org:10004
+container_push_registry: nexus3.o-ran-sc.org:10002
+project: aiml-fw/awmf/tm
+ref: Ia0bbc2cd162ee60dec0526966516bfb3372adaca
+containers:
+    - name: aiml-fw-awmf-tm-docker
+      version: 1.0.0
