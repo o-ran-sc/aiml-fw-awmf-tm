@@ -81,7 +81,7 @@ def change_field_of_latest_version(trainingjob_name, ps_db_obj, field, field_val
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in change_field_of_latest_version,"  + str(err))
+        raise DBException("Failed to execute query in change_field_of_latest_version," + str(err))
     finally:
         if conn is not None:
             conn.close()
@@ -137,7 +137,7 @@ def get_field_by_latest_version(trainingjob_name, ps_db_obj, field):
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in get_field_by_latest_version,"  + str(err))
+        raise DBException("Failed to execute query in get_field_by_latest_version," + str(err))
     finally:
         if conn is not None:
                 conn.close()
@@ -230,7 +230,7 @@ def change_steps_state_of_latest_version(trainingjob_name, ps_db_obj, key, value
         if conn is not None:
             conn.rollback()
         raise DBException("Failed to execute query in " + \
-            "change_steps_state_of_latest_version"  + str(err))
+            "change_steps_state_of_latest_version" + str(err))
     finally:
         if conn is not None:
                 conn.close()
@@ -302,7 +302,7 @@ def get_info_by_version(trainingjob_name, version, ps_db_obj):
         if conn is not None:
             conn.rollback()
         raise DBException("Failed to execute query in " + \
-            "get_info_by_version"  + str(err))
+            "get_info_by_version" + str(err))
     finally:
         if conn is not None:
                 conn.close()
@@ -358,7 +358,7 @@ def get_latest_version_trainingjob_name(trainingjob_name, ps_db_obj):
         if conn is not None:
             conn.rollback()
         raise DBException("Failed to execute query in " + \
-            "get_latest_version_trainingjob_name"  + str(err))
+            "get_latest_version_trainingjob_name" + str(err))
     finally:
         if conn is not None:
                 conn.close()
@@ -437,7 +437,7 @@ def get_all_version_num_by_trainingjob_name(trainingjob_name, ps_db_obj):
         if conn is not None:
             conn.rollback()
         raise DBException("Failed to execute query in " + \
-            "get_all_version_num_by_trainingjob_name"  + str(err))
+            "get_all_version_num_by_trainingjob_name" + str(err))
     finally:
         if conn is not None:
                 conn.close()
@@ -552,7 +552,7 @@ def add_update_trainingjob(description, pipeline_name, experiment_name, feature_
         if conn is not None:
             conn.rollback()
         raise DBException("Failed to execute query in " + \
-            "add_update_trainingjob"  + str(err))
+            "add_update_trainingjob" + str(err))
     finally:
         if conn is not None:
                 conn.close()
@@ -582,7 +582,7 @@ def get_all_jobs_latest_status_version(ps_db_obj):
         if conn is not None:
             conn.rollback()
         raise DBException("Failed to execute query in " + \
-            "get_all_jobs_latest_status_version"  + str(err))
+            "get_all_jobs_latest_status_version" + str(err))
     finally:
         if conn is not None:
                 conn.close()
