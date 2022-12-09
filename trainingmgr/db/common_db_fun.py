@@ -49,7 +49,7 @@ def get_data_extraction_in_progress_trainingjobs(ps_db_obj):
         if conn is not None:
             conn.rollback()
         raise DBException("Failed to execute query in " + \
-            "get_data_extraction_in_progress_trainingjobs," +  + str(err))
+            "get_data_extraction_in_progress_trainingjobs," + str(err))
     finally:
         if conn is not None:
                 conn.close()
@@ -163,7 +163,7 @@ def get_field_of_given_version(trainingjob_name, version, ps_db_obj, field):
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in get_field_of_given_version" +  + str(err))
+        raise DBException("Failed to execute query in get_field_of_given_version" + str(err))
     finally:
         if conn is not None:
                 conn.close()
@@ -199,7 +199,7 @@ def change_in_progress_to_failed_by_latest_version(trainingjob_name, ps_db_obj):
         if conn is not None:
             conn.rollback()
         raise DBException("Failed to execute query in " + \
-             "change_in_progress_to_failed_by_latest_version" +  + str(err))
+             "change_in_progress_to_failed_by_latest_version" + str(err))
     finally:
         if conn is not None:
                 conn.close()
