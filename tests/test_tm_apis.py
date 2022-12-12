@@ -451,6 +451,18 @@ class Test_get_versions_for_pipeline:
     the_response.headers={"content-type": "application/json"}
     the_response._content = b'{"versions_list": ["football", "baseball"]}'
     
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'kf_adapter_ip.return_value': '123', 'kf_adapter_port.return_value' : '100'}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.requests.get', return_value = the_response)
+    def test_get_versions_for_pipeline_positive(self,mock1,mock2):
+        response = self.client.get("/pipelines/{}/versions".format("qoe_pipeline"))     
+        trainingmgr_main.LOGGER.debug(response.data)
+        assert response.content_type == "application/json", "not equal content type"
+        assert response.status_code == 200, "Return status code NOT equal"   
+        
+
     @patch('trainingmgr.trainingmgr_main.requests.get', return_value = the_response)
     def test_get_versions_for_pipeline(self,mock1):
         

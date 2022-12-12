@@ -29,11 +29,11 @@ Install training manager itself as python package
 pip3 install .
 
 ## Install modelmetricsdk and featurestoresdk as python packages
-git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/feature-store"
-git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/model-storage"
+  git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/feature-store" /tmp/fssdk/
+  git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/model-storage" /tmp/modelsdk/
 
-pip3 install feature-store/.
-pip3 install model-storage/.
+  pip3 install /tmp/fssdk/.
+  pip3 install /tmp/modelsdk/.
 
 ## Install all python dependecy packages
 pip3 install -r requirements_test.txt
