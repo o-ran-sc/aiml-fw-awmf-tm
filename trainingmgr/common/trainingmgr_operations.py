@@ -24,6 +24,7 @@ Training manager main operations
 import json
 import requests
 
+str_ing = 'http://'
 def data_extraction_start(training_config_obj, trainingjob_name, feature_list, query_filter,
                           datalake_source, _measurement, bucket):
     """
@@ -34,7 +35,7 @@ def data_extraction_start(training_config_obj, trainingjob_name, feature_list, q
     logger.debug('training manager is calling data extraction for '+trainingjob_name)
     data_extraction_ip = training_config_obj.data_extraction_ip
     data_extraction_port = training_config_obj.data_extraction_port
-    url = 'http://'+str(data_extraction_ip)+':'+str(data_extraction_port)+'/feature-groups'
+    url = str_ing+str(data_extraction_ip)+':'+str(data_extraction_port)+'/feature-groups'
     logger.debug(url)
 
     source = {}
@@ -84,7 +85,7 @@ def data_extraction_status(trainingjob_name,training_config_obj):
     logger.debug('training manager is calling data extraction for '+trainingjob_name)
     data_extraction_ip = training_config_obj.data_extraction_ip
     data_extraction_port = training_config_obj.data_extraction_port
-    url = 'http://'+str(data_extraction_ip)+':'+str(data_extraction_port)+\
+    url = str_ing+str(data_extraction_ip)+':'+str(data_extraction_port)+\
           '/task-status/'+trainingjob_name
     logger.debug(url)
     response = requests.get(url)
@@ -100,7 +101,7 @@ def training_start(training_config_obj, dict_data, trainingjob_name):
     logger.debug('training manager will send to kf_adapter: '+json.dumps(dict_data))
     kf_adapter_ip = training_config_obj.kf_adapter_ip
     kf_adapter_port = training_config_obj.kf_adapter_port
-    url = 'http://'+str(kf_adapter_ip)+':'+str(kf_adapter_port)+\
+    url = str_ing+str(kf_adapter_ip)+':'+str(kf_adapter_port)+\
             '/trainingjobs/' + trainingjob_name + '/execution'
     logger.debug(url)
     response = requests.post(url,
