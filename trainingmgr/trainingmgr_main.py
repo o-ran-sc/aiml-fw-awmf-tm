@@ -872,7 +872,6 @@ def trainingjob_operations(trainingjob_name):
         All exception are provided with exception message and HTTP status code.
     """
     api_response = {}
-    #response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     LOGGER.debug("Training job create/update request(trainingjob name  %s) ", trainingjob_name )
     try:

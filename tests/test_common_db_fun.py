@@ -118,14 +118,14 @@ class Test_Common_Db_Fun:
         
         assert out != None, 'Function get_data_extraction_in_progress_trainingjobs has failed'
     
-    def test_get_data_extraction_in_progress_trainingjobs(self):
+    def test_negative_get_data_extraction_in_progress_trainingjobs(self):
         checker = Check()
         try:
             db_obj = db_helper([["usecase_name", "steps_state"]], raise_exception=True, check_success_obj=checker)
             out = get_data_extraction_in_progress_trainingjobs(db_obj)
             assert out != None, 'Fxn get_usecases_which_has_data_extraction_in_progress Failed'
         except Exception as err:
-            assert str(err) == "bad operand type for unary +: 'str'", 'Negative test get_usecases_which_has_data_extraction_in_progress FAILED, Doesnt returned required error'
+            assert str(err) == "Failed to execute query in get_data_extraction_in_progress_trainingjobs,DB Error", 'Negative test get_usecases_which_has_data_extraction_in_progress FAILED, Doesnt returned required error'
             assert checker.finished, 'Cursor Not Closed Properly for fxn test_negative_get_usecases_which_has_data_extraction_in_progress'
 
     def test_change_field_of_latest_version(self):
@@ -209,7 +209,7 @@ class Test_Common_Db_Fun:
             assert checker.finished, 'change_in_progress_to_failed_by_latest_version FAILED'
         except Exception as err:
                 fxn_name = "change_in_progress_to_failed_by_latest_version("
-                assert str(err) == "bad operand type for unary +: 'str'", 'Negative test {} FAILED, Doesnt returned required error'.format(fxn_name)
+                assert str(err) == "Failed to execute query in change_in_progress_to_failed_by_latest_versionDB Error", 'Negative test {} FAILED, Doesnt returned required error'.format(fxn_name)
                 assert checker.finished, 'Cursor Not Closed Properly for fxn {} | Negative Test'.format(fxn_name)
 
     def test_change_steps_state_of_latest_version(self):
