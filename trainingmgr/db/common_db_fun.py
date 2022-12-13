@@ -175,7 +175,7 @@ def change_in_progress_to_failed_by_latest_version(trainingjob_name, ps_db_obj):
     This function changes steps_state's key's value to FAILED which is currently
     IN_PROGRESS of <trainingjob_name, trainingjob_name trainingjob's latest version> trainingjob.
     """
-    status_Changed = False
+    status_changed = False
     conn = None
     try:
         conn = ps_db_obj.get_new_conn()
@@ -192,7 +192,7 @@ def change_in_progress_to_failed_by_latest_version(trainingjob_name, ps_db_obj):
                 steps_state[step] = States.FAILED.name
         cursor.execute("update {} set steps_state = %s where trainingjob_name = %s and ".format(tm_table_name) + \
                        "version = %s", (json.dumps(steps_state), trainingjob_name, version))
-        status_Changed = True
+        status_changed = True
         conn.commit()
         cursor.close() 
     except Exception as err:
@@ -203,7 +203,7 @@ def change_in_progress_to_failed_by_latest_version(trainingjob_name, ps_db_obj):
     finally:
         if conn is not None:
                 conn.close()
-    return status_Changed
+    return status_changed
 
 
 def change_steps_state_of_latest_version(trainingjob_name, ps_db_obj, key, value):
