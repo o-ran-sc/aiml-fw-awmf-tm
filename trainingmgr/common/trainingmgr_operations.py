@@ -34,7 +34,7 @@ def data_extraction_start(training_config_obj, trainingjob_name, feature_list, q
     logger.debug('training manager is calling data extraction for '+trainingjob_name)
     data_extraction_ip = training_config_obj.data_extraction_ip
     data_extraction_port = training_config_obj.data_extraction_port
-    url = 'http://'+str(data_extraction_ip)+':'+str(data_extraction_port)+'/feature-groups'
+    url = 'http://'+str(data_extraction_ip)+':'+str(data_extraction_port)+'/feature-groups' #NOSONAR
     logger.debug(url)
 
     source = {}
@@ -85,7 +85,7 @@ def data_extraction_status(trainingjob_name,training_config_obj):
     data_extraction_ip = training_config_obj.data_extraction_ip
     data_extraction_port = training_config_obj.data_extraction_port
     url = 'http://'+str(data_extraction_ip)+':'+str(data_extraction_port)+\
-          '/task-status/'+trainingjob_name
+          '/task-status/'+trainingjob_name #NOSONAR
     logger.debug(url)
     response = requests.get(url)
     return response
@@ -101,7 +101,7 @@ def training_start(training_config_obj, dict_data, trainingjob_name):
     kf_adapter_ip = training_config_obj.kf_adapter_ip
     kf_adapter_port = training_config_obj.kf_adapter_port
     url = 'http://'+str(kf_adapter_ip)+':'+str(kf_adapter_port)+\
-            '/trainingjobs/' + trainingjob_name + '/execution'
+            '/trainingjobs/' + trainingjob_name + '/execution' #NOSONAR
     logger.debug(url)
     response = requests.post(url,
                              data=json.dumps(dict_data),
