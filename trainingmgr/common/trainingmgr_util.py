@@ -39,7 +39,6 @@ def response_for_training(code, message, logger, is_success, trainingjob_name, p
     logger.debug("Training job result: " + str(code) + " " + message + " " + str(is_success))
     
     try :
-        #TODO DB query optimization, all data to fetch in one call
         notif_url_result = get_field_by_latest_version(trainingjob_name, ps_db_obj, "notification_url")
         if notif_url_result :
             notification_url = notif_url_result[0][0]
