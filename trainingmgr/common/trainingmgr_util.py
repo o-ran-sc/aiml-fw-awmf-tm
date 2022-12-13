@@ -39,7 +39,6 @@ def response_for_training(code, message, logger, is_success, trainingjob_name, p
     logger.debug("Training job result: " + str(code) + " " + message + " " + str(is_success))
     
     try :
-        #TODO DB query optimization, all data to fetch in one call
         notif_url_result = get_field_by_latest_version(trainingjob_name, ps_db_obj, "notification_url")
         if notif_url_result :
             notification_url = notif_url_result[0][0]
@@ -83,13 +82,13 @@ def check_key_in_dictionary(fields, dictionary):
     This function raises exception if any string from fields list does not present in a dictionary
     as a key
     '''
-    isKeyAvailable = True
+    iskeyavailable = True
     for field_name in fields:
         if field_name not in dictionary:
-            isKeyAvailable = False
+            iskeyavailable = False
             break
             #Log (field_name + " not provide")
-    return isKeyAvailable
+    return iskeyavailable
 
 def get_one_word_status(steps_state):
     """
