@@ -335,14 +335,14 @@ def training(trainingjob_name):
                 response_data = de_response.json()
                 response_code = status.HTTP_200_OK
             elif( de_response.headers['content-type'] == "application/json" ) :
-                errMsg = "Data extraction responded with error code."
-                LOGGER.error(errMsg)
+                errmsg = "Data extraction responded with error code."
+                LOGGER.error(errmsg)
                 json_data = de_response.json()
                 LOGGER.debug(str(json_data))
                 if check_key_in_dictionary(["result"], json_data):
-                    response_data = {"Failed":errMsg + json_data["result"]}
+                    response_data = {"Failed":errmsg + json_data["result"]}
                 else:
-                    raise TMException(errMsg)
+                    raise TMException(errmsg)
             else:
                 raise TMException("Data extraction doesn't send json type response" + \
                            "(trainingjob name is " + trainingjob_name + ")") from None
@@ -505,9 +505,9 @@ def pipeline_notification():
                                                         Steps.TRAINED_MODEL.name,
                                                         States.FINISHED.name)
             else:
-                errMsg = "Trained model is not available  "
-                LOGGER.error(errMsg + trainingjob_name)
-                raise TMException(errMsg + trainingjob_name)
+                errmsg = "Trained model is not available  "
+                LOGGER.error(errmsg + trainingjob_name)
+                raise TMException(errmsg + trainingjob_name)
         else:
             LOGGER.error("Pipeline notification -Training failed " + trainingjob_name)    
             raise TMException("Pipeline not successful for " + \
