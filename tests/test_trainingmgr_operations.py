@@ -85,3 +85,49 @@ class Test_upload_pipeline:
                                     content_type="application/json")
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
         assert expected_data in response.json.keys() 
+
+class dummy_class:
+    def debug(self,var):
+        return True
+class dummy_var:
+    data_extraction_ip = '123'
+    data_extraction_port = '100'
+    logger = dummy_class()
+
+class Test_data_extraction_start:
+    def setup_method(self):
+        self.client = trainingmgr_main.APP.test_client(self)
+        self.logger = trainingmgr_main.LOGGER
+
+    @patch('trainingmgr.common.trainingmgr_operations.requests.post', return_value = "data_extraction_start func tested properly")
+    def test_data_extraction_start(self, mock1):
+        training_config_obj = dummy_var()
+        trainingjob_name = "usecase88"
+        feature_list = ['apple','ball','cat']
+        query_filter = "*"
+        datalake_source = {'InfluxSource': {'query': 'Geeks', 2: 'For', 3: 'Geeks'}, 2: 'For', 3: 'Geeks'}
+        _measurement = "measure1"
+        bucket = "bucket1"
+        expected = 'data_extraction_start func tested properly'
+        response = trainingmgr_operations.data_extraction_start(training_config_obj, trainingjob_name, feature_list, query_filter,
+                          datalake_source, _measurement, bucket)
+        assert response == expected
+
+class Test_data_extraction_status:
+    def setup_method(self):
+        self.client = trainingmgr_main.APP.test_client(self)
+        self.logger = trainingmgr_main.LOGGER
+
+    @patch('trainingmgr.common.trainingmgr_operations.requests.get', return_value = "data_extraction_start func tested properly")
+    def test_data_extraction_status(self, mock1):
+        training_config_obj = dummy_var()
+        trainingjob_name = "usecase88"
+        # feature_list = ['apple','ball','cat']
+        # query_filter = "*"
+        # datalake_source = {'InfluxSource': {'query': 'Geeks', 2: 'For', 3: 'Geeks'}, 2: 'For', 3: 'Geeks'}
+        # _measurement = "measure1"
+        # bucket = "bucket1"
+        expected = 'data_extraction_start func tested properly'
+        response = trainingmgr_operations.data_extraction_status(trainingjob_name,training_config_obj)
+        assert response == expected
+      

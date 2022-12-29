@@ -492,7 +492,7 @@ def pipeline_notification():
             change_steps_state_of_latest_version(trainingjob_name, PS_DB_OBJ,
                                                     Steps.TRAINED_MODEL.name,
                                                     States.IN_PROGRESS.name)
-
+                                                    
             if MM_SDK.check_object(trainingjob_name, version, "Model.zip"):
                 model_url = "http://" + str(TRAININGMGR_CONFIG_OBJ.my_ip) + ":" + \
                             str(TRAININGMGR_CONFIG_OBJ.my_port) + "/model/" + \
@@ -1062,7 +1062,7 @@ if __name__ == "__main__":
     TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
     try:
         if TRAININGMGR_CONFIG_OBJ.is_config_loaded_properly() is False:
-            raise Exception("Not all configuration loaded.")
+            raise TMException("Not all configuration loaded.")
         LOGGER = TRAININGMGR_CONFIG_OBJ.logger
         PS_DB_OBJ = PSDB(TRAININGMGR_CONFIG_OBJ)
         LOCK = Lock()
@@ -1071,5 +1071,5 @@ if __name__ == "__main__":
         MM_SDK = ModelMetricsSdk()
         LOGGER.debug("Starting AIML-WF training manager .....")
         APP.run(debug=True, port=int(TRAININGMGR_CONFIG_OBJ.my_port), host='0.0.0.0')
-    except Exception as err:
+    except TMException as err:
         print("Startup failure" + str(err))

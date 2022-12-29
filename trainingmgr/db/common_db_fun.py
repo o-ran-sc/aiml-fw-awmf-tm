@@ -473,13 +473,13 @@ def add_update_trainingjob(description, pipeline_name, experiment_name, feature_
                           query_filter, adding, enable_versioning,
                           pipeline_version, datalake_source, trainingjob_name, ps_db_obj, notification_url="",
                           _measurement="", bucket=""):
-    """
-    This function add the new row or update existing row with given information
-    """
+        """
+        This function add the new row or update existing row with given information
+        """
 
 
-    conn = None
-    try:
+        conn = None
+    # try:
         arguments_string = json.dumps({"arguments": arguments})
         datalake_source_dic = {}
         datalake_source_dic[datalake_source] = {}
@@ -505,7 +505,6 @@ def add_update_trainingjob(description, pipeline_name, experiment_name, feature_
                            '''{} group by trainingjob_name) nt where nt.trainingjob_name = %s'''.format(tm_table_name),
                            (trainingjob_name))
             version = int(cursor.fetchall()[0][0])
-
             if enable_versioning:
                 version = version + 1
                 cursor.execute('''INSERT INTO {} VALUES '''.format(tm_table_name) + \
@@ -548,15 +547,14 @@ def add_update_trainingjob(description, pipeline_name, experiment_name, feature_
                             deletion_in_progress))
         conn.commit()
         cursor.close()
-    except Exception as err:
-        if conn is not None:
-            conn.rollback()
-        raise DBException("Failed to execute query in " + \
-            "add_update_trainingjob"  + str(err))
-    finally:
-        if conn is not None:
-                conn.close()
-
+    # except Exception as err:
+    #     if conn is not None:
+    #         conn.rollback()
+    #     raise DBException("Failed to execute query in " + \
+    #         "add_update_trainingjob"  + str(err))
+    # finally:
+    #     if conn is not None:
+    #             conn.close()
 
 def get_all_jobs_latest_status_version(ps_db_obj):
     """

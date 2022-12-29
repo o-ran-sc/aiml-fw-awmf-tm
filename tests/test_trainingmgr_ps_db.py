@@ -22,6 +22,14 @@ from mock import patch
 from trainingmgr.db.trainingmgr_ps_db import PSDB
 from dotenv import load_dotenv
 
+class dummpy_test:
+       api = "APITest"
+       def logger(self):
+        return cred_handle()
+    
+       def error(self):
+        raise Exception('Connection Failed To Exist')
+
 class cred_handle:
     def __init__(self):
         self.ps_user = "gdgdgd"
@@ -72,6 +80,16 @@ class Test_PSDB:
 
     def test_init_psdb(self):
         assert self.obj != None, 'PSDB Object Creation Failed'
+    
+    @patch('trainingmgr.db.trainingmgr_ps_db.pg8000.dbapi.connect', return_value = "HTTP_500_INTERNAL_SERVER_ERROR")
+    def test_negative_init_psdb(self,mock1):
+      config_hdl = dummpy_test()
+      try:
+        obj1 = PSDB(config_hdl)
+        response = obj1.__init__(config_hdl)
+        assert response == 200
+      except:
+         pass
 
     @patch('trainingmgr.db.trainingmgr_ps_db.pg8000.dbapi.connect', return_value = connection('usecase_manager_database'))
     def test_get_new_conn(self, mock1):

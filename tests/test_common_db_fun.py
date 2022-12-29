@@ -20,6 +20,7 @@ import pytest
 import sys
 from dotenv import load_dotenv
 import json
+from mock import patch
 from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainingjobs, \
      change_field_of_latest_version, change_field_value_by_version, \
      get_field_by_latest_version, get_field_of_given_version, \
@@ -108,9 +109,60 @@ class Check:
     def setwin(self):
          self.finished = True
 
+#defining of the dummy class
+class ps_db_obj_dummy:
+    def __init__(self):
+        self.name = 'Green'
+        self.lg = Lightgreen()
+ 
+    def get_new_conn(self):
+        return self.lg
+ 
+class Lightgreen:
+    def __init__(self):
+        self.name = 'Light Green'
+        self.code = Execute_class()
+ 
+    def cursor(self):
+        return self.code
+
+    def commit(Self):
+        return True
+    
+    def close(self):
+        pass
+
+    def rollback(self):
+        pass
+ 
+class Execute_class:
+     def __init__(self):
+        self.array = [[1,2,3],[1,2,3]] 
+     
+     def execute(self,var,var2):
+        return True
+
+     def close(self):
+        pass
+     
+     def fetchall(self):
+        return self.array
+
 class Test_Common_Db_Fun:
     def setup_method(self):
         pass
+
+    def test_add_update_trainingjob_second(self):
+        checker = Check()
+        db_obj = ps_db_obj_dummy()
+        response = add_update_trainingjob('Testing', 'qoe-pipeline', 'Default', '*', '{epoches : 1}', '', False, True, 1, 'InfluxSource', 'Tester',db_obj)
+        assert response == None, 'add_update_trainingjob FAILED, When adding = True'
+
+    def test_negative_add_update_trainingjob_second(self    ):
+        checker = Check()
+        db_obj = ps_db_obj_dummy()
+        response = add_update_trainingjob('Testing', 'qoe-pipeline', 'Default', '*', '{epoches : 1}', '', False, False, 1, 'InfluxSource', 'Tester',db_obj)
+        assert response == None, 'add_update_trainingjob FAILED, When adding = True'
 
     def test_get_data_extraction_in_progress_trainingjobs(self):
         db_obj = db_helper([["usecase_name", "steps_state"]])
@@ -366,7 +418,7 @@ class Test_Common_Db_Fun:
         db_obj = db_helper([[None]], check_success_obj=checker)
         add_update_trainingjob('Testing', 'qoe-pipeline', 'Default', '*', '{epoches : 1}', '', True, True, 1, 'InfluxSource', 'Tester',db_obj)
         assert checker.finished, 'add_update_trainingjob FAILED, When adding = True'
-    
+
     def test_negative_add_update_trainingjob_2(self):
         checker = Check()
         db_obj = db_helper([[None]], check_success_obj=checker)

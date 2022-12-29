@@ -30,34 +30,88 @@ from flask_api import status
 from dotenv import load_dotenv
 from threading import Lock
 from trainingmgr import trainingmgr_main 
-from trainingmgr.common.tmgr_logger import TMLogger
-from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
-trainingmgr_main.LOGGER = pytest.logger
 trainingmgr_main.LOCK = Lock()
 trainingmgr_main.DATAEXTRACTION_JOBS_CACHE = {}
+from trainingmgr.common.tmgr_logger import TMLogger
+from trainingmgr import trainingmgr_main
+trainingmgr_main.LOGGER = pytest.logger
+from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
+
+class err:
+    def __init__(self):
+        self.message = "Error occured while execution"
+        self.code = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+class Test_error:
+    def setup_method(self):
+         self.client = trainingmgr_main.APP.test_client(self)
+         self.logger = trainingmgr_main.LOGGER
+
+    def test_error(self):
+        expected_data = "result"
+        err_data = err()
+        response = trainingmgr_main.error(err_data)
+        assert response.status == '500 INTERNAL SERVER ERROR'
 
 class Test_upload_pipeline:
-    def setup_method(self):
-        self.client = trainingmgr_main.APP.test_client(self)
-        self.logger = trainingmgr_main.LOGGER
+     def setup_method(self):
+         self.client = trainingmgr_main.APP.test_client(self)
+         self.logger = trainingmgr_main.LOGGER
+ 
+     mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+     attrs_TRAININGMGR_CONFIG_OBJ = {'kf_adapter_ip.return_value': '123', 'kf_adapter_port.return_value' : '100'}
+     mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+     @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+     def test_upload_pipeline_negative(self, mock1):
+         trainingmgr_main.LOGGER.debug("*******  *******")
+         expected_data = "result"
+         trainingjob_req = {
+                     "pipe_name":"usecase1",
+                     }
+         response = self.client.post("/pipelines/<pipe_name>/upload".format("usecase1"), data=json.dumps(trainingjob_req),
+                                     content_type="application/json")
+ 
+         trainingmgr_main.LOGGER.debug(response.data)
+         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+         assert expected_data in response.json.keys() 
 
-    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
-    attrs_TRAININGMGR_CONFIG_OBJ = {'kf_adapter_ip.return_value': '123', 'kf_adapter_port.return_value' : '100'}
-    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
-    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
-    def test_upload_pipeline_negative(self, mock1):
-        trainingmgr_main.LOGGER.debug("*******  *******")
-        expected_data = "result"
-        trainingjob_req = {
-                    "pipe_name":"usecase1",
-                    }
-        response = self.client.post("/pipelines/<pipe_name>/upload".format("usecase1"), data=json.dumps(trainingjob_req),
-                                    content_type="application/json")
+class dummy_class_requests:
+    def json(var):
+        Dict = {"trainingjob_name": 'testcases21', 2: 'For', 3: 'Geeks'}
+        return Dict
 
-        trainingmgr_main.LOGGER.debug(response.data)
-        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-        assert expected_data in response.json.keys() 
+class response_dummy2:
+       headers={"content-type": "application/json"}
+       status_code = status.HTTP_200_OK
+       def json():
+          my_dict = {
+                    "task_status": "Error",
+                    "model": "Mustang",
+                    "year": 1964
+                  }
+          return my_dict
 
+class Dummy_response:
+    def setup(self):
+        self.code = "expired"
+        self.error_type = "expired"
+        self.status_code = 500
+        self.headers={'content-type': "applicationnnnnnnnnn/json"}
+        self._content = b'{"task_status": "Completed", "result": "Data Extraction Completed"}'
+        self.example_dict = {"run_status": 'scheduled', "Italy": "Rome", "England": "London"}
+    def json(self):
+        return self.example_dict
+
+class Dummy_response_true_input:
+    def setup(self):
+        self.code = "expired"
+        self.error_type = "expired"
+        self.status_code = status.HTTP_200_OK
+        self.headers={'content-type': "application/json"}
+        self._content = b'{"task_status": "Completed", "result": "Data Extraction Completed"}'
+        self.example_dict = {"run_status": 'scheduled', "Italy": "Rome", "England": "London"}
+    def json(self):
+        return self.example_dict
 
 class Test_data_extraction_notification:
     def setup_method(self):
@@ -94,7 +148,231 @@ class Test_data_extraction_notification:
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)
         assert response.status_code == status.HTTP_200_OK
-        
+    
+    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result2)  
+    @patch('trainingmgr.trainingmgr_main.training_start', return_value = de_response2)
+    @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')  
+    @patch('trainingmgr.trainingmgr_main.change_field_of_latest_version')        
+    @patch('trainingmgr.trainingmgr_main.change_in_progress_to_failed_by_latest_version', return_value = True)
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = resp) 
+    @patch('trainingmgr.trainingmgr_main.Logger.error', return_value = True)
+    def test_negative_data_extraction_notification(self, mock1, mock2, mock3, mock4, mock5, mock6, mock7):
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    }
+        expected_data = "Data Extraction Completed"
+        response = self.client.post("/trainingjob/dataExtractionNotification".format("usecase1"),
+                                    data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)
+        assert response.status_code == status.HTTP_200_OK
+
+class Test_negative_data_extraction_notification:
+    def setup_method(self):
+        self.client = trainingmgr_main.APP.test_client(self)
+        self.logger = trainingmgr_main.LOGGER
+
+    db_result2 = [('usecase1', 'uc1', '*', 'qoe Pipeline lat v2', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "usecase1"}}',
+    '', datetime.datetime(2022, 10, 12, 10, 0, 59, 923588), '51948a12-aee9-42e5-93a0-b8f4a15bca33',
+    '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FAILED"}',
+    datetime.datetime(2022, 10, 12, 10, 2, 31, 888830), 1, False, '3', '{"datalake_source": {"InfluxSource": {}}}', 'No data available.', '', 'liveCell', 'UEData', False)]
+
+    de_response2 = Response()
+    de_response2.code = "expired"
+    de_response2.error_type = "expired"
+    de_response2.status_code = 500
+    de_response2.headers={"content-type": "application/json"}
+    de_response2._content = b'{"task_status": "Completed", "result": "Data Extraction Completed"}'
+    resp= ({"str1":"rp1","str2":"rp2"} ,status.HTTP_200_OK)
+    
+    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result2)  
+    @patch('trainingmgr.trainingmgr_main.training_start', return_value = Dummy_response_true_input)   
+    @patch('trainingmgr.trainingmgr_main.change_in_progress_to_failed_by_latest_version', return_value = False)
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = resp) 
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value = True)
+    @patch('trainingmgr.trainingmgr_main.Logger.error', return_value = True)
+    def test_positive_data_extraction_notification_100(self, mock1, mock2, mock3, mock4, mock5, mock6):
+        trainingmgr_main.LOGGER.debug("******* Data_Extraction_Notification *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    }
+        expected_data = "Data Extraction Completed"
+        response = self.client.post("/trainingjob/dataExtractionNotification".format("usecase1"),
+                                    data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        # assert response == status.HTTP_200_OK
+        assert response.status == '200 OK'
+    ##Do Changes here only
+    ######################################################################################
+    de_response2 = Response()
+    de_response2.code = "expired"
+    de_response2.error_type = "expired"
+    de_response2.status_code = 500
+    de_response2.headers={"content-type": "application/json"}
+    de_response2._content = b'{"task_status": "Completed", "result": "Data Extraction Completed"}'
+    resp= ({"str1":"rp1","str2":"rp2"} ,status.HTTP_200_OK)
+    
+    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result2)  
+    # @patch('trainingmgr.trainingmgr_main.training_start', return_value = de_response2)   
+    @patch('trainingmgr.trainingmgr_main.change_in_progress_to_failed_by_latest_version', return_value = False)
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = resp) 
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value = True)
+    @patch('trainingmgr.trainingmgr_main.Logger.error', return_value = True)
+    def test_positive_data_extraction_notification_101(self, mock1, mock2, mock3, mock4, mock5):
+        trainingmgr_main.LOGGER.debug("******* Data_Extraction_Notification *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    }
+        expected_data = "Data Extraction Completed"
+        response = self.client.post("/trainingjob/dataExtractionNotification".format("usecase1"),
+                                    data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        assert response.status == '200 OK'
+    ######################################################################################
+
+    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result2)  
+    @patch('trainingmgr.trainingmgr_main.training_start', return_value = Dummy_response_true_input)
+    @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')  
+    @patch('trainingmgr.trainingmgr_main.change_field_of_latest_version')        
+    @patch('trainingmgr.trainingmgr_main.change_in_progress_to_failed_by_latest_version', return_value = False)
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = resp) 
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value = True)
+    def test_negative_data_extraction_notification_3(self, mock1, mock2, mock3, mock4, mock5, mock6, mock7):
+        trainingmgr_main.LOGGER.debug("******* Data_Extraction_Notification *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    }
+        expected_data = "Data Extraction Completed"
+        response = self.client.post("/trainingjob/dataExtractionNotification".format("usecase1"),
+                                    data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)
+        # assert response == status.HTTP_200_OK
+        # assert response.status_code == status.HTTP_200_OK   
+
+    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result2)  
+    @patch('trainingmgr.trainingmgr_main.training_start', return_value = Dummy_response_true_input)
+    @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')  
+    @patch('trainingmgr.trainingmgr_main.change_field_of_latest_version')        
+    @patch('trainingmgr.trainingmgr_main.change_in_progress_to_failed_by_latest_version', return_value = False)
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = resp) 
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value = False)
+    def test_negative_data_extraction_notification_4(self, mock1, mock2, mock3, mock4, mock5, mock6, mock7):
+        trainingmgr_main.LOGGER.debug("******* Data_Extraction_Notification *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    }
+        expected_data = "Data Extraction Completed"
+        response = self.client.post("/trainingjob/dataExtractionNotification".format("usecase1"),
+                                    data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)
+        # assert response == status.HTTP_200_OK
+        # assert response.status_code == status.HTTP_200_OK    
+    
+    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result2)  
+    @patch('trainingmgr.trainingmgr_main.training_start', return_value = Dummy_response)
+    @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')  
+    @patch('trainingmgr.trainingmgr_main.change_field_of_latest_version')        
+    @patch('trainingmgr.trainingmgr_main.change_in_progress_to_failed_by_latest_version', return_value = False)
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = resp) 
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value = True)
+    def test_negative_data_extraction_notification_5(self, mock1, mock2, mock3, mock4, mock5, mock6, mock7):
+        trainingmgr_main.LOGGER.debug("******* Data_Extraction_Notification *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    }
+        expected_data = "Data Extraction Completed"
+        response = self.client.post("/trainingjob/dataExtractionNotification".format("usecase1"),
+                                    data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)
+        # assert response == status.HTTP_200_OK
+        # assert response.status_code == status.HTTP_200_OK 
+
+    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result2)  
+    @patch('trainingmgr.trainingmgr_main.training_start', return_value = Dummy_response)
+    @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')  
+    @patch('trainingmgr.trainingmgr_main.change_field_of_latest_version')        
+    @patch('trainingmgr.trainingmgr_main.change_in_progress_to_failed_by_latest_version', return_value = False)
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = resp) 
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value = False)
+    def test_negative_data_extraction_notification_6(self, mock1, mock2, mock3, mock4, mock5, mock6, mock7):
+        trainingmgr_main.LOGGER.debug("******* Data_Extraction_Notification *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    }
+        expected_data = "Data Extraction Completed"
+        response = self.client.post("/trainingjob/dataExtractionNotification".format("usecase1"),
+                                    data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)
+        # assert response == status.HTTP_200_OK
+        # assert response.status_code == status.HTTP_200_OK 
+    
+    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result2)  
+    @patch('trainingmgr.trainingmgr_main.training_start', return_value = Dummy_response)   
+    @patch('trainingmgr.trainingmgr_main.change_in_progress_to_failed_by_latest_version', return_value = False)
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = resp) 
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value = False)
+    @patch('trainingmgr.trainingmgr_main.Logger.error', return_value = True)
+    def test_negative_data_extraction_notification_7(self, mock1, mock2, mock3, mock4, mock5, mock6):
+        trainingmgr_main.LOGGER.debug("******* Data_Extraction_Notification *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    }
+        expected_data = "Data Extraction Completed"
+        response = self.client.post("/trainingjob/dataExtractionNotification".format("usecase1"),
+                                    data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)
+        # assert response == status.HTTP_200_OK
+        # assert response.status_code == status.HTTP_200_OK 
+    
+    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result2)  
+    @patch('trainingmgr.trainingmgr_main.training_start', return_value = de_response2)   
+    @patch('trainingmgr.trainingmgr_main.change_in_progress_to_failed_by_latest_version', return_value = False)
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = resp) 
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value = True)
+    @patch('trainingmgr.trainingmgr_main.Logger.error', return_value = True)
+    def test_negative_data_extraction_notification_8(self, mock1, mock2, mock3, mock4, mock5, mock6):
+        trainingmgr_main.LOGGER.debug("******* Data_Extraction_Notification *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    }
+        expected_data = "Data Extraction Completed"
+        response = self.client.post("/trainingjob/dataExtractionNotification".format("usecase1"),
+                                    data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)
+        # assert response == status.HTTP_200_OK
+        # assert response.status_code == status.HTTP_200_OK 
+
+#67-68, 345-347, 406-426, 428-432, 443, 508-510, 520, 616, 621-650, 656-660, 663-664, 708, 901-902, 908, 912, 1019, 1040, 1044-1045, 1062-1075
+    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result2)  
+    @patch('trainingmgr.trainingmgr_main.training_start', return_value = Dummy_response_true_input)   
+    @patch('trainingmgr.trainingmgr_main.change_in_progress_to_failed_by_latest_version', return_value = False)
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = resp) 
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value = True)
+    @patch('trainingmgr.trainingmgr_main.Logger.error', return_value = True)
+    def test_negative_data_extraction_notification_9(self, mock1, mock2, mock3, mock4, mock5, mock6):
+        trainingmgr_main.LOGGER.debug("******* Data_Extraction_Notification *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    }
+        expected_data = "Data Extraction Completed"
+        response = self.client.post("/trainingjob/dataExtractionNotification".format("usecase1"),
+                                    data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)
+        # assert response == status.HTTP_200_OK
+        # assert response.status_code == status.HTTP_200_OK
+
+
+
+
+
+
 class Test_trainingjobs_operations:
     def setup_method(self):
         self.client = trainingmgr_main.APP.test_client(self)
@@ -122,11 +400,165 @@ class Test_trainingjobs_operations:
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR, "Return status code NOT equal"
         assert expected_data in str(response.data)
 
+import signal
+from contextlib import contextmanager
+class TimeoutException(Exception): pass
+@contextmanager
+def time_limit(seconds):
+    def signal_handler(signum, frame):
+        raise TimeoutException("Timed out!")
+    signal.signal(signal.SIGALRM, signal_handler)
+    signal.alarm(seconds)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
+
+class response_dummy:
+       headers={"content-type": "application/json"}
+       status_code = status.HTTP_200_OK
+       def json():
+          my_dict = {
+                    "task_status": "Completed",
+                    "model": "Mustang",
+                    "year": 1964
+                  }
+          return my_dict
+          
+class response_dummy2:
+       headers={"content-type": "application/json"}
+       status_code = status.HTTP_200_OK
+       def json():
+          my_dict = {
+                    "task_status": "Error",
+                    "model": "Mustang",
+                    "year": 1964
+                  }
+          return my_dict
+
+class TRAININGMGR_CONFIG_OBJ_dummy:
+       my_ip = "1.0.0.1"
+       my_port = "10.0.0.47"
+       def pop(value):
+           return True
+                 
+class Test_async_feature_engineering_status:
+    def setup_method(self):
+         self.client = trainingmgr_main.APP.test_client(self)
+         self.logger = trainingmgr_main.LOGGER
+ 
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'kf_adapter_ip.return_value': '123', 'kf_adapter_port.return_value' : '100'}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    mocked_mm_sdk=mock.Mock(name="MM_SDK")
+    attrs_mm_sdk = {'check_object.return_value': True}
+    mocked_mm_sdk.configure_mock(**attrs_mm_sdk)
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': 123, 'my_port.return_value' : 100}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    message1="Pipeline notification success."
+    code1=status.HTTP_200_OK
+    response_tuple1=({"result": message1}, code1)
+    @patch('trainingmgr.trainingmgr_main.MM_SDK', return_value = mocked_mm_sdk)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.data_extraction_status', return_value = response_dummy)
+    @patch('trainingmgr.trainingmgr_main.list', return_value = ['usecase1','usecase2','usecase3','usecase4'])
+    @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version', return_value = True)
+    @patch('trainingmgr.trainingmgr_main.requests.post', return_value = response_dummy)  
+    @patch('trainingmgr.trainingmgr_main.DATAEXTRACTION_JOBS_CACHE', return_value = TRAININGMGR_CONFIG_OBJ_dummy)
+    def test_async_feature_engineering_status(self,mock1, mock2, mock3, mock4, mock5, mock6, mock7):
+        trainingmgr_main.LOGGER.debug("******* async_feature_engineering_status test running *******")      
+        try:
+          with time_limit(2):
+              trainingmgr_main.async_feature_engineering_status()
+        except TimeoutException as e:
+          print("Timed out!")
+    
+    @patch('trainingmgr.trainingmgr_main.MM_SDK', return_value = mocked_mm_sdk)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.data_extraction_status', return_value = response_dummy)
+    @patch('trainingmgr.trainingmgr_main.list', return_value = ['usecase1','usecase2','usecase3','usecase4'])
+    @patch('trainingmgr.trainingmgr_main.requests.post', return_value = response_dummy2)  
+    @patch('trainingmgr.trainingmgr_main.DATAEXTRACTION_JOBS_CACHE', return_value = TRAININGMGR_CONFIG_OBJ_dummy)
+    def test_negative_async_feature_engineering_status(self,mock1, mock2, mock3, mock4, mock5, mock6):
+        trainingmgr_main.LOGGER.debug("******* async_feature_engineering_status negative test running *******")      
+        try:
+          with time_limit(2):
+              trainingmgr_main.async_feature_engineering_status()
+        except TimeoutException as e:
+          print("Timed out!")
+      
+class  mmSDK_dummy:
+    def check_object(self,val1,val2,val3):
+        return False
+
 class Test_pipeline_notification:
     def setup_method(self):
         self.client = trainingmgr_main.APP.test_client(self)
         self.logger = trainingmgr_main.LOGGER
         
+    #####################CODE HERE###############################################
+    mocked_mm_sdk=mock.Mock(name="MM_SDK")
+    attrs_mm_sdk = {'check_object.return_value': False}
+    mocked_mm_sdk.configure_mock(**attrs_mm_sdk)
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': 123, 'my_port.return_value' : 100}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    message1="Pipeline notification success."
+    code1=status.HTTP_200_OK
+    response_tuple1=({"result": message1}, code1)
+    @patch('trainingmgr.trainingmgr_main.MM_SDK', return_value = mmSDK_dummy())
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ) 
+    @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')
+    @patch('trainingmgr.trainingmgr_main.update_model_download_url')
+    @patch('trainingmgr.trainingmgr_main.get_latest_version_trainingjob_name', return_value = "usecase1")
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = response_tuple1)
+    @patch('trainingmgr.trainingmgr_main.LOGGER.debug', return_value = True)
+    def test_pipeline_notification_33(self,mock1, mock2, mock3, mock4, mock5, mock6, mock7):
+        trainingmgr_main.LOGGER.debug("******* test_pipeline_notification post *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    "run_status":"Succeeded",
+                    }
+        expected_data = "Pipeline notification success."
+        response = self.client.post("/trainingjob/pipelineNotification".format("usecase1"),data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)    
+        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
+        assert expected_data in str(response.data)
+    ##################CODE ENDS HERE###############################################
+    
+    #####################CODE HERE###############################################
+    #Testcases for 520 line
+    mocked_mm_sdk=mock.Mock(name="MM_SDK")
+    attrs_mm_sdk = {'check_object.return_value': False}
+    mocked_mm_sdk.configure_mock(**attrs_mm_sdk)
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': 123, 'my_port.return_value' : 100}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    message1="Pipeline notification success."
+    code1=status.HTTP_200_OK
+    response_tuple1=({"result": message1}, code1)
+    @patch('trainingmgr.trainingmgr_main.MM_SDK', return_value = mmSDK_dummy())
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ) 
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value = Exception())
+    @patch('trainingmgr.trainingmgr_main.update_model_download_url')
+    @patch('trainingmgr.trainingmgr_main.get_latest_version_trainingjob_name', return_value = "usecase1")
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = response_tuple1)
+    @patch('trainingmgr.trainingmgr_main.LOGGER.error', return_value = True)
+    def test_pipeline_notification_bb(self,mock1, mock2, mock3, mock4, mock5, mock6, mock7):
+        trainingmgr_main.LOGGER.debug("******* test_pipeline_notification post *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    "run_status":"Succeeded",
+                    }
+        expected_data = "Pipeline notification success."
+        response = self.client.post("/trainingjob/pipelineNotification".format("usecase1"),data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)    
+        assert response.status_code == 500, "Return status code NOT equal"
+    ##################CODE ENDS HERE###############################################
+   
     mocked_mm_sdk=mock.Mock(name="MM_SDK")
     attrs_mm_sdk = {'check_object.return_value': True}
     mocked_mm_sdk.configure_mock(**attrs_mm_sdk)
@@ -155,6 +587,64 @@ class Test_pipeline_notification:
         assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
         assert expected_data in str(response.data)
 
+    mocked_mm_sdk=mock.Mock(name="MM_SDK")
+    attrs_mm_sdk = {'check_object.return_value': True}
+    mocked_mm_sdk.configure_mock(**attrs_mm_sdk)
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': 123, 'my_port.return_value' : 100}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    message1="Pipeline notification success."
+    code1=status.HTTP_200_OK
+    response_tuple1=({"result": message1}, code1)
+    @patch('trainingmgr.trainingmgr_main.MM_SDK', return_value = mocked_mm_sdk)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ) 
+    @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')
+    @patch('trainingmgr.trainingmgr_main.update_model_download_url')
+    @patch('trainingmgr.trainingmgr_main.get_latest_version_trainingjob_name', return_value = "usecase1")
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = response_tuple1)
+    def test_pipeline_notification(self,mock1, mock2, mock3, mock4, mock5, mock6):
+        trainingmgr_main.LOGGER.debug("******* test_pipeline_notification post *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    "run_status":"Succeeded",
+                    }
+        expected_data = "Pipeline notification success."
+        response = self.client.post("/trainingjob/pipelineNotification".format("usecase1"),data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)    
+        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
+        assert expected_data in str(response.data)
+    
+    #####################CODE HERE###############################################
+    mocked_mm_sdk=mock.Mock(name="MM_SDK")
+    attrs_mm_sdk = {'check_object.return_value': False}
+    mocked_mm_sdk.configure_mock(**attrs_mm_sdk)
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': 123, 'my_port.return_value' : 100}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    message1="Pipeline notification success."
+    code1=status.HTTP_200_OK
+    response_tuple1=({"result": message1}, code1)
+    @patch('trainingmgr.trainingmgr_main.MM_SDK', return_value = mocked_mm_sdk)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ) 
+    @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')
+    @patch('trainingmgr.trainingmgr_main.update_model_download_url')
+    @patch('trainingmgr.trainingmgr_main.get_latest_version_trainingjob_name', return_value = "usecase1")
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = response_tuple1)
+    def test_pipeline_notification_22(self,mock1, mock2, mock3, mock4, mock5, mock6):
+        trainingmgr_main.LOGGER.debug("******* test_pipeline_notification post *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    "run_status":"Succeeded",
+                    }
+        expected_data = "Pipeline notification success."
+        response = self.client.post("/trainingjob/pipelineNotification".format("usecase1"),data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)    
+        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
+        assert expected_data in str(response.data)
+
+    ##################CODE ENDS HERE###############################################
     message2="Pipeline notification -Training failed "
     code2=status.HTTP_500_INTERNAL_SERVER_ERROR
     response_tuple2=({"result": message2}, code2)
@@ -384,23 +874,21 @@ class Test_training_main:
         assert response.status_code == status.HTTP_409_CONFLICT, "Return status code NOT equal"
         assert expected_data in str(response.data)
 
-
     db_result = [('usecase1', 'uc1', '*', 'qoe Pipeline lat v2', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "usecase1"}}',
     '', datetime.datetime(2022, 10, 12, 10, 0, 59, 923588), '51948a12-aee9-42e5-93a0-b8f4a15bca33',
     '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FAILED"}',
     datetime.datetime(2022, 10, 12, 10, 2, 31, 888830), 1, False, '3', '{"datalake_source": {"InfluxSource": {}}}', 'No data available.', '', 'liveCell', 'UEData', False)]
 
-    de_response = Response()
-    de_response = Response()
-    de_response.code = "expired"
-    de_response.error_type = "expired"
-    de_response.status_code = status.HTTP_200_OK
-    de_response.headers={"content-type": "application/json"}
-    de_response._content = b'{"task_status": "Completed", "result": "Data Pipeline Execution Completed"}'
+    de_response_fake = Response()
+    de_response_fake.code = "expired"
+    de_response_fake.error_type = "expired"
+    de_response_fake.status_code = status.HTTP_200_OK
+    de_response_fake.headers={"content-type": "application/json"}
+    de_response_fake._content = b'{"task_status": "Completed", "result": "Data Pipeline Execution Completed"}'
 
     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
     @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result)
-    @patch('trainingmgr.trainingmgr_main.data_extraction_start', return_value = de_response)
+    @patch('trainingmgr.trainingmgr_main.data_extraction_start', return_value = de_response_fake)
     @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')
     def test_training(self,mock1,mock2,mock3,mock4):
         trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
@@ -408,8 +896,62 @@ class Test_training_main:
         response = self.client.post("/trainingjobs/<trainingjob_name>/training".format("usecase1"),
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)    
-        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
+        assert response.status_code == 200, "Return status code NOT equal"
         assert expected_data in str(response.data) 
+    
+    de_response_fake = Response()
+    de_response_fake.code = "expired"
+    de_response_fake.error_type = "expired"
+    de_response_fake.status_code = 500
+    de_response_fake.headers={"content-type": "application/json"}
+    de_response_fake._content = b'{"task_status": "Completed", "result": "Data Pipeline Execution Completed"}'
+    @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
+    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result)
+    @patch('trainingmgr.trainingmgr_main.data_extraction_start', return_value = de_response_fake)
+    @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')
+    def test_negative_training(self,mock1,mock2,mock3,mock4):
+        trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
+        expected_data = 'Data Pipeline Execution Completed"'
+        response = self.client.post("/trainingjobs/<trainingjob_name>/training".format("usecase1"),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)    
+        assert response.status_code == 500, "Return status code NOT equal"
+
+    de_response_fake = Response()
+    de_response_fake.code = "expired"
+    de_response_fake.error_type = "expired"
+    de_response_fake.status_code = 500
+    de_response_fake.headers={"content-type": "applicationn/json"}
+    de_response_fake._content = b'{"task_status": "Completed", "result": "Data Pipeline Execution Completed"}'
+    @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
+    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result)
+    @patch('trainingmgr.trainingmgr_main.data_extraction_start', return_value = de_response_fake)
+    @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')
+    def test_negative_training2(self,mock1,mock2,mock3,mock4):
+        trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
+        expected_data = 'Data Pipeline Execution Completed"'
+        response = self.client.post("/trainingjobs/<trainingjob_name>/training".format("usecase1"),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)    
+        assert response.status_code == 500, "Return status code NOT equal"
+   
+    de_response_fake = Response()
+    de_response_fake.code = "expired"
+    de_response_fake.error_type = "expired"
+    de_response_fake.status_code = 500
+    de_response_fake.headers={"content-type": "application/json"}
+    de_response_fake._content = b'{"task_status": "Completed", "result": "Data Pipeline Execution Completed"}'
+    @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
+    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result)
+    @patch('trainingmgr.trainingmgr_main.data_extraction_start', return_value = de_response_fake)
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value = False)
+    def test_negative_training3(self,mock1,mock2,mock3,mock4):
+        trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
+        expected_data = 'Data Pipeline Execution Completed'
+        response = self.client.post("/trainingjobs/<trainingjob_name>/training".format("usecase1"),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)    
+        assert response.status_code == 500, "Return status code NOT equal"
 
     db_result1 = [('usecase1', 'uc1', '*', 'qoe Pipeline lat v2', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "usecase1"}}',
     '', datetime.datetime(2022, 10, 12, 10, 0, 59, 923588), '51948a12-aee9-42e5-93a0-b8f4a15bca33',
@@ -497,9 +1039,12 @@ class Test_get_versions_for_pipeline:
         assert response.content_type != "application/text", "not equal content type"
     
 class Test_get_all_pipeline_names:
-    def setup_method(self):
+    @patch('trainingmgr.common.trainingmgr_config.TMLogger', return_value = TMLogger("tests/common/conf_log.yaml"))
+    def setup_method(self,mock1,mock2):
         self.client = trainingmgr_main.APP.test_client(self)
         self.logger = trainingmgr_main.LOGGER
+        load_dotenv('tests/test.env')
+        trainingmgr_main.TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()   
 
     the_response = Response()
     the_response.code = "expired"
@@ -511,12 +1056,21 @@ class Test_get_all_pipeline_names:
     def test_get_all_pipeline_names(self,mock1):
         response = self.client.get("/pipelines")      
         assert response.content_type == "application/json", "not equal content type"
-        assert response.status_code == 500, "Return status code NOT equal"   
-        
+        assert response.status_code == 200, "Return status code NOT equal"   
+
+    @patch('trainingmgr.trainingmgr_main.requests.get', return_value = the_response)
+    def test_negative_get_all_pipeline_names_100001(self,mock1):
+        response = self.client.get("/pipelines")   
+        print("Subhasis Mahana")   
+        print(response.data)
+        expected_data = b'{"pipeline_names": ["exp1", "exp2"]}'
+        assert response.content_type == "application/json", "not equal content type"
+        assert response.status_code == 200, "Return status code NOT equal"
+        assert response.data == b'{"pipeline_names": ["exp1", "exp2"]}'
+
     @patch('trainingmgr.trainingmgr_main.requests.get', side_effect = requests.exceptions.ConnectionError('Mocked error'))
     def test_negative_get_all_pipeline_names_1(self,mock1):
         response = self.client.get("/pipelines")       
-        print(response.data)
         assert response.content_type == "application/json", "not equal content type"
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR, "Should have thrown the exception "
         
@@ -554,7 +1108,7 @@ class Test_get_all_exp_names:
         response = self.client.get("/experiments")      
         print(response.data)
         assert response.content_type == "application/json", "not equal content type"
-        assert response.status_code == 500, "Return status code NOT equal"   
+        assert response.status_code == 200, "Return status code NOT equal"   
         
     @patch('trainingmgr.trainingmgr_main.requests.get', side_effect = requests.exceptions.ConnectionError('Mocked error'))
     def test_negative_get_all_experiment_names_1(self,mock1):
@@ -672,3 +1226,26 @@ class Test_get_metadata_1:
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)
         assert response.status_code == status.HTTP_404_NOT_FOUND, "Return status code NOT equal"
+    
+# class Test__main__:
+#     def setup_method(self):
+#         self.client = trainingmgr_main.APP.test_client(self)
+#         self.logger = trainingmgr_main.LOGGER
+        
+#     mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+#     attrs_TRAININGMGR_CONFIG_OBJ = {'kf_adapter_ip.return_value': '123', 'kf_adapter_port.return_value' : '100'}
+#     mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+#     mocked_mm_sdk=mock.Mock(name="MM_SDK")
+#     attrs_mm_sdk = {'check_object.return_value': True}
+#     mocked_mm_sdk.configure_mock(**attrs_mm_sdk)
+#     mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+#     attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': 123, 'my_port.return_value' : 100}
+#     mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+#     message1="Pipeline notification success."
+#     code1=status.HTTP_200_OK
+#     response_tuple1=({"result": message1}, code1)
+#     @patch('trainingmgr.trainingmgr_main.MM_SDK', return_value = mocked_mm_sdk)
+#     @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+#     def test__main__(self,mock1, mock2):
+#         trainingmgr_main.main()
+#         assert response.status_code == status.HTTP_404_NOT_FOUND, "Return status code NOT equal"
