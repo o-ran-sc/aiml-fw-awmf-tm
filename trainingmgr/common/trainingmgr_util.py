@@ -83,13 +83,13 @@ def check_key_in_dictionary(fields, dictionary):
     This function raises exception if any string from fields list does not present in a dictionary
     as a key
     '''
-    isKeyAvailable = True
+    iskeyavailable = True
     for field_name in fields:
         if field_name not in dictionary:
-            isKeyAvailable = False
+            iskeyavailable = False
             break
             #Log (field_name + " not provide")
-    return isKeyAvailable
+    return iskeyavailable
 
 def get_one_word_status(steps_state):
     """
@@ -177,12 +177,12 @@ def get_metrics(trainingjob_name, version, mm_sdk):
         if present:
             data = json.dumps(mm_sdk.get_metrics(trainingjob_name, version))
             if data is None:
-                raise Exception("Problem while downloading metrics")
+                raise TMException("Problem while downloading metrics")
         else:
             data = "No data available"
     except Exception as err:
-        errMsg = str(err)
-        raise TMException ( "Problem while downloading metric" + errMsg)
+        errmsg = str(err)
+        raise TMException ( "Problem while downloading metric" + errmsg)
     return data
 
 
@@ -212,12 +212,12 @@ def validate_trainingjob_name(trainingjob_name, ps_db_obj):
     it returns False.
     """
     results = None
-    isAvailable = False
+    isavailable = False
     try:
         results = get_all_versions_info_by_name(trainingjob_name, ps_db_obj)
     except Exception as err:
-        errMsg = str(err)
-        raise DBException("Could not get info from db for " + trainingjob_name + "," + errMsg)
+        errmsg = str(err)
+        raise DBException("Could not get info from db for " + trainingjob_name + "," + errmsg)
     if results:
-        isAvailable = True
-    return isAvailable    
+        isavailable = True
+    return isavailable    

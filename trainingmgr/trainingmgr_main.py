@@ -59,6 +59,10 @@ MM_SDK = None
 LOCK = None
 DATAEXTRACTION_JOBS_CACHE = None
 
+ERROR_TYPE_KF_ADAPTER_JSON = "Kf adapter doesn't sends json type response"
+ERROR_TYPE_DB_STATUS = "Couldn't update the status as failed in db access"
+MIMETYPE_JSON = "application/json"
+
 @APP.errorhandler(APIException)
 def error(err):
     """
@@ -67,7 +71,7 @@ def error(err):
     LOGGER.error(err.message)
     return APP.response_class(response=json.dumps({"Exception": err.message}),
                               status=err.code,
-                              mimetype='application/json')
+                              mimetype=MIMETYPE_JSON)
 
 
 @APP.route('/trainingjobs/<trainingjob_name>/<version>', methods=['GET'])
@@ -179,7 +183,7 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
         
     return APP.response_class(response=json.dumps(response_data),
                                         status=response_code,
-                                        mimetype='application/json')
+                                        mimetype=MIMETYPE_JSON)
 
 @APP.route('/trainingjobs/<trainingjob_name>/<version>/steps_state', methods=['GET']) # Handled in GUI
 @cross_origin()
@@ -246,7 +250,7 @@ def get_steps_state(trainingjob_name, version):
 
     return APP.response_class(response=reponse_data,
                                       status=response_code,
-                                      mimetype='application/json')
+                                      mimetype=MIMETYPE_JSON)
 
 @APP.route('/model/<trainingjob_name>/<version>/Model.zip', methods=['GET'])
 def get_model(trainingjob_name, version):
@@ -334,7 +338,7 @@ def training(trainingjob_name):
                     DATAEXTRACTION_JOBS_CACHE[trainingjob_name] = "Scheduled"
                 response_data = de_response.json()
                 response_code = status.HTTP_200_OK
-            elif( de_response.headers['content-type'] == "application/json" ) :
+            elif( de_response.headers['content-type'] == MIMETYPE_JSON ) :
                 errMsg = "Data extraction responded with error code."
                 LOGGER.error(errMsg)
                 json_data = de_response.json()
@@ -350,7 +354,7 @@ def training(trainingjob_name):
         response_data =  {"Exception": str(err)}
         LOGGER.debug("Error is training, job name:" + trainingjob_name + str(err))         
     return APP.response_class(response=json.dumps(response_data),status=response_code,
-                            mimetype='application/json')
+                            mimetype=MIMETYPE_JSON)
 
 @APP.route('/trainingjob/dataExtractionNotification', methods=['POST'])
 def data_extraction_notification():
@@ -398,7 +402,7 @@ def data_extraction_notification():
         }
 
         response = training_start(TRAININGMGR_CONFIG_OBJ, dict_data, trainingjob_name)
-        if ( response.headers['content-type'] != "application/json" 
+        if ( response.headers['content-type'] != MIMETYPE_JSON 
                 or response.status_code != status.HTTP_200_OK ):
             err_msg = "Kf adapter invalid content-type or status_code for " + trainingjob_name
             raise TMException(err_msg)
@@ -428,21 +432,21 @@ def data_extraction_notification():
         err_msg = "Failed to connect KF adapter."
         LOGGER.error(err_msg)
         if not change_in_progress_to_failed_by_latest_version(trainingjob_name, PS_DB_OBJ) :
-            LOGGER.error("Couldn't update the status as failed in db")
+            LOGGER.error(ERROR_TYPE_DB_STATUS)
         return response_for_training(err_response_code,
                                         err_msg + str(err) + "(trainingjob name is " + trainingjob_name + ")",
                                         LOGGER, False, trainingjob_name, PS_DB_OBJ, MM_SDK)
     except Exception as err:
         LOGGER.error("Failed to handle dataExtractionNotification. " + str(err))
         if not change_in_progress_to_failed_by_latest_version(trainingjob_name, PS_DB_OBJ) :
-            LOGGER.error("Couldn't update the status as failed in db")
+            LOGGER.error(ERROR_TYPE_DB_STATUS)
         return response_for_training(err_response_code,
                                         str(err) + "(trainingjob name is " + trainingjob_name + ")",
                                         LOGGER, False, trainingjob_name, PS_DB_OBJ, MM_SDK)
 
     return APP.response_class(response=json.dumps({"result": "pipeline is scheduled"}),
                                     status=status.HTTP_200_OK,
-                                    mimetype='application/json')
+                                    mimetype=MIMETYPE_JSON)
 
 
 @APP.route('/trainingjob/pipelineNotification', methods=['POST'])
@@ -492,7 +496,7 @@ def pipeline_notification():
             change_steps_state_of_latest_version(trainingjob_name, PS_DB_OBJ,
                                                     Steps.TRAINED_MODEL.name,
                                                     States.IN_PROGRESS.name)
-
+                                                    
             if MM_SDK.check_object(trainingjob_name, version, "Model.zip"):
                 model_url = "http://" + str(TRAININGMGR_CONFIG_OBJ.my_ip) + ":" + \
                             str(TRAININGMGR_CONFIG_OBJ.my_port) + "/model/" + \
@@ -517,7 +521,7 @@ def pipeline_notification():
         #Training failure response
         LOGGER.error("Pipeline notification failed" + str(err))
         if not change_in_progress_to_failed_by_latest_version(trainingjob_name, PS_DB_OBJ) :
-            LOGGER.error("Couldn't update the status as failed in db")
+            LOGGER.error(ERROR_TYPE_DB_STATUS)
         
         return response_for_training(status.HTTP_500_INTERNAL_SERVER_ERROR,
                             str(err) + " (trainingjob " + trainingjob_name + ")",
@@ -578,7 +582,7 @@ def trainingjobs_operations():
         LOGGER.error(str(err))
     return APP.response_class(response=json.dumps(api_response),
                         status=response_code,
-                        mimetype='application/json')
+                        mimetype=MIMETYPE_JSON)
 
 @APP.route("/pipelines/<pipe_name>/upload", methods=['POST'])
 @cross_origin()
@@ -623,17 +627,18 @@ def upload_pipeline(pipe_name):
             uploaded_file_path = "/tmp/" + uploaded_file.filename
             uploaded_file.save(uploaded_file_path)
             LOGGER.debug("File uploaded :%s", uploaded_file_path)
-
             kf_adapter_ip = TRAININGMGR_CONFIG_OBJ.kf_adapter_ip
             kf_adapter_port = TRAININGMGR_CONFIG_OBJ.kf_adapter_port
-            url = 'http://' + str(kf_adapter_ip) + ':' + str(kf_adapter_port) + \
+            if kf_adapter_ip!=None and kf_adapter_port!=None:
+               url = 'http://' + str(kf_adapter_ip) + ':' + str(kf_adapter_port) + \
                   '/pipelineIds/' + pipe_name
 
             description = ''
             if 'description' in request.form:
                 description = request.form['description']
-            with open(uploaded_file_path, 'rb') as file:
-                files = {'file': file.read()}
+            if uploaded_file_path != None:     
+                with open(uploaded_file_path, 'rb') as file:
+                    files = {'file': file.read()}
 
             resp = requests.post(url, files=files, data={"description": description})
             LOGGER.debug(resp.text)
@@ -661,12 +666,13 @@ def upload_pipeline(pipe_name):
 
     if uploaded_file_path and os.path.isfile(uploaded_file_path):
         LOGGER.debug("Deleting %s", uploaded_file_path)
-        os.remove(uploaded_file_path)
+        if uploaded_file_path != None:
+            os.remove(uploaded_file_path)
 
     LOGGER.debug("Responding to Client with %d %s", result_code, result_string)
     return APP.response_class(response=json.dumps({'result': result_string}),
                                   status=result_code,
-                                  mimetype='application/json')
+                                  mimetype=MIMETYPE_JSON)
 
 
 @APP.route("/pipelines/<pipeline_name>/versions", methods=['GET'])
@@ -698,14 +704,14 @@ def get_versions_for_pipeline(pipeline_name):
     try:
         kf_adapter_ip = TRAININGMGR_CONFIG_OBJ.kf_adapter_ip
         kf_adapter_port = TRAININGMGR_CONFIG_OBJ.kf_adapter_port
-        
-        url = 'http://' + str(kf_adapter_ip) + ':' + str(
+        if kf_adapter_ip!=None and kf_adapter_port!=None :
+          url = 'http://' + str(kf_adapter_ip) + ':' + str(
             kf_adapter_port) + '/pipelines/' + pipeline_name + \
             '/versions'
         LOGGER.debug("URL:" + url)
         response = requests.get(url)
-        if response.headers['content-type'] != "application/json":
-            raise TMException("Kf adapter doesn't sends json type response")
+        if response.headers['content-type'] != MIMETYPE_JSON:
+            raise TMException(ERROR_TYPE_KF_ADAPTER_JSON)
         api_response = {"versions_list": response.json()['versions_list']}
         response_code = status.HTTP_200_OK
     except Exception as err:
@@ -713,7 +719,7 @@ def get_versions_for_pipeline(pipeline_name):
         LOGGER.error(str(err))
     return APP.response_class(response=json.dumps(api_response),
             status=response_code,
-            mimetype='application/json')
+            mimetype=MIMETYPE_JSON)
      
 
 @APP.route('/pipelines', methods=['GET'])
@@ -745,11 +751,12 @@ def get_all_pipeline_names():
     try:
         kf_adapter_ip = TRAININGMGR_CONFIG_OBJ.kf_adapter_ip
         kf_adapter_port = TRAININGMGR_CONFIG_OBJ.kf_adapter_port
-        url = 'http://' + str(kf_adapter_ip) + ':' + str(kf_adapter_port) + '/pipelines'
+        if kf_adapter_ip!=None and kf_adapter_port!=None:
+            url = 'http://' + str(kf_adapter_ip) + ':' + str(kf_adapter_port) + '/pipelines'
         LOGGER.debug(url)
         response = requests.get(url)
-        if response.headers['content-type'] != "application/json":
-            err_smg = "Kf adapter doesn't sends json type response"
+        if response.headers['content-type'] != MIMETYPE_JSON:
+            err_smg = ERROR_TYPE_KF_ADAPTER_JSON
             LOGGER.error(err_smg)
             raise TMException(err_smg)
         pipeline_names = []
@@ -763,7 +770,7 @@ def get_all_pipeline_names():
         api_response =  {"Exception": str(err)}
     return APP.response_class(response=json.dumps(api_response),
                                     status=response_code,
-                                    mimetype='application/json')
+                                    mimetype=MIMETYPE_JSON)
 
 
 @APP.route('/experiments', methods=['GET'])
@@ -795,11 +802,12 @@ def get_all_experiment_names():
     try:
         kf_adapter_ip = TRAININGMGR_CONFIG_OBJ.kf_adapter_ip
         kf_adapter_port = TRAININGMGR_CONFIG_OBJ.kf_adapter_port
-        url = 'http://' + str(kf_adapter_ip) + ':' + str(kf_adapter_port) + '/experiments'
+        if kf_adapter_ip!=None and kf_adapter_port!=None: 
+            url = 'http://' + str(kf_adapter_ip) + ':' + str(kf_adapter_port) + '/experiments'
         LOGGER.debug("url is :" + url)
         response = requests.get(url)
-        if response.headers['content-type'] != "application/json":
-            err_smg = "Kf adapter doesn't sends json type response"
+        if response.headers['content-type'] != MIMETYPE_JSON:
+            err_smg = ERROR_TYPE_KF_ADAPTER_JSON
             raise TMException(err_smg)
 
         experiment_names = []
@@ -812,7 +820,7 @@ def get_all_experiment_names():
         LOGGER.error(str(err))
     return APP.response_class(response=json.dumps(api_response),
                                   status=reponse_code,
-                                  mimetype='application/json')
+                                  mimetype=MIMETYPE_JSON)
 
 
 @APP.route('/trainingjobs/<trainingjob_name>', methods=['POST', 'PUT']) # Handled in GUI
@@ -878,8 +886,8 @@ def trainingjob_operations(trainingjob_name):
         json_data = request.json
         if (request.method == 'POST'):          
             LOGGER.debug("Create request json : " + json.dumps(json_data))
-            isDataAvailable = validate_trainingjob_name(trainingjob_name, PS_DB_OBJ)
-            if  isDataAvailable:
+            is_data_available = validate_trainingjob_name(trainingjob_name, PS_DB_OBJ)
+            if  is_data_available:
                 response_code = status.HTTP_409_CONFLICT
                 raise TMException("trainingjob name(" + trainingjob_name + ") is already present in database")
             else:
@@ -896,8 +904,8 @@ def trainingjob_operations(trainingjob_name):
                 response_code = status.HTTP_201_CREATED
         elif(request.method == 'PUT'):
             LOGGER.debug("Update request json : " + json.dumps(json_data))
-            isDataAvailable = validate_trainingjob_name(trainingjob_name, PS_DB_OBJ)
-            if not isDataAvailable:
+            is_data_available = validate_trainingjob_name(trainingjob_name, PS_DB_OBJ)
+            if not is_data_available:
                 response_code = status.HTTP_404_NOT_FOUND
                 raise TMException("Trainingjob name(" + trainingjob_name + ") is not  present in database")
             else:
@@ -927,7 +935,7 @@ def trainingjob_operations(trainingjob_name):
 
     return APP.response_class(response= json.dumps(api_response),
                     status= response_code,
-                    mimetype='application/json')
+                    mimetype=MIMETYPE_JSON)
 
 @APP.route('/trainingjobs/metadata/<trainingjob_name>')
 def get_metadata(trainingjob_name):
@@ -996,7 +1004,7 @@ def get_metadata(trainingjob_name):
         api_response = {"Exception":str(err)}
     return APP.response_class(response=json.dumps(api_response),
                                         status=response_code,
-                                        mimetype='application/json')
+                                        mimetype=MIMETYPE_JSON)
 
 def async_feature_engineering_status():
     """
@@ -1014,7 +1022,7 @@ def async_feature_engineering_status():
             LOGGER.debug("Current DATAEXTRACTION_JOBS_CACHE :" + str(DATAEXTRACTION_JOBS_CACHE))
             try:
                 response = data_extraction_status(trainingjob_name, TRAININGMGR_CONFIG_OBJ)
-                if (response.headers['content-type'] != "application/json" or 
+                if (response.headers['content-type'] != MIMETYPE_JSON or 
                         response.status_code != status.HTTP_200_OK ):
                     raise TMException("Data extraction responsed with error status code or invalid content type" + \
                                          "doesn't send json type response (trainingjob " + trainingjob_name + ")")
@@ -1032,10 +1040,10 @@ def async_feature_engineering_status():
                     kf_response = requests.post(url_pipeline_run,
                                                 data=json.dumps({"trainingjob_name": trainingjob_name}),
                                                 headers={
-                                                    'content-type': 'application/json',
+                                                    'content-type': MIMETYPE_JSON,
                                                     'Accept-Charset': 'UTF-8'
                                                 })
-                    if (kf_response.headers['content-type'] != "application/json" or 
+                    if (kf_response.headers['content-type'] != MIMETYPE_JSON or 
                             kf_response.status_code != status.HTTP_200_OK ):
                         raise TMException("KF adapter responsed with error status code or invalid content type" + \
                                          "doesn't send json type response (trainingjob " + trainingjob_name + ")")
@@ -1062,7 +1070,7 @@ if __name__ == "__main__":
     TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
     try:
         if TRAININGMGR_CONFIG_OBJ.is_config_loaded_properly() is False:
-            raise Exception("Not all configuration loaded.")
+            raise TMException("Not all configuration loaded.")
         LOGGER = TRAININGMGR_CONFIG_OBJ.logger
         PS_DB_OBJ = PSDB(TRAININGMGR_CONFIG_OBJ)
         LOCK = Lock()
@@ -1071,5 +1079,5 @@ if __name__ == "__main__":
         MM_SDK = ModelMetricsSdk()
         LOGGER.debug("Starting AIML-WF training manager .....")
         APP.run(debug=True, port=int(TRAININGMGR_CONFIG_OBJ.my_port), host='0.0.0.0')
-    except Exception as err:
+    except TMException as err:
         print("Startup failure" + str(err))

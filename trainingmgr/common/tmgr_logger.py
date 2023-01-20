@@ -43,7 +43,7 @@ class TMLogger(object):# pylint: disable=too-few-public-methods
             with open(conf_file, 'r') as file:
                 log_config = yaml.safe_load(file.read())
             logging.config.dictConfig(log_config)
-            self.LogLevel = log_config["root"]["level"]
+            self.loglevel = log_config["root"]["level"]
             self.logger = logging.getLogger(__name__)
         except FileNotFoundError as err:
             print("error opening yaml config file")
@@ -61,5 +61,5 @@ class TMLogger(object):# pylint: disable=too-few-public-methods
     
     @property
     def get_logLevel(self):
-        return self.LogLevel
+        return self.loglevel
     

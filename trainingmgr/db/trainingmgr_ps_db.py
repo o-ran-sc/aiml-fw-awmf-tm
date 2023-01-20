@@ -23,6 +23,8 @@ and sending connection of postgres db.
 import pg8000.dbapi
 from trainingmgr.common.exceptions_utls import DBException
 
+PG_DB_ACCESS_ERROR = "Problem of connection with postgres db"
+
 class PSDB():
     """
     Database interface for training manager
@@ -43,7 +45,7 @@ class PSDB():
                                         port=int(config_hdl.ps_port))
         except pg8000.dbapi.Error:
             self.__config_hdl.logger.error("Problem of connection with postgres db")
-            raise DBException("Problem of connection with postgres db") from None
+            raise DBException(PG_DB_ACCESS_ERROR) from None
         conn1.autocommit = True
         cur1 = conn1.cursor()
         present = False
@@ -59,7 +61,7 @@ class PSDB():
         except pg8000.dbapi.Error:
             conn1.rollback()
             self.__config_hdl.logger.error("Can't create database.")
-            raise DBException("Can't create database.") from None
+            raise DBException(PG_DB_ACCESS_ERROR) from None
         finally:
             if conn1 is not None:
                 conn1.close()
@@ -74,7 +76,7 @@ class PSDB():
                                         database="training_manager_database")
         except pg8000.dbapi.Error:
             self.__config_hdl.logger.error("Problem of connection with postgres db")
-            raise DBException("Problem of connection with postgres db") from None
+            raise DBException(PG_DB_ACCESS_ERROR) from None
         cur2 = conn2.cursor()
         try:
             cur2.execute("create table if not exists trainingjob_info(" + \

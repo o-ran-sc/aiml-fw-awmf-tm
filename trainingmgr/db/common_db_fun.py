@@ -26,6 +26,7 @@ from trainingmgr.constants.states import States
 from trainingmgr.common.exceptions_utls import DBException
 
 tm_table_name = "trainingjob_info" # Table used by 'Training Manager' for training jobs
+DB_QUERY_EXEC_ERROR = "Failed to execute query in "
 
 def get_data_extraction_in_progress_trainingjobs(ps_db_obj):
     """
@@ -48,7 +49,7 @@ def get_data_extraction_in_progress_trainingjobs(ps_db_obj):
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in " + \
+        raise DBException(DB_QUERY_EXEC_ERROR + \
             "get_data_extraction_in_progress_trainingjobs," + str(err))
     finally:
         if conn is not None:
@@ -175,7 +176,7 @@ def change_in_progress_to_failed_by_latest_version(trainingjob_name, ps_db_obj):
     This function changes steps_state's key's value to FAILED which is currently
     IN_PROGRESS of <trainingjob_name, trainingjob_name trainingjob's latest version> trainingjob.
     """
-    status_Changed = False
+    status_changed = False
     conn = None
     try:
         conn = ps_db_obj.get_new_conn()
@@ -191,19 +192,19 @@ def change_in_progress_to_failed_by_latest_version(trainingjob_name, ps_db_obj):
             if steps_state[step] == States.IN_PROGRESS.name:
                 steps_state[step] = States.FAILED.name
         cursor.execute("update {} set steps_state = %s where trainingjob_name = %s and ".format(tm_table_name) + \
-                       "version = %s", (json.dumps(steps_state), trainingjob_name, version))
-        status_Changed = True
+                       "version= %s", (json.dumps(steps_state), trainingjob_name, version))
+        status_changed = True
         conn.commit()
         cursor.close() 
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in " + \
+        raise DBException(DB_QUERY_EXEC_ERROR + \
              "change_in_progress_to_failed_by_latest_version" + str(err))
     finally:
         if conn is not None:
                 conn.close()
-    return status_Changed
+    return status_changed
 
 
 def change_steps_state_of_latest_version(trainingjob_name, ps_db_obj, key, value):
@@ -223,13 +224,13 @@ def change_steps_state_of_latest_version(trainingjob_name, ps_db_obj, key, value
         steps_state = json.loads(cursor.fetchall()[0][0])
         steps_state[key] = value
         cursor.execute("update {} set steps_state = %s where trainingjob_name = %s and ".format(tm_table_name) + \
-                       "version = %s",  (json.dumps(steps_state), trainingjob_name, version))   
+                       "version= %s",  (json.dumps(steps_state), trainingjob_name, version))   
         conn.commit()
         cursor.close() 
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in " + \
+        raise DBException(DB_QUERY_EXEC_ERROR + \
             "change_steps_state_of_latest_version"  + str(err))
     finally:
         if conn is not None:
@@ -249,13 +250,13 @@ def change_steps_state_by_version(trainingjob_name, version, ps_db_obj, key, val
         steps_state = json.loads(cursor.fetchall()[0][0])
         steps_state[key] = value
         cursor.execute("update {} set steps_state = %s where trainingjob_name = %s ".format(tm_table_name) + \
-                       "and version = %s", (json.dumps(steps_state), trainingjob_name, version))
+                       "and version= %s", (json.dumps(steps_state), trainingjob_name, version))
         conn.commit()
         cursor.close()
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in " + \
+        raise DBException(DB_QUERY_EXEC_ERROR + \
             "change_steps_state_by_version"  + str(err))
     finally:
         if conn is not None:
@@ -277,7 +278,7 @@ def delete_trainingjob_version(trainingjob_name, version, ps_db_obj):
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in " + \
+        raise DBException(DB_QUERY_EXEC_ERROR + \
             "delete_trainingjob_version"  + str(err))
     finally:
         if conn is not None:
@@ -301,7 +302,7 @@ def get_info_by_version(trainingjob_name, version, ps_db_obj):
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in " + \
+        raise DBException(DB_QUERY_EXEC_ERROR + \
             "get_info_by_version"  + str(err))
     finally:
         if conn is not None:
@@ -331,7 +332,7 @@ def get_trainingjob_info_by_name(trainingjob_name, ps_db_obj):
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in " + \
+        raise DBException(DB_QUERY_EXEC_ERROR + \
             "get_trainingjob_info_by_name"  + str(err))
     finally:
         if conn is not None:
@@ -357,7 +358,7 @@ def get_latest_version_trainingjob_name(trainingjob_name, ps_db_obj):
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in " + \
+        raise DBException(DB_QUERY_EXEC_ERROR + \
             "get_latest_version_trainingjob_name"  + str(err))
     finally:
         if conn is not None:
@@ -382,7 +383,7 @@ def get_all_versions_info_by_name(trainingjob_name, ps_db_obj):
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in " + \
+        raise DBException(DB_QUERY_EXEC_ERROR + \
             "get_all_versions_info_by_name"  + str(err))
     finally:
         if conn is not None:
@@ -408,7 +409,7 @@ def get_all_distinct_trainingjobs(ps_db_obj):
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in " + \
+        raise DBException(DB_QUERY_EXEC_ERROR + \
             "get_all_distinct_trainingjobs"  + str(err))
     finally:
         if conn is not None:
@@ -436,7 +437,7 @@ def get_all_version_num_by_trainingjob_name(trainingjob_name, ps_db_obj):
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in " + \
+        raise DBException(DB_QUERY_EXEC_ERROR + \
             "get_all_version_num_by_trainingjob_name"  + str(err))
     finally:
         if conn is not None:
@@ -462,7 +463,7 @@ def update_model_download_url(trainingjob_name, version, url, ps_db_obj):
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in " + \
+        raise DBException(DB_QUERY_EXEC_ERROR + \
             "update_model_download_url"  + str(err))
     finally:
         if conn is not None:
@@ -473,13 +474,13 @@ def add_update_trainingjob(description, pipeline_name, experiment_name, feature_
                           query_filter, adding, enable_versioning,
                           pipeline_version, datalake_source, trainingjob_name, ps_db_obj, notification_url="",
                           _measurement="", bucket=""):
-    """
-    This function add the new row or update existing row with given information
-    """
+     """
+        This function add the new row or update existing row with given information
+     """
 
 
-    conn = None
-    try:
+     conn = None
+     try:
         arguments_string = json.dumps({"arguments": arguments})
         datalake_source_dic = {}
         datalake_source_dic[datalake_source] = {}
@@ -502,10 +503,10 @@ def add_update_trainingjob(description, pipeline_name, experiment_name, feature_
         cursor = conn.cursor()
         if not adding:
             cursor.execute('''select nt.mv from (select max(version) mv,trainingjob_name from ''' + \
-                           '''{} group by trainingjob_name) nt where nt.trainingjob_name = %s'''.format(tm_table_name),
-                           (trainingjob_name))
+                       '''{} group by trainingjob_name) nt where nt.trainingjob_name = %s'''.format(tm_table_name),
+                       (trainingjob_name,))
             version = int(cursor.fetchall()[0][0])
-
+            
             if enable_versioning:
                 version = version + 1
                 cursor.execute('''INSERT INTO {} VALUES '''.format(tm_table_name) + \
@@ -548,15 +549,14 @@ def add_update_trainingjob(description, pipeline_name, experiment_name, feature_
                             deletion_in_progress))
         conn.commit()
         cursor.close()
-    except Exception as err:
-        if conn is not None:
-            conn.rollback()
-        raise DBException("Failed to execute query in " + \
-            "add_update_trainingjob"  + str(err))
-    finally:
-        if conn is not None:
-                conn.close()
-
+     except Exception as err:
+         if conn is not None:
+             conn.rollback()
+         raise DBException(DB_QUERY_EXEC_ERROR + \
+             "add_update_trainingjob"  + str(err))
+     finally:
+         if conn is not None:
+                 conn.close()
 
 def get_all_jobs_latest_status_version(ps_db_obj):
     """
@@ -581,7 +581,7 @@ def get_all_jobs_latest_status_version(ps_db_obj):
     except Exception as err:
         if conn is not None:
             conn.rollback()
-        raise DBException("Failed to execute query in " + \
+        raise DBException(DB_QUERY_EXEC_ERROR + \
             "get_all_jobs_latest_status_version"  + str(err))
     finally:
         if conn is not None:
