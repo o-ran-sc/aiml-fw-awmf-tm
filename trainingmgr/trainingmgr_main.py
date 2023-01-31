@@ -30,6 +30,7 @@ from flask import Flask, request, send_file
 from flask_api import status
 import requests
 from flask_cors import cross_origin
+from werkzeug.utils import secure_filename
 from modelmetricsdk.model_metrics_sdk import ModelMetricsSdk
 from trainingmgr.common.trainingmgr_operations import data_extraction_start, training_start, data_extraction_status
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
@@ -41,7 +42,6 @@ from trainingmgr.common.trainingmgr_util import get_one_word_status, check_train
 from trainingmgr.common.exceptions_utls import APIException,TMException
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
-
 from trainingmgr.db.trainingmgr_ps_db import PSDB
 from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainingjobs, \
     change_field_of_latest_version, \
@@ -624,7 +624,7 @@ def upload_pipeline(pipe_name):
 
         LOGGER.debug("Uploading received for %s", uploaded_file.filename)
         if uploaded_file.filename != '':
-            uploaded_file_path = "/tmp/" + uploaded_file.filename
+            uploaded_file_path = "/tmp/" + secure_filename(uploaded_file.filename)
             uploaded_file.save(uploaded_file_path)
             LOGGER.debug("File uploaded :%s", uploaded_file_path)
             kf_adapter_ip = TRAININGMGR_CONFIG_OBJ.kf_adapter_ip
