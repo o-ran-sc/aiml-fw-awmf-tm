@@ -25,9 +25,11 @@ import requests
 from trainingmgr.db.common_db_fun import change_in_progress_to_failed_by_latest_version, \
     get_field_by_latest_version, change_field_of_latest_version, \
     get_latest_version_trainingjob_name,get_all_versions_info_by_name
-
 from trainingmgr.constants.states import States
 from trainingmgr.common.exceptions_utls import APIException,TMException,DBException
+
+ERROR_TYPE_KF_ADAPTER_JSON = "Kf adapter doesn't sends json type response"
+MIMETYPE_JSON = "application/json"
 
 def response_for_training(code, message, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk):
     """
@@ -221,3 +223,26 @@ def validate_trainingjob_name(trainingjob_name, ps_db_obj):
     if results:
         isavailable = True
     return isavailable    
+
+def get_all_pipeline_names_svc(training_config_obj):
+    # This function returns all the pipeline names 
+
+    pipeline_names = []
+    logger=training_config_obj.logger
+    try:
+        kf_adapter_ip = training_config_obj.kf_adapter_ip
+        kf_adapter_port = training_config_obj.kf_adapter_port
+        if kf_adapter_ip!=None and kf_adapter_port!=None:
+            url = 'http://' + str(kf_adapter_ip) + ':' + str(kf_adapter_port) + '/pipelines'
+        logger.debug(url)
+        response = requests.get(url)
+        if response.headers['content-type'] != MIMETYPE_JSON:
+            err_smg = ERROR_TYPE_KF_ADAPTER_JSON
+            logger.error(err_smg)
+            raise TMException(err_smg)
+        for pipeline in response.json().keys():
+            pipeline_names.append(pipeline)
+    except Exception as err:
+        logger.error(str(err))
+    logger.debug(pipeline_names)
+    return pipeline_names
