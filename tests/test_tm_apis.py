@@ -456,7 +456,10 @@ class Test_get_versions_for_pipeline:
     mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.requests.get', return_value = the_response)
-    def test_get_versions_for_pipeline_positive(self,mock1,mock2):
+    @patch('trainingmgr.trainingmgr_main.get_all_pipeline_names_svc', return_value=[
+		"qoe_pipeline"
+	])
+    def test_get_versions_for_pipeline_positive(self,mock1,mock2, mock3):
         response = self.client.get("/pipelines/{}/versions".format("qoe_pipeline"))     
         trainingmgr_main.LOGGER.debug(response.data)
         assert response.content_type == "application/json", "not equal content type"

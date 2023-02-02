@@ -21,6 +21,7 @@ This file contains the unittesting for Training management utility functions
 """
 from pickle import FALSE
 import sys
+from unittest import mock, TestCase
 from mock import patch
 from threading import Lock
 import pytest
@@ -36,11 +37,12 @@ from trainingmgr.common.tmgr_logger import TMLogger
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.trainingmgr_util import response_for_training, check_key_in_dictionary,check_trainingjob_data, \
     get_one_key, get_metrics, handle_async_feature_engineering_status_exception_case, get_one_word_status, check_trainingjob_data, \
-    validate_trainingjob_name
+    validate_trainingjob_name, get_all_pipeline_names_svc
 from requests.models import Response   
 from trainingmgr import trainingmgr_main
 from trainingmgr.common.tmgr_logger import TMLogger
 trainingmgr_main.LOGGER = pytest.logger
+from trainingmgr.common.exceptions_utls import TMException
 
 class Test_response_for_training:
     def setup_method(self):
@@ -638,3 +640,28 @@ class Test_validate_trainingjob_name:
             assert False
         except Exception:
             assert True
+
+class Test_get_all_pipeline_names_svc:
+    # testing the get_all_pipeline service
+    def setup_method(self):
+        self.client = trainingmgr_main.APP.test_client(self)
+        self.logger = trainingmgr_main.LOGGER
+    
+    the_response = Response()
+    the_response.code = "expired"
+    the_response.error_type = "expired"
+    the_response.status_code = 200
+    the_response.headers={"content-type": "application/json"}
+    the_response._content = b'{ "qoe_Pipeline":"id1"}'
+
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'kf_adapter_ip.return_value': '123', 'kf_adapter_port.return_value' : '100'}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.requests.get', return_value = the_response)
+    def test_get_all_pipeline_names(self,mock1, mock2):
+        expected_data=['qoe_Pipeline']
+        assert get_all_pipeline_names_svc(self.mocked_TRAININGMGR_CONFIG_OBJ) ==expected_data, "Not equal"
+
+            
