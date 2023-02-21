@@ -588,3 +588,26 @@ def get_all_jobs_latest_status_version(ps_db_obj):
                 conn.close()
     return results
 
+def get_info_of_latest_version(trainingjob_name, ps_db_obj):
+    """
+    This function returns information of <trainingjob_name, trainingjob_name trainingjob's latest version>
+    usecase.
+    """
+
+    conn = ps_db_obj.get_new_conn()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('''select nt.mv from (select max(version) mv,trainingjob_name ''' + \
+                       '''from trainingjob_info group by trainingjob_name) nt where nt.trainingjob_name=%s''',
+                       (trainingjob_name,))
+        version = int(cursor.fetchall()[0][0])
+        cursor.execute(''' select * from trainingjob_info where trainingjob_name=%s and version = %s''',
+                       (trainingjob_name, version))
+    except Exception as err:
+        conn.rollback()
+        conn.close()
+        raise err
+    results = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    return results
