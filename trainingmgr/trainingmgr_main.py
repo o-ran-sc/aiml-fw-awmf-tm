@@ -972,7 +972,6 @@ def retraining():
         raise APIException(status.HTTP_400_BAD_REQUEST, str(err)) from None
 
     trainingjobs_list = request.json['trainingjobs_list']
-    print("trainingjobs list is :", trainingjobs_list)
     if not isinstance(trainingjobs_list, list):
         raise APIException(status.HTTP_400_BAD_REQUEST, "not given as list")
 

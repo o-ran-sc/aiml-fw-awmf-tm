@@ -28,7 +28,7 @@ from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainin
      get_trainingjob_info_by_name, get_latest_version_trainingjob_name, \
      get_all_versions_info_by_name, get_all_distinct_trainingjobs, \
      get_all_version_num_by_trainingjob_name, update_model_download_url, \
-     add_update_trainingjob, get_all_jobs_latest_status_version
+     add_update_trainingjob, get_all_jobs_latest_status_version, get_info_of_latest_version
 
 mimic_db = {
             "usecase_name": "Tester",
@@ -438,4 +438,21 @@ class Test_Common_Db_Fun:
         except Exception as err:
             fxn_name = "get_all_versions_info_by_name"
             assert str(err) == "Failed to execute query in get_all_versions_info_by_nameDB Error", 'Negative test {} FAILED, Doesnt returned required error'.format(fxn_name)
+            assert checker.finished, 'Cursor Not Closed Properly for fxn {} | Negative Test'.format(fxn_name)
+
+    def test_get_info_of_latest_version(self):
+        db_obj = db_helper([["version"], ["*"]])
+        out = get_info_of_latest_version("Tester", db_obj)
+        assert out != None, 'get_info_of_latest_version FAILED'
+
+
+    def test_negative_get_info_of_latest_version(self):
+        checker = Check()
+        try:
+            db_obj = db_helper([["version"], ["*"]], raise_exception=True,check_success_obj=checker)
+            out = get_info_of_latest_version("Tester", db_obj)
+            assert out != None, 'get_info_of_latest_version FAILED'
+        except Exception as err:
+            fxn_name = "get_info_by_version"
+            assert str(err) == "DB Error", 'Negative test {} FAILED, Doesnt returned required error'.format(fxn_name)
             assert checker.finished, 'Cursor Not Closed Properly for fxn {} | Negative Test'.format(fxn_name)

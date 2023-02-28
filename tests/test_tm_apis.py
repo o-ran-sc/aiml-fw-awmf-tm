@@ -28,6 +28,7 @@ import sys
 import datetime
 from flask_api import status
 from dotenv import load_dotenv
+from trainingmgr.constants.states import States
 from threading import Lock
 from trainingmgr import trainingmgr_main 
 from trainingmgr.common.tmgr_logger import TMLogger
@@ -676,3 +677,125 @@ class Test_get_metadata_1:
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)
         assert response.status_code == status.HTTP_404_NOT_FOUND, "Return status code NOT equal"
+
+## Retraining API test
+class Test_retraining:
+    @patch('trainingmgr.common.trainingmgr_config.TMLogger', return_value = TMLogger("tests/common/conf_log.yaml"))
+    def setup_method(self,mock1,mock2):
+        self.client = trainingmgr_main.APP.test_client(self)
+        self.logger = trainingmgr_main.LOGGER
+        
+    #test_positive_1
+    db_result = [('mynetwork', 'testing', '*', 'testing_pipeline', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "mynetwork"}}', '', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 'No data available', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "IN_PROGRESS", "TRAINING": "NOT_STARTED", "TRAINING_AND_TRAINED_MODEL": "NOT_STARTED", "TRAINED_MODEL": "NOT_STARTED"}', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 1, False, '2', '{"datalake_source": {"InfluxSource": {}}}', 'No data available.', '', 'liveCell', 'UEData', False)]
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': '123'}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    #postive_1
+    tmres = Response()
+    tmres.code = "expired"
+    tmres.error_type = "expired"
+    tmres.status_code = status.HTTP_200_OK
+    tmres.headers={"content-type": "application/json"}
+    tmres._content = b'{"task_status": "Completed", "result": "Data Pipeline Execution Completed"}'  
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary',return_value=True) 
+    @patch('trainingmgr.trainingmgr_main.get_info_of_latest_version', return_value= db_result)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.add_update_trainingjob',return_value="")
+    @patch('trainingmgr.trainingmgr_main.get_one_word_status',return_value = States.FINISHED.name)
+    @patch('trainingmgr.trainingmgr_main.requests.post',return_value = tmres)
+    def test_retraining(self,mock1, mock2, mock3,mock4, mock5, mock6):
+        retrain_req = {"trainingjobs_list": [{"trainingjob_name": "mynetwork"}]}
+        response = self.client.post("/trainingjobs/retraining", data=json.dumps(retrain_req),content_type="application/json")   
+        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal" 
+
+    #Negative_1
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary',side_effect = Exception('Mocked error'))
+    def test_negative_retraining_1(self,mock1):
+        retrain_req = {"trainingjobs_list": [{"trainingjob_name": "mynetwork"}]}
+        response = self.client.post("/trainingjobs/retraining", data=json.dumps(retrain_req),content_type="application/json")   
+        assert response.status_code == status.HTTP_400_BAD_REQUEST, "Return status code NOT equal"  
+
+    #Negative_2
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary')
+    def test_negative_retraining_2(self,mock1):
+        retrain_req = {"trainingjobs_list": [{"trainingjob_name": "mynetwork"}]}
+        response = self.client.post("/trainingjobs/retraining", data=json.dumps(retrain_req),content_type="application/json")   
+        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"  
+
+    #Negative_3
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary')
+    @patch('trainingmgr.trainingmgr_main.get_info_of_latest_version', side_effect = Exception('Mocked error'))
+    def test_negative_retraining_3(self,mock1,mock2):
+        retrain_req = {"trainingjobs_list": [{"trainingjob_name": "mynetwork"}]}
+        response = self.client.post("/trainingjobs/retraining", data=json.dumps(retrain_req),content_type="application/json")   
+        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
+
+    #Negative_4
+    db_result1 = [('mynetwork', 'testing', '*', 'testing_pipeline', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "mynetwork"}}', '', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 'No data available', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "IN_PROGRESS", "TRAINING": "NOT_STARTED", "TRAINING_AND_TRAINED_MODEL": "NOT_STARTED", "TRAINED_MODEL": "NOT_STARTED"}', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 1, False, '2', '{"datalake_source": {"InfluxSource": {}}}', 'No data available.', '', 'liveCell', 'UEData', False)]
+    
+  
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary') 
+    @patch('trainingmgr.trainingmgr_main.get_info_of_latest_version', return_value= db_result1)
+    def test_negative_retraining_4(self,mock1, mock2):
+        retrain_req = {"trainingjobs_list": [{"trainingjob_name": "mynetwork"}]}
+        response = self.client.post("/trainingjobs/retraining", data=json.dumps(retrain_req),content_type="application/json")   
+        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal" 
+      
+
+    #Negative_5
+    db_result2 = [('mynetwork', 'testing', '*', 'testing_pipeline', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "mynetwork"}}', '', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 'No data available', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "IN_PROGRESS", "TRAINING": "NOT_STARTED", "TRAINING_AND_TRAINED_MODEL": "NOT_STARTED", "TRAINED_MODEL": "NOT_STARTED"}', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 1, False, '2', '{"datalake_source": {"InfluxSource": {}}}', 'No data available.', '', 'liveCell', 'UEData', False)]
+    
+  
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary') 
+    @patch('trainingmgr.trainingmgr_main.get_info_of_latest_version', return_value= db_result2)
+    def test_negative_retraining_5(self,mock1, mock2):
+        retrain_req = {"trainingjobs_list": [{"trainingjob_name": "mynetwork"}]}
+        response = self.client.post("/trainingjobs/retraining", data=json.dumps(retrain_req),content_type="application/json")   
+        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
+
+
+    #Negative_6
+    db_result = [('mynetwork', 'testing', '*', 'testing_pipeline', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "mynetwork"}}', '', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 'No data available', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "IN_PROGRESS", "TRAINING": "NOT_STARTED", "TRAINING_AND_TRAINED_MODEL": "NOT_STARTED", "TRAINED_MODEL": "NOT_STARTED"}', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 1, False, '2', '{"datalake_source": {"InfluxSource": {}}}', 'No data available.', '', 'liveCell', 'UEData', False)]
+    
+    ucres = Response()
+    ucres.code = "expired"
+    ucres.error_type = "expired"
+    ucres.status_code = status.HTTP_200_OK
+    ucres.headers={"content-type": "application/json"}
+    ucres._content = b'{"task_status": "Completed", "result": "Data Pipeline Execution Completed"}'  
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary',return_value="") 
+    @patch('trainingmgr.trainingmgr_main.get_info_of_latest_version', return_value= db_result)
+    @patch('trainingmgr.trainingmgr_main.add_update_trainingjob',side_effect = Exception('Mocked error'))
+    def test_negative_retraining_6(self,mock1, mock2, mock3):
+        retrain_req = {"trainingjobs_list": [{"trainingjob_name": "mynetwork"}]}
+        response = self.client.post("/trainingjobs/retraining", data=json.dumps(retrain_req),content_type="application/json")   
+        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
+
+
+    #Negative_7
+    db_result = [('mynetwork', 'testing', '*', 'testing_pipeline', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "mynetwork"}}', '', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 'No data available', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "IN_PROGRESS", "TRAINING": "NOT_STARTED", "TRAINING_AND_TRAINED_MODEL": "NOT_STARTED", "TRAINED_MODEL": "NOT_STARTED"}', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 1, False, '2', '{"datalake_source": {"InfluxSource": {}}}', 'No data available.', '', 'liveCell', 'UEData', False)]
+    
+
+    ucres = Response()
+    ucres.code = "expired"
+    ucres.error_type = "expired"
+    ucres.status_code = status.HTTP_204_NO_CONTENT
+    ucres.headers={"content-type": "application/json"}
+    ucres._content = b'{"task_status": "Completed", "result": "Data Pipeline Execution Completed"}'  
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary',return_value="") 
+    @patch('trainingmgr.trainingmgr_main.get_info_of_latest_version', return_value= db_result)
+    @patch('trainingmgr.trainingmgr_main.add_update_trainingjob',return_value="")
+    @patch('trainingmgr.trainingmgr_main.requests.post',return_value = tmres)
+    def test_negative_retraining_7(self,mock1, mock2, mock3,mock4):
+        retrain_req = {"trainingjobs_list": [{"trainingjob_name": "mynetwork"}]}
+        response = self.client.post("/trainingjobs/retraining", data=json.dumps(retrain_req),content_type="application/json")   
+        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal" 
+      
+    #Negative_8
+    db_result3 = [] 
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary') 
+    @patch('trainingmgr.trainingmgr_main.get_info_of_latest_version', return_value= db_result3)
+    def test_negative_retraining_8(self,mock1, mock2):
+        retrain_req = {"trainingjobs_list": [{"trainingjob_name": "mynetwork"}]}
+        response = self.client.post("/trainingjobs/retraining", data=json.dumps(retrain_req),content_type="application/json")   
+        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal" 
