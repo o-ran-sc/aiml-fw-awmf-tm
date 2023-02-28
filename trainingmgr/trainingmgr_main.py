@@ -972,7 +972,6 @@ def retraining():
         raise APIException(status.HTTP_400_BAD_REQUEST, str(err)) from None
 
     trainingjobs_list = request.json['trainingjobs_list']
-    print("trainingjobs list is :", trainingjobs_list)
     if not isinstance(trainingjobs_list, list):
         raise APIException(status.HTTP_400_BAD_REQUEST, "not given as list")
 
@@ -1037,7 +1036,7 @@ def retraining():
                                       notification_url, _measurement, bucket)
             except Exception as err:
                 not_possible_to_retrain.append(trainingjob_name)
-                LOGGER.debug(str(err) + "(usecase_name is " + trainingjob_name + ")")
+                LOGGER.debug(str(err) + "(training job is " + trainingjob_name + ")")
                 continue
 
             url = 'http://' + str(TRAININGMGR_CONFIG_OBJ.my_ip) + \
