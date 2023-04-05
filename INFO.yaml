@@ -44,6 +44,12 @@ committers:
       company: 'Samsung Electronics'
       id: 'ashishj1729'
       timezone: 'Asia/Seoul'
+    - name: 'Rajdeep Singh'
+      email: 'rajdeep.sin@samsung.com'
+      company: 'Samsung Electronics'
+      id: 'rajdeep11'
+      timezone: 'Asia/Seoul'
+
 tsc:
     # yamllint disable rule:line-length
     approval: 'https://wiki.o-ran-sc.org/display/TOC\#ORANSCTechnicalOversightCommittee\(TOC\)-20220811'
