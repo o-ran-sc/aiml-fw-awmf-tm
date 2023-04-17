@@ -25,3 +25,4 @@ requests
 pandas
 PyYAML
 kubernetes
+validators==0.20.0
