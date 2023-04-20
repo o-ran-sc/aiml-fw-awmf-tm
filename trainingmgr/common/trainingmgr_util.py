@@ -157,6 +157,34 @@ def check_trainingjob_data(trainingjob_name, json_data):
             arguments, query_filter, enable_versioning, pipeline_version,
             datalake_source, _measurement, bucket)
 
+def check_featureGroup_data(json_data):
+    """
+    This function checks validation for json_data dictionary and return tuple which conatins
+    values of different keys in jsn_data.
+    """
+    try:
+        if check_key_in_dictionary(["featureGroupName", "feature_list", \
+                                    "datalake_source", "enable_Dme", "DmeHost", 
+                                    "DmePort", "bucket", "token", "source_name"], json_data):
+            featureGroup_name=json_data["featureGroupName"]
+            feature_list=json_data["feature_list"]
+            datalake_source=json_data["datalake_source"]
+            enable_Dme=json_data["enable_Dme"]
+            DmeHost=json_data["DmeHost"]
+            DmePort=json_data["DmePort"]
+            bucket=json_data["bucket"]
+            token=json_data["token"]
+            source_name=json_data["source_name"]
+            db_org=json_data["dbOrg"]
+            
+        else :
+            raise TMException("check_featuregroup_data- supplied data doesn't have" + \
+                                " all the required fields ")
+    
+    except Exception as err:
+        raise APIException(status.HTTP_400_BAD_REQUEST, str(err)) from None
+    
+    return (featureGroup_name, feature_list, datalake_source, enable_Dme, DmeHost, DmePort, bucket, token, source_name,db_org)
 
 def get_one_key(dictionary):
     '''

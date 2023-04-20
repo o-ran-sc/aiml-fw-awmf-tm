@@ -33,13 +33,13 @@ import requests
 from flask_cors import cross_origin
 from werkzeug.utils import secure_filename
 from modelmetricsdk.model_metrics_sdk import ModelMetricsSdk
-from trainingmgr.common.trainingmgr_operations import data_extraction_start, training_start, data_extraction_status
+from trainingmgr.common.trainingmgr_operations import data_extraction_start, training_start, data_extraction_status, create_dme_filtered_data_job
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.trainingmgr_util import get_one_word_status, check_trainingjob_data, \
     check_key_in_dictionary, get_one_key, \
     response_for_training, get_metrics, \
     handle_async_feature_engineering_status_exception_case, \
-    validate_trainingjob_name, get_all_pipeline_names_svc
+    validate_trainingjob_name, get_all_pipeline_names_svc, check_featureGroup_data
 from trainingmgr.common.exceptions_utls import APIException,TMException
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
@@ -49,7 +49,7 @@ from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainin
     change_in_progress_to_failed_by_latest_version, change_steps_state_of_latest_version, \
     get_info_by_version, \
     get_trainingjob_info_by_name, get_latest_version_trainingjob_name, get_all_versions_info_by_name, \
-    update_model_download_url, add_update_trainingjob, \
+    update_model_download_url, add_update_trainingjob, add_featuregroup, \
     get_field_of_given_version,get_all_jobs_latest_status_version, get_info_of_latest_version
 
 APP = Flask(__name__)
@@ -1133,6 +1133,41 @@ def get_metadata(trainingjob_name):
     return APP.response_class(response=json.dumps(api_response),
                                         status=response_code,
                                         mimetype=MIMETYPE_JSON)
+
+@APP.route('/trainingjobs/featureGroup', methods=['POST'])
+@cross_origin()
+def create_feature_group():
+    api_response = {}
+    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    LOGGER.debug('feature Group Create request, ' + json.dumps(request.json))
+
+    try:
+        json_data=request.json
+        (featureGroup_name, features, datalake_source, enable_Dme, DmeHost, DmePort, bucket, token, source_name, db_org)=check_featureGroup_data(json_data)
+        # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
+        features_list = features.split(", ")
+        add_featuregroup(featureGroup_name, features, datalake_source, enable_Dme, PS_DB_OBJ,DmeHost, DmePort, bucket, token, source_name,db_org )
+        #todo :  if the create_dme_job fails delete the feature group in the db.
+        if enable_Dme == True :
+            response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, source_name, db_org, bucket,  token, features_list, featureGroup_name,  DmeHost, DmePort)
+            if response.status_code != 201:
+                api_response={"Exception": "Cannot create dme job"}
+                response_code=status.HTTP_400_BAD_REQUEST
+            else:
+                api_response={"result": "Feature Group Created"}
+                response_code =status.HTTP_200_OK
+        else:
+            api_response={"result": "Feature Group Created"}
+            response_code =status.HTTP_200_OK    
+    except Exception as err:
+        err_msg = "Failed to create the feature Group"
+        api_response = {"Exception":err_msg}
+        LOGGER.error(str(err))
+    
+    return APP.response_class(response=json.dumps(api_response),
+                                        status=response_code,
+                                        mimetype=MIMETYPE_JSON)
+
 
 def async_feature_engineering_status():
     """

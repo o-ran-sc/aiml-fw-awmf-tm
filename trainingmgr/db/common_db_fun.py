@@ -26,6 +26,7 @@ from trainingmgr.constants.states import States
 from trainingmgr.common.exceptions_utls import DBException
 
 tm_table_name = "trainingjob_info" # Table used by 'Training Manager' for training jobs
+fg_table_name="featuregroup_info"  # Table used by 'Training Manager' for Feature Groups
 DB_QUERY_EXEC_ERROR = "Failed to execute query in "
 
 def get_data_extraction_in_progress_trainingjobs(ps_db_obj):
@@ -558,6 +559,31 @@ def add_update_trainingjob(description, pipeline_name, experiment_name, feature_
          if conn is not None:
                  conn.close()
 
+def add_featuregroup(featureGroup_name, feature_list, datalake_source, enable_Dme, ps_db_obj , DmeHost="", DmePort="", bucket="", token="", source_name="",db_org=""):
+    """
+        This function add the new row or update existing row with given information
+    """
+
+    conn = None
+    conn = ps_db_obj.get_new_conn()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute(''' INSERT INTO {} VALUES '''.format(fg_table_name) +
+                       '''(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',
+                       (featureGroup_name, feature_list, datalake_source, enable_Dme, DmeHost, DmePort, bucket, token, source_name, db_org))
+        conn.commit()
+        cursor.close()
+    except Exception as err:
+        if conn is not None:
+            conn.rollback()
+        raise DBException(DB_QUERY_EXEC_ERROR +
+                          "add_featuregroup" + str(err))
+    finally:
+        if conn is not None:
+            conn.close()
+
+     
 def get_all_jobs_latest_status_version(ps_db_obj):
     """
     This function returns True if given trainingjob_name exists in db otherwise

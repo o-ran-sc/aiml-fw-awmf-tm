@@ -111,6 +111,42 @@ class PSDB():
         finally:
             if conn2 is not None:
                 conn2.close()
+        
+        # Create Table
+        conn3 =None
+        try:
+            conn3 = pg8000.dbapi.connect(user=config_hdl.ps_user,
+                                        password=config_hdl.ps_password,
+                                        host=config_hdl.ps_ip,
+                                        port=int(config_hdl.ps_port),
+                                        database="training_manager_database")
+        except pg8000.dbapi.Error:
+            self.__config_hdl.logger.error("Problem of connection with postgres db")
+            raise DBException(PG_DB_ACCESS_ERROR) from None
+        cur3= conn3.cursor()
+        try:
+            cur3.execute("create table if not exists featuregroup_info(" + \
+                        "featureGroup_name varchar(128) NOT NULL," + \
+                        "feature_list varchar(2000) NOT NULL," + \
+                        "datalake_source varchar(2000) NOT NULL," + \
+                        "enable_dme BOOLEAN NOT NULL," + \
+                        "DmeHost varchar(128) NOT NULL," + \
+                        "DmePort varchar(128) NOT NULL," + \
+                        "bucket varchar(128) NOT NULL," + \
+                        "token varchar(2000) NOT NULL," + \
+                        "source_name varchar(2000) NOT NULL," + \
+                        "db_org varchar(128) NOT NULL," + \
+                        "PRIMARY KEY (featureGroup_name)" + \
+                        ")")
+            conn3.commit()
+            cur3.close()
+        except pg8000.dbapi.Error as err:
+            conn2.rollback()
+            self.__config_hdl.logger.error("Can't create featuregroup_info table.")
+            raise DBException("Can't create featuregroup_info table.", str(err)) from None
+        finally:
+            if conn3 is not None:
+                conn3.close()
 
     def get_new_conn(self):
         """
