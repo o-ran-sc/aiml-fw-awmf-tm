@@ -583,7 +583,58 @@ def add_featuregroup(featureGroup_name, feature_list, datalake_source, enable_Dm
         if conn is not None:
             conn.close()
 
-     
+def get_feature_groups_db(ps_db_obj):
+    """
+    This function returns feature_groups from db
+    """
+    conn=None
+    result=None
+    try:
+        conn=ps_db_obj.get_new_conn()
+        cursor=conn.cursor()
+        query = '''select * from {}'''.format(fg_table_name)
+        cursor.execute(query)
+        result=cursor.fetchall()
+        conn.commit()
+        cursor.close()
+    except Exception as err:
+        if conn is not None:
+            conn.rollback()
+        else:
+            raise DBException(DB_QUERY_EXEC_ERROR + \
+                "get_feature_groups"  + str(err))
+    finally:
+        if conn is not None:
+            conn.close()
+    return result
+
+def get_feature_group_by_name_db(ps_db_obj, featuregroup_name):
+    """
+    This Function return a feature group with name "featuregroup_name"
+    """
+    conn=None
+    result=None
+    try:
+        conn=ps_db_obj.get_new_conn()
+        cursor=conn.cursor()
+        print()
+        cursor.execute(''' select * from  {} where featuregroup_name = %s '''.format(fg_table_name),
+                       (featuregroup_name, ))
+        result=cursor.fetchall()
+        print("the result from db is :", result)
+        conn.commit()
+        cursor.close()
+    except Exception as err:
+        if conn is not None:
+            conn.rollback()
+        else:
+            raise DBException(DB_QUERY_EXEC_ERROR + \
+                "get_feature_groups"  + str(err))
+    finally:
+        if conn is not None:
+            conn.close()
+    return result 
+                
 def get_all_jobs_latest_status_version(ps_db_obj):
     """
     This function returns True if given trainingjob_name exists in db otherwise
