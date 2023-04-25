@@ -50,7 +50,8 @@ from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainin
     get_info_by_version, \
     get_trainingjob_info_by_name, get_latest_version_trainingjob_name, get_all_versions_info_by_name, \
     update_model_download_url, add_update_trainingjob, add_featuregroup, \
-    get_field_of_given_version,get_all_jobs_latest_status_version, get_info_of_latest_version
+    get_field_of_given_version,get_all_jobs_latest_status_version, get_info_of_latest_version, \
+    get_feature_groups_db, get_feature_group_by_name_db, delete_feature_group_by_name
 
 APP = Flask(__name__)
 TRAININGMGR_CONFIG_OBJ = None
@@ -566,18 +567,15 @@ def trainingjobs_operations():
     try:
         results = get_all_jobs_latest_status_version(PS_DB_OBJ)
         trainingjobs = []
-        if results:
-            for res in results:
-                dict_data = {
-                    "trainingjob_name": res[0],
-                    "version": res[1],
-                    "overall_status": get_one_word_status(json.loads(res[2]))
-                }
-                trainingjobs.append(dict_data)
-            api_response = {"trainingjobs": trainingjobs}
-            response_code = status.HTTP_200_OK
-        else :
-            raise TMException("Failed to fetch training job info from db")
+        for res in results:
+            dict_data = {
+                "trainingjob_name": res[0],
+                "version": res[1],
+                "overall_status": get_one_word_status(json.loads(res[2]))
+            }
+            trainingjobs.append(dict_data)
+        api_response = {"trainingjobs": trainingjobs}
+        response_code = status.HTTP_200_OK
     except Exception as err:
         api_response =   {"Exception": str(err)}
         LOGGER.error(str(err))
@@ -1137,21 +1135,67 @@ def get_metadata(trainingjob_name):
 @APP.route('/trainingjobs/featureGroup', methods=['POST'])
 @cross_origin()
 def create_feature_group():
+    """
+    Rest endpoind to create feature group
+
+    Args in function:
+                NONE
+
+    Args in json:
+            json with below fields are given:
+                featureGroupName: str
+                    description
+                feature_list: str
+                    feature names
+                enable_Dme: boolean
+                    whether to enable dme
+                source_name: str
+                    name of source
+                dbOrg: str
+                    name of db org
+                bucket: str
+                    bucket name
+                DmePort: str
+                    DME port
+                DmeHost: str
+                    DME Host
+                datalake_source: str
+                    string indicating datalake source
+                token: str
+                    token for the bucket
+
+    Returns:
+        1. For post request
+            json:
+                result : str
+                    result message
+                status code:
+                    HTTP status code 201
+        2. For put request
+            json:
+                result : str
+                    result message
+                status code:
+                    HTTP status code 200
+
+    Exceptions:
+        All exception are provided with exception message and HTTP status code."""
+    
     api_response = {}
     response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     LOGGER.debug('feature Group Create request, ' + json.dumps(request.json))
 
     try:
         json_data=request.json
-        (featureGroup_name, features, datalake_source, enable_Dme, DmeHost, DmePort, bucket, token, source_name, db_org)=check_featureGroup_data(json_data)
+        (featureGroup_name, features, datalake_source, enable_Dme, dme_host, dme_port, bucket, token, source_name,db_org)=check_featureGroup_data(json_data)
         # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
         features_list = features.split(", ")
-        add_featuregroup(featureGroup_name, features, datalake_source, enable_Dme, PS_DB_OBJ,DmeHost, DmePort, bucket, token, source_name,db_org )
-        #todo :  if the create_dme_job fails delete the feature group in the db.
-        if enable_Dme == True :
-            response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, source_name, db_org, bucket,  token, features_list, featureGroup_name,  DmeHost, DmePort)
+        add_featuregroup(featureGroup_name, features, datalake_source, enable_Dme, PS_DB_OBJ,dme_host, dme_port, bucket, token, source_name,db_org )
+        if enable_Dme == True :   
+            response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, source_name, db_org, bucket,  token, features_list, featureGroup_name,  dme_host, dme_port)
             if response.status_code != 201:
                 api_response={"Exception": "Cannot create dme job"}
+                delete_feature_group_by_name(PS_DB_OBJ, featureGroup_name)
                 response_code=status.HTTP_400_BAD_REQUEST
             else:
                 api_response={"result": "Feature Group Created"}
@@ -1160,13 +1204,137 @@ def create_feature_group():
             api_response={"result": "Feature Group Created"}
             response_code =status.HTTP_200_OK    
     except Exception as err:
-        err_msg = "Failed to create the feature Group"
+        delete_feature_group_by_name(PS_DB_OBJ, featureGroup_name)
+        err_msg = "Failed to create the feature Group "
         api_response = {"Exception":err_msg}
         LOGGER.error(str(err))
     
     return APP.response_class(response=json.dumps(api_response),
                                         status=response_code,
                                         mimetype=MIMETYPE_JSON)
+
+@APP.route('/trainingjobs/featureGroup', methods=['GET'])
+@cross_origin()
+def get_feature_group():
+    """
+    Rest endpoint to fetch all the feature groups
+
+    Args in function: none
+    Required Args in json:
+        no json required 
+    
+    Returns:
+        json:
+            FeatureGroups: list
+                list of dictionaries.
+                    dictionaries contains:
+                        featuregroup_name: str
+                            name of feature group
+                        features: str
+                            name of features
+                        datalake: str
+                            datalake
+                        dme: boolean
+                            whether to enable dme
+                        
+    """
+    LOGGER.debug("Request for getting all feature groups")
+    api_response={}
+    response_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+    try:
+        result= get_feature_groups_db(PS_DB_OBJ)
+        feature_groups=[]
+        for res in result:
+            dict_data={
+                "featuregroup_name": res[0],
+                "features": res[1],
+                "datalake": res[2],
+                "dme": res[3]                
+                }
+            feature_groups.append(dict_data)
+        api_response={"featuregroups":feature_groups}
+        response_code=status.HTTP_200_OK
+
+    except Exception as err:
+        api_response =   {"Exception": str(err)}
+        LOGGER.error(str(err))
+    return APP.response_class(response=json.dumps(api_response),
+                        status=response_code,
+                        mimetype=MIMETYPE_JSON)
+
+@APP.route('/trainingjobs/featureGroup/<featuregroup_name>', methods=['GET'])
+@cross_origin()
+def get_feature_group_by_name(featuregroup_name):
+    """
+    Rest endpoint to fetch a feature group
+
+    Args in function:
+        featuregroup_name: str
+            name of featuregroup_name.
+
+    Returns:
+        json:
+            trainingjob: dict
+                     dictionary contains
+                         featuregroup_name: str
+                             name of featuregroup
+                         features: str
+                             features
+                         datalake: str
+                             name of datalake
+                         dme: str
+                             whether dme enabled or not
+                         dme_host: str
+                             dme host
+                         dme_port: str
+                             dme_port
+                         bucket: str
+                             bucket name
+                         token: str
+                             token for the bucket
+                         source_name: dict
+                             source name
+                         db_org: str
+                             db org
+        status code:
+            HTTP status code 200
+
+    Exceptions:
+        all exception are provided with exception message and HTTP status code.
+
+    """
+    LOGGER.debug("Request for getting a feature group with name = "+ featuregroup_name)
+    api_response={}
+    response_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+    try:
+        result= get_feature_group_by_name_db(PS_DB_OBJ, featuregroup_name)
+        feature_group=[]
+        if result:
+            for res in result:
+                features=res[1].split(", ")
+                dict_data={
+                    "featuregroup_name": res[0],
+                    "features": features,
+                    "datalake": res[2],
+                    "dme": res[3],
+                    "dme_host": res[4],
+                    "dme_port": res[5],
+                    "bucket":res[6],
+                    "token":res[7],
+                    "source_name":res[8],
+                    "db_org":res[9]
+                }
+                feature_group.append(dict_data)
+            api_response={"featuregroup":feature_group}
+            response_code=status.HTTP_200_OK
+        else:
+            raise TMException("Failed to fetch feature group info from db")
+    except Exception as err:
+        api_response =   {"Exception": str(err)}
+        LOGGER.error(str(err))
+    return APP.response_class(response=json.dumps(api_response),
+                        status=response_code,
+                        mimetype=MIMETYPE_JSON) 
 
 
 def async_feature_engineering_status():
