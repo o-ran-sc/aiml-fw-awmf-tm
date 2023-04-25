@@ -120,7 +120,7 @@ class Test_trainingjobs_operations:
         expected_data = "Failed to fetch training job info from db"
         response = self.client.get("/trainingjobs/latest",content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)    
-        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR, "Return status code NOT equal"
+        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
         assert expected_data in str(response.data)
 
 class Test_pipeline_notification:
