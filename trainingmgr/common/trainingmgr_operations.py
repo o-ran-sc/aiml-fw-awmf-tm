@@ -24,6 +24,7 @@ Training manager main operations
 import json
 import requests
 import validators
+from trainingmgr.common.exceptions_utls import TMException
 
 def create_url_host_port(protocol, host, port, path=''):
     """
@@ -31,8 +32,7 @@ def create_url_host_port(protocol, host, port, path=''):
     """
     url = protocol + '://' + host + ':' + port + '/' + path
     if not validators.url(url):
-        logger.debug('URL validation error: ',url)
-        return None
+        raise TMException('URL validation error: '+ url)
     return url
 
 def data_extraction_start(training_config_obj, trainingjob_name, feature_list, query_filter,
