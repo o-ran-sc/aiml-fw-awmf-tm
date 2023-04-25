@@ -167,11 +167,11 @@ def check_featureGroup_data(json_data):
                                     "datalake_source", "enable_Dme", "DmeHost", 
                                     "DmePort", "bucket", "token", "source_name"], json_data):
             featureGroup_name=json_data["featureGroupName"]
-            feature_list=json_data["feature_list"]
+            features=json_data["feature_list"]
             datalake_source=json_data["datalake_source"]
             enable_Dme=json_data["enable_Dme"]
-            DmeHost=json_data["DmeHost"]
-            DmePort=json_data["DmePort"]
+            dme_host=json_data["DmeHost"]
+            dme_port=json_data["DmePort"]
             bucket=json_data["bucket"]
             token=json_data["token"]
             source_name=json_data["source_name"]
@@ -184,7 +184,7 @@ def check_featureGroup_data(json_data):
     except Exception as err:
         raise APIException(status.HTTP_400_BAD_REQUEST, str(err)) from None
     
-    return (featureGroup_name, feature_list, datalake_source, enable_Dme, DmeHost, DmePort, bucket, token, source_name,db_org)
+    return (featureGroup_name, features, datalake_source, enable_Dme, dme_host, dme_port, bucket, token, source_name,db_org)
 
 def get_one_key(dictionary):
     '''
