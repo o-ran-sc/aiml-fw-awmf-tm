@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "54b9840b_e790932a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2023-04-25T06:43:48Z",
+      "side": 1,
+      "message": "added the TMException when the url validation fails. Looks good to me.",
+      "revId": "5d843972856e4c0452a4ec37cbe665a3636352d5",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
