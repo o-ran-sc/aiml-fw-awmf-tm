@@ -630,6 +630,26 @@ def get_feature_group_by_name_db(ps_db_obj, featuregroup_name):
         if conn is not None:
             conn.close()
     return result 
+
+def delete_feature_group_by_name(ps_db_obj, featuregroup_name):
+    """
+    This function is used to delete the feature group from db
+    """
+    conn=None
+    try:
+        conn=ps_db_obj.get_new_conn()
+        cursor=conn.cursor()
+        cursor.execute('''delete from featuregroup_info where featuregroup_name =%s''',(featuregroup_name, ))
+        conn.commit()
+        cursor.close()
+    except Exception as err:
+        if conn is not None:
+            conn.rollback()
+        raise DBException(DB_QUERY_EXEC_ERROR + \
+            "delete_feature_group"  + str(err))
+    finally:
+        if conn is not None:
+                conn.close()
      
 def get_all_jobs_latest_status_version(ps_db_obj):
     """
