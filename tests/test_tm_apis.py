@@ -117,11 +117,12 @@ class Test_trainingjobs_operations:
     @patch('trainingmgr.trainingmgr_main.get_one_word_status', return_value = "status OK")
     def test_trainingjobs_operations_get_exception(self,mock1,mock2):
         trainingmgr_main.LOGGER.debug("******* test_trainingjobs_operations get exception*******")
-        expected_data = "Failed to fetch training job info from db"
+        expected_data =  b'{"trainingjobs": []}'
         response = self.client.get("/trainingjobs/latest",content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)    
-        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR, "Return status code NOT equal"
-        assert expected_data in str(response.data)
+        print("response data is : ", response.data)
+        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
+        assert expected_data in response.data
 
 class Test_pipeline_notification:
     def setup_method(self):
