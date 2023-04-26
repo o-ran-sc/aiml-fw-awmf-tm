@@ -33,7 +33,7 @@ import requests
 from flask_cors import cross_origin
 from werkzeug.utils import secure_filename
 from modelmetricsdk.model_metrics_sdk import ModelMetricsSdk
-from trainingmgr.common.trainingmgr_operations import data_extraction_start, training_start, data_extraction_status, create_dme_filtered_data_job
+from trainingmgr.common.trainingmgr_operations import data_extraction_start, training_start, data_extraction_status, create_dme_filtered_data_job, delete_dme_filtered_data_job
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.trainingmgr_util import get_one_word_status, check_trainingjob_data, \
     check_key_in_dictionary, get_one_key, \
@@ -1337,6 +1337,97 @@ def get_feature_group_by_name(featuregroup_name):
                         status=response_code,
                         mimetype=MIMETYPE_JSON) 
 
+@APP.route('/featureGroup', methods=['DELETE'])
+@cross_origin()
+def delete_list_of_feature_group():
+    """
+    Function handling rest endpoint to delete featureGroup which is
+    given in request json. 
+
+    Args in function: none
+    Required Args in json:
+        list: list
+              list containing dictionaries.
+                  dictionary contains
+                      featuregroup_name: str
+                          featuregroup name
+
+    Returns:
+        json:
+            success count: int
+                successful deletion count
+            failure count: int
+                failure deletion count
+        status:
+            HTTP status code 200
+    Exceptions:
+        all exception are provided with exception message and HTTP status code.
+    """
+    LOGGER.debug('request comes for deleting:' + json.dumps(request.json))
+    try:
+        check_key_in_dictionary(["featuregroups_list"], request.json)
+    except Exception as err:
+        LOGGER.debug("exception in check_key_in_dictionary")
+        raise APIException(status.HTTP_400_BAD_REQUEST, str(err)) from None
+
+    list_of_feature_groups = request.json['featuregroups_list']
+    if not isinstance(list_of_feature_groups, list):
+        LOGGER.debug("exception in not instance")
+        raise APIException(status.HTTP_400_BAD_REQUEST, "not given as list")
+
+    not_possible_to_delete = []
+    possible_to_delete = []
+
+    for my_dict in list_of_feature_groups:
+        if not isinstance(my_dict, dict):
+            not_possible_to_delete.append(my_dict)
+            LOGGER.debug(str(my_dict) + "did not pass dictionary")
+            continue
+        
+        try:
+            check_key_in_dictionary(["featureGroup_name"], my_dict)
+        except Exception as err:
+            not_possible_to_delete.append(my_dict)
+            LOGGER.debug(str(err))
+            continue
+
+        featuregroup_name = my_dict['featureGroup_name']
+        results = None
+        try:
+            results = get_feature_group_by_name_db(PS_DB_OBJ, featuregroup_name)
+        except Exception as err:
+            not_possible_to_delete.append(my_dict)
+            LOGGER.debug(str(err) + "(featureGroup_name is " + featuregroup_name)
+            continue
+
+        if results:
+            dme=results[0][3]
+            try:
+                delete_feature_group_by_name(PS_DB_OBJ, featuregroup_name)
+                if dme :
+                    dme_host=results[0][4]
+                    dme_port=results[0][5]
+                    delete_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, featuregroup_name, dme_host, dme_port)
+                possible_to_delete.append(my_dict)
+            except Exception as err:
+                not_possible_to_delete.append(my_dict)
+                LOGGER.debug(str(err) + "(featuregroup_name is "+ featuregroup_name + ")")
+                continue
+        else:
+             not_possible_to_delete.append(my_dict)
+             LOGGER.debug("cannot find in postgres db" + "(featuregroup_name is " + \
+                          featuregroup_name + ")")
+
+    LOGGER.debug('success list: ' + str(possible_to_delete))
+    LOGGER.debug('failure list: ' + str(not_possible_to_delete))
+
+    return APP.response_class(response=json.dumps( \
+        {
+            "success count": len(possible_to_delete),
+            "failure count": len(not_possible_to_delete)
+        }),
+        status=status.HTTP_200_OK,
+        mimetype='application/json')
 
 def async_feature_engineering_status():
     """
