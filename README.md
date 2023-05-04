@@ -1,3 +1,4 @@
+<!--
 # ==================================================================================
 #
 #       Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved.
@@ -15,6 +16,11 @@
 #   limitations under the License.
 #
 # ==================================================================================
-#This folder contains all files realted to training manager.
-#To install training maager as package
+-->
+This folder contains all files realted to training manager.
+
+## To install training maager as package
+
+``` bash
 pip3 install .
+```
