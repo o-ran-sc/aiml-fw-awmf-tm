@@ -280,7 +280,7 @@ def delete_trainingjob_version(trainingjob_name, version, ps_db_obj):
         if conn is not None:
             conn.rollback()
         raise DBException(DB_QUERY_EXEC_ERROR + \
-            "delete_trainingjob_version"  + str(err))
+            "delete_trainingjob_version" + str(err))
     finally:
         if conn is not None:
                 conn.close()
@@ -339,7 +339,6 @@ def get_trainingjob_info_by_name(trainingjob_name, ps_db_obj):
         if conn is not None:
                 conn.close()
     return results
-
 
 def get_latest_version_trainingjob_name(trainingjob_name, ps_db_obj):
     """
