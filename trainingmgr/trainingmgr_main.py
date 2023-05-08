@@ -1189,7 +1189,7 @@ def create_feature_group():
         json_data=request.json
         (featureGroup_name, features, datalake_source, enable_Dme, dme_host, dme_port, bucket, token, source_name,db_org)=check_featureGroup_data(json_data)
         # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
-        features_list = features.split(", ")
+        features_list = features.split(",")
         add_featuregroup(featureGroup_name, features, datalake_source, enable_Dme, PS_DB_OBJ,dme_host, dme_port, bucket, token, source_name,db_org )
         if enable_Dme == True :   
             response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, source_name, db_org, bucket,  token, features_list, featureGroup_name,  dme_host, dme_port)
@@ -1311,7 +1311,7 @@ def get_feature_group_by_name(featuregroup_name):
         feature_group=[]
         if result:
             for res in result:
-                features=res[1].split(", ")
+                features=res[1].split(",")
                 dict_data={
                     "featuregroup_name": res[0],
                     "features": features,
