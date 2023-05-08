@@ -340,6 +340,21 @@ def get_trainingjob_info_by_name(trainingjob_name, ps_db_obj):
                 conn.close()
     return results
 
+def delete_trainingjob_version(trainingjob_name, version, ps_db_obj):
+    """
+    This function deletes the row with given <trainingjob_name, version> trainingjob.
+    """
+    conn = ps_db_obj.get_new_conn()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('''delete from {} where trainingjob_name = %s and version = %s'''.format(tm_table_name),
+                       (trainingjob_name, version))
+    except Exception as err:
+        conn.rollback()
+        conn.close()
+        raise err
+    conn.commit()
+    conn.close()
 
 def get_latest_version_trainingjob_name(trainingjob_name, ps_db_obj):
     """

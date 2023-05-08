@@ -51,7 +51,7 @@ from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainin
     get_trainingjob_info_by_name, get_latest_version_trainingjob_name, get_all_versions_info_by_name, \
     update_model_download_url, add_update_trainingjob, add_featuregroup, \
     get_field_of_given_version,get_all_jobs_latest_status_version, get_info_of_latest_version, \
-    get_feature_groups_db, get_feature_group_by_name_db, delete_feature_group_by_name
+    get_feature_groups_db, get_feature_group_by_name_db, delete_feature_group_by_name, delete_trainingjob_version, change_field_value_by_version
 
 APP = Flask(__name__)
 TRAININGMGR_CONFIG_OBJ = None
@@ -1059,6 +1059,139 @@ def retraining():
         {
             "success count": len(possible_to_retrain),
             "failure count": len(not_possible_to_retrain)
+        }),
+        status=status.HTTP_200_OK,
+        mimetype='application/json')
+
+@APP.route('/trainingjobs', methods=['DELETE'])
+@cross_origin()
+def delete_list_of_trainingjob_version():
+    """
+    Function handling rest endpoint to delete latest version of trainingjob_name trainingjobs which is
+    given in request json. trainingjob's overall_status should be failed or finished and its
+    deletion_in_progress should be False otherwise deletion of that trainingjobs is counted in failure.
+    Args in function: none
+    Required Args in json:
+        list: list
+              list containing dictionaries.
+                  dictionary contains
+                      trainingjob_name: str
+                          trainingjob name
+                      version: int
+                          version of trainingjob
+    Returns:
+        json:
+            success count: int
+                successful deletion count
+            failure count: int
+                failure deletion count
+        status:
+            HTTP status code 200
+    Exceptions:
+        all exception are provided with exception message and HTTP status code.
+    """
+    LOGGER.debug('request comes for deleting:' + json.dumps(request.json))
+    try:
+        check_key_in_dictionary(["list"], request.json)
+    except Exception as err:
+        raise APIException(status.HTTP_400_BAD_REQUEST, str(err)) from None
+
+    list_of_trainingjob_version = request.json['list']
+    if not isinstance(list_of_trainingjob_version, list):
+        raise APIException(status.HTTP_400_BAD_REQUEST, "not given as list")
+
+    not_possible_to_delete = []
+    possible_to_delete = []
+
+    for my_dict in list_of_trainingjob_version:
+
+        if not isinstance(my_dict, dict):
+            not_possible_to_delete.append(my_dict)
+            LOGGER.debug(str(my_dict) + "did not pass dictionary")
+            continue
+
+        try:
+            check_key_in_dictionary(["trainingjob_name", "version"], my_dict)
+        except Exception as err:
+            not_possible_to_delete.append(my_dict)
+            LOGGER.debug(str(err))
+            continue
+
+        trainingjob_name = my_dict['trainingjob_name']
+        version = my_dict['version']
+
+        results = None
+        try:
+            results = get_info_by_version(trainingjob_name, version, PS_DB_OBJ)
+        except Exception as err:
+            not_possible_to_delete.append(my_dict)
+            LOGGER.debug(str(err) + "(trainingjob_name is " + trainingjob_name + ", version is " + str(
+                version) + ")")
+            continue
+
+        if results:
+
+            if results[0][19]:
+                not_possible_to_delete.append(my_dict)
+                LOGGER.debug("Failed to process deletion request because deletion is " + \
+                             "already in progress" + \
+                             "(trainingjob_name is " + trainingjob_name + ", version is " + str(
+                    version) + ")")
+                continue
+
+            if (get_one_word_status(json.loads(results[0][9]))
+                    not in [States.FINISHED.name, States.FAILED.name]):
+                not_possible_to_delete.append(my_dict)
+                LOGGER.debug("Not finished or not failed status" + \
+                             "(usecase_name is " + trainingjob_name + ", version is " + str(
+                    version) + ")")
+                continue
+
+            try:
+                change_field_value_by_version(trainingjob_name, version, PS_DB_OBJ,
+                                              "deletion_in_progress", True)
+            except Exception as err:
+                not_possible_to_delete.append(my_dict)
+                LOGGER.debug(str(err) + "(usecase_name is " + trainingjob_name + \
+                             ", version is " + str(version) + ")")
+                continue
+
+            try:
+                deleted = True
+                if MM_SDK.is_bucket_present(trainingjob_name):
+                    deleted = MM_SDK.delete_model_metric(trainingjob_name, version)
+            except Exception as err:
+                not_possible_to_delete.append(my_dict)
+                LOGGER.debug(str(err) + "(trainingjob_name is " + trainingjob_name + \
+                             ", version is " + str(version) + ")")
+                continue
+
+            if not deleted:
+                not_possible_to_delete.append(my_dict)
+                continue
+
+            try:
+                delete_trainingjob_version(trainingjob_name, version, PS_DB_OBJ)
+            except Exception as err:
+                not_possible_to_delete.append(my_dict)
+                LOGGER.debug(str(err) + "(trainingjob_name is " + \
+                             trainingjob_name + ", version is " + str(version) + ")")
+                continue
+
+            possible_to_delete.append(my_dict)
+
+        else:
+            not_possible_to_delete.append(my_dict)
+            LOGGER.debug("not find in postgres db" + "(trainingjob_name is " + \
+                         trainingjob_name + ", version is " + str(version) + ")")
+
+        LOGGER.debug('success list: ' + str(possible_to_delete))
+        LOGGER.debug('failure list: ' + str(not_possible_to_delete))
+
+    return APP.response_class(response=json.dumps( \
+        {
+            "success count": len(possible_to_delete),
+            "failure count": len(not_possible_to_delete)
         }),
         status=status.HTTP_200_OK,
         mimetype='application/json')
