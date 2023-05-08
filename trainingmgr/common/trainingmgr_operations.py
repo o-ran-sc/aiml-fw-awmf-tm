@@ -130,7 +130,7 @@ def create_dme_filtered_data_job(training_config_obj, source_name, db_org, bucke
         "info_type_id": "json-file-data-from-filestore-to-influx",
         "job_owner": "console",
         "status_notification_uri": "http://callback.nonrtric:80/post",
-        "job_definition": { "db-url":"http://influxdb.onap:8086",
+        "job_definition": { "db-url":"http://influxdb2.nonrtric:8086",
         "db-org":db_org,
         "db-bucket":bucket_name,
         "db-token": token,
