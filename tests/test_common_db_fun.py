@@ -28,7 +28,8 @@ from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainin
      get_trainingjob_info_by_name, get_latest_version_trainingjob_name, \
      get_all_versions_info_by_name, get_all_distinct_trainingjobs, \
      get_all_version_num_by_trainingjob_name, update_model_download_url, \
-     add_update_trainingjob, get_all_jobs_latest_status_version, get_info_of_latest_version
+     add_update_trainingjob, get_all_jobs_latest_status_version, get_info_of_latest_version, \
+     add_featuregroup
 
 mimic_db = {
             "usecase_name": "Tester",
@@ -56,6 +57,19 @@ mimic_db = {
             "bucket": "UEdata",
             "accuracy": 70
         }
+
+mimic_fg_db={
+	"featureGroupName": "testing_hash",
+	"feature_list": "",
+	"datalake_source": "InfluxSource",
+	"enable_Dme": True,
+	"DmeHost": "",
+	"DmePort": "",
+	"bucket": "pm-bucket",
+	"token": "",
+	"source_name": "qoedataset0905202305",
+	"dbOrg": "est"
+}
 
 class db_helper:
     '''Mimics as a Db'''
@@ -87,6 +101,50 @@ class db_helper:
             else:
                 for col in self.cols[self.counter]:
                     out.append(mimic_db[col])
+        self.counter += 1
+        return [out]
+
+    def close(self):
+        ''' For checking success in fxn not returning anything, If you call close, then It means query as exceuted as expected '''
+        if self.check_success_obj:
+            self.check_success_obj.setwin()
+        
+    def rollback(self):
+        pass
+
+    def commit(self):
+        pass
+
+class db_helper_fg:
+    '''Mimics as a Db'''
+    def __init__(self, req_cols, raise_exception = False, check_success_obj = None):
+        self.cols = req_cols
+        self.raise_exception = raise_exception
+        self.check_success_obj = check_success_obj
+        self.counter = 0
+        
+    def get_new_conn(self):
+        return db_helper_fg(self.cols, self.raise_exception, self.check_success_obj)
+    
+    def cursor(self):
+        return db_helper_fg(self.cols, self.raise_exception, self.check_success_obj)
+
+    def execute(self, query, values = None):
+        if self.raise_exception:
+            raise Exception("DB Error")
+
+    def fetchall(self):
+        out = []
+        if(len(self.cols) > 0):
+            if(self.cols[self.counter][0] == "*"):
+               for (col, value) in mimic_fg_db.items():
+                    out.append(value)
+            elif(self.cols[self.counter][0] == None):
+                self.counter += 1
+                return None
+            else:
+                for col in self.cols[self.counter]:
+                    out.append(mimic_fg_db[col])
         self.counter += 1
         return [out]
 
@@ -456,3 +514,19 @@ class Test_Common_Db_Fun:
             fxn_name = "get_info_by_version"
             assert str(err) == "DB Error", 'Negative test {} FAILED, Doesnt returned required error'.format(fxn_name)
             assert checker.finished, 'Cursor Not Closed Properly for fxn {} | Negative Test'.format(fxn_name)
+
+    def test_add_featuregroup(self):
+        checker = Check()
+        db_obj = db_helper_fg([[None]], check_success_obj=checker)
+        add_featuregroup('Testing', '', '', True, db_obj, '', '', '', '', '')
+        assert checker.finished, 'add_featuregroup FAILED when dme true'      
+
+    def test_negative_add_featuregroup(self):
+        checker = Check()
+        try:
+            db_obj = db_helper_fg([[None]], raise_exception=True, check_success_obj=checker)
+            add_featuregroup('Testing', '', '', True, db_obj, '', '', '', '', '')
+            assert False
+        except Exception as err:
+            fxn_name = "add_featuregroup"
+            assert str(err)=="Failed to execute query in {}DB Error".format(fxn_name)
