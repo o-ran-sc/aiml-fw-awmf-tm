@@ -788,3 +788,119 @@ class Test_retraining:
         data=json.loads(response.data)
         assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
         assert data["failure count"]==1, "Return failure count NOT equal"
+
+
+class Test_create_featuregroup:
+    def setup_method(self):
+        self.client = trainingmgr_main.APP.test_client(self)
+        self.logger = trainingmgr_main.LOGGER
+    
+    feature_group_data2=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',False,'','','','','','')
+    @patch('trainingmgr.trainingmgr_main.check_featureGroup_data', return_value=feature_group_data2)
+    @patch('trainingmgr.trainingmgr_main.add_featuregroup')
+    def test_create_featuregroup_1(self, mock1, mock2):
+        create_featuregroup_req={
+                            "featureGroupName": "testing_hash",
+                            "feature_list": "pdcpBytesDl,pdcpBytesUl",
+                            "datalake_source": "InfluxSource",
+                            "enable_Dme": False,
+                            "DmeHost": "",
+                            "DmePort": "",
+                            "bucket": "",
+                            "token": "",
+                            "source_name": "",
+                            "dbOrg": ""
+                                }
+        expected_response=b'{"result": "Feature Group Created"}'
+        response=self.client.post("/featureGroup", data=json.dumps(create_featuregroup_req),
+                                  content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)
+        assert response.data==expected_response
+        assert response.status_code ==status.HTTP_200_OK, "Return status code not equal"  
+    
+    the_response1 = Response()
+    the_response1.status_code = status.HTTP_201_CREATED
+    the_response1.headers={"content-type": "application/json"}
+    the_response1._content = b''
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    feature_group_data2=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'10.0.0.54','31823','pm-bucket','','','')
+    @patch('trainingmgr.trainingmgr_main.check_featureGroup_data', return_value=feature_group_data2)
+    @patch('trainingmgr.trainingmgr_main.add_featuregroup')
+    @patch('trainingmgr.trainingmgr_main.create_dme_filtered_data_job', return_value=the_response1)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.delete_feature_group_by_name')
+    def test_create_featuregroup_2(self, mock1, mock2, mock3,mock4,mock5):
+        create_featuregroup_req={
+                            "featureGroupName": "testing_hash",
+                            "feature_list": "pdcpBytesDl,pdcpBytesUl",
+                            "datalake_source": "InfluxSource",
+                            "enable_Dme": True,
+                            "DmeHost": "",
+                            "DmePort": "",
+                            "bucket": "",
+                            "token": "",
+                            "source_name": "",
+                            "dbOrg": ""
+                                }
+        expected_response=b'{"result": "Feature Group Created"}'
+        response=self.client.post("/featureGroup", data=json.dumps(create_featuregroup_req),
+                                  content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)
+        assert response.data==expected_response
+        assert response.status_code ==status.HTTP_200_OK, "Return status code not equal"
+
+    the_response2= Response()
+    the_response2.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    the_response2.headers={"content-type": "application/json"}
+    the_response2._content = b''
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    feature_group_data3=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'10.0.0.54','31823','pm-bucket','','','')
+    @patch('trainingmgr.trainingmgr_main.check_featureGroup_data', return_value=feature_group_data3)
+    @patch('trainingmgr.trainingmgr_main.add_featuregroup')
+    @patch('trainingmgr.trainingmgr_main.create_dme_filtered_data_job', return_value=the_response2)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.delete_feature_group_by_name')
+    def test_negative_create_featuregroup_1(self, mock1, mock2, mock3,mock4,mock5):
+        create_featuregroup_req={
+                            "featureGroupName": "testing_hash",
+                            "feature_list": "pdcpBytesDl,pdcpBytesUl",
+                            "datalake_source": "InfluxSource",
+                            "enable_Dme": True,
+                            "DmeHost": "",
+                            "DmePort": "",
+                            "bucket": "",
+                            "token": "",
+                            "source_name": "",
+                            "dbOrg": ""
+                                }
+        expected_response=b'{"Exception": "Cannot create dme job"}'
+        response=self.client.post("/featureGroup", data=json.dumps(create_featuregroup_req),
+                                  content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)
+        assert response.data==expected_response
+        assert response.status_code ==status.HTTP_400_BAD_REQUEST, "Return status code not equal"
+
+
+    feature_group_data3=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'10.0.0.54','31823','pm-bucket','','','')
+    @patch('trainingmgr.trainingmgr_main.check_featureGroup_data', return_value=feature_group_data3)
+    @patch('trainingmgr.trainingmgr_main.add_featuregroup',side_effect = Exception('Mocked error'))
+    @patch('trainingmgr.trainingmgr_main.delete_feature_group_by_name')
+    def test_neagtive_create_featuregroup_2(self, mock1, mock2, mock3):
+        create_featuregroup_req={
+                            "featureGroupName": "testing_hash",
+                            "feature_list": "pdcpBytesDl,pdcpBytesUl",
+                            "datalake_source": "InfluxSource",
+                            "enable_Dme": False,
+                            "DmeHost": "",
+                            "DmePort": "",
+                            "bucket": "",
+                            "token": "",
+                            "source_name": "",
+                            "dbOrg": ""
+                                }
+        expected_response=b'{"Exception": "Failed to create the feature Group "}'
+        response=self.client.post("/featureGroup", data=json.dumps(create_featuregroup_req),
+                                  content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)
+        assert response.data==expected_response
+        assert response.status_code ==status.HTTP_500_INTERNAL_SERVER_ERROR, "Return status code not equal"  

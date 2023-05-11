@@ -37,7 +37,7 @@ from trainingmgr.common.tmgr_logger import TMLogger
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.trainingmgr_util import response_for_training, check_key_in_dictionary,check_trainingjob_data, \
     get_one_key, get_metrics, handle_async_feature_engineering_status_exception_case, get_one_word_status, check_trainingjob_data, \
-    validate_trainingjob_name, get_all_pipeline_names_svc
+    validate_trainingjob_name, get_all_pipeline_names_svc, check_featureGroup_data
 from requests.models import Response   
 from trainingmgr import trainingmgr_main
 from trainingmgr.common.tmgr_logger import TMLogger
@@ -662,3 +662,42 @@ class Test_get_all_pipeline_names_svc:
     def test_get_all_pipeline_names(self,mock1, mock2):
         expected_data=['qoe_Pipeline']
         assert get_all_pipeline_names_svc(self.mocked_TRAININGMGR_CONFIG_OBJ) ==expected_data, "Not equal"
+
+class Test_check_featureGroup_data:
+    @patch('trainingmgr.common.trainingmgr_util.check_key_in_dictionary',return_value=True)
+    def test_check_featureGroup_data(self, mock1):
+        json_data={
+                            "featureGroupName": "test",
+                            "feature_list": "",
+                            "datalake_source": "",
+                            "enable_Dme": False,
+                            "DmeHost": "",
+                            "DmePort": "",
+                            "bucket": "",
+                            "token": "",
+                            "source_name": "",
+                            "dbOrg": ""
+                                }
+        expected_data=("test", "", "",False,"","","","","","")
+        assert check_featureGroup_data(json_data)==expected_data, "data not equal"
+
+    @patch('trainingmgr.common.trainingmgr_util.check_key_in_dictionary',return_value=False)
+    def test_negative_featureGroup_data(self, mock1):
+        json_data={
+                "featureGroupName": "test",
+                "feature_list": "",
+                "datalake_source": "",
+                "enable_Dme": False,
+                "DmeHost": "",
+                "DmePort": "",
+                "bucket": "",
+                "token": "",
+                "source_name": "",
+                "dbOrg": ""
+                    }
+        expected_data=("test", "", "",False,"","","","","","")
+        try:
+            assert check_featureGroup_data(json_data)==expected_data, 'data not equal'
+            assert False
+        except:
+            assert True
