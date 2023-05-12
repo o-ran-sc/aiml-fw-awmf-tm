@@ -1321,21 +1321,26 @@ def create_feature_group():
     try:
         json_data=request.json
         (featureGroup_name, features, datalake_source, enable_Dme, dme_host, dme_port, bucket, token, source_name,db_org)=check_featureGroup_data(json_data)
-        # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
-        features_list = features.split(",")
-        add_featuregroup(featureGroup_name, features, datalake_source, enable_Dme, PS_DB_OBJ,dme_host, dme_port, bucket, token, source_name,db_org )
-        if enable_Dme == True :   
-            response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, source_name, db_org, bucket,  token, features_list, featureGroup_name,  dme_host, dme_port)
-            if response.status_code != 201:
-                api_response={"Exception": "Cannot create dme job"}
-                delete_feature_group_by_name(PS_DB_OBJ, featureGroup_name)
-                response_code=status.HTTP_400_BAD_REQUEST
+        # check the data conformance
+        if len(featureGroup_name) < 3 or len(featureGroup_name) > 63:
+            api_response = {"Exception": "Failed to create the feature group since feature group name must be between 3 and 63 characters long."}
+            response_code = status.HTTP_400_BAD_REQUEST
+        else:
+            # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
+            features_list = features.split(",")
+            add_featuregroup(featureGroup_name, features, datalake_source, enable_Dme, PS_DB_OBJ,dme_host, dme_port, bucket, token, source_name,db_org )
+            if enable_Dme == True :
+                response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, source_name, db_org, bucket,  token, features_list, featureGroup_name,  dme_host, dme_port)
+                if response.status_code != 201:
+                    api_response={"Exception": "Cannot create dme job"}
+                    delete_feature_group_by_name(PS_DB_OBJ, featureGroup_name)
+                    response_code=status.HTTP_400_BAD_REQUEST
+                else:
+                    api_response={"result": "Feature Group Created"}
+                    response_code =status.HTTP_200_OK
             else:
                 api_response={"result": "Feature Group Created"}
                 response_code =status.HTTP_200_OK
-        else:
-            api_response={"result": "Feature Group Created"}
-            response_code =status.HTTP_200_OK    
     except Exception as err:
         delete_feature_group_by_name(PS_DB_OBJ, featureGroup_name)
         err_msg = "Failed to create the feature Group "
