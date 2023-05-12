@@ -29,7 +29,7 @@ from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainin
      get_all_versions_info_by_name, get_all_distinct_trainingjobs, \
      get_all_version_num_by_trainingjob_name, update_model_download_url, \
      add_update_trainingjob, get_all_jobs_latest_status_version, get_info_of_latest_version, \
-     add_featuregroup
+     add_featuregroup, get_feature_group_by_name_db, get_feature_groups_db
 
 mimic_db = {
             "usecase_name": "Tester",
@@ -529,4 +529,39 @@ class Test_Common_Db_Fun:
             assert False
         except Exception as err:
             fxn_name = "add_featuregroup"
+            assert str(err)=="Failed to execute query in {}DB Error".format(fxn_name)
+
+    def test_get_feature_groups_db(self):
+        checker=Check()
+        db_obj = db_helper_fg([['featureGroupName']], check_success_obj=checker)
+        out = get_feature_groups_db(db_obj)
+        assert out ==[['testing_hash']]
+    
+    def test_negative_get_feature_groups_db(self):
+        checker= Check()
+        try:
+            db_obj= db_helper_fg([[None]], raise_exception=True, check_success_obj=checker)
+            out = get_feature_groups_db(db_obj)
+            assert False
+        except Exception as err:
+            fxn_name="get_feature_groups"
+            assert str(err) == "Failed to execute query in {}DB Error".format(fxn_name)
+
+    
+    def test_get_feature_group_by_name_db(self):
+        checker=Check()
+        featuregroup_name='tester'
+        db_obj = db_helper_fg([['feature_list'], ['datalake_source']], check_success_obj=checker)
+        out = get_feature_group_by_name_db(db_obj, featuregroup_name)
+        assert out != None, 'get_feature_group_by_name_db FAILED'
+    
+    def test_negative_get_feature_group_by_name_db(self):
+        checker=Check()
+        featuregroup_name='tester'
+        try:
+            db_obj = db_helper_fg([['feature_list'], ['datalake_source']],raise_exception=True, check_success_obj=checker)
+            out = get_feature_group_by_name_db(db_obj, featuregroup_name)
+            assert False
+        except Exception as err:
+            fxn_name="get_feature_groups"
             assert str(err)=="Failed to execute query in {}DB Error".format(fxn_name)

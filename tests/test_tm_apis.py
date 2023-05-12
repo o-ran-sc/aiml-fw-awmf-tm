@@ -33,6 +33,7 @@ from threading import Lock
 from trainingmgr import trainingmgr_main 
 from trainingmgr.common.tmgr_logger import TMLogger
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
+from trainingmgr.common.exceptions_utls import DBException
 trainingmgr_main.LOGGER = pytest.logger
 trainingmgr_main.LOCK = Lock()
 trainingmgr_main.DATAEXTRACTION_JOBS_CACHE = {}
@@ -904,3 +905,54 @@ class Test_create_featuregroup:
         trainingmgr_main.LOGGER.debug(response.data)
         assert response.data==expected_response
         assert response.status_code ==status.HTTP_500_INTERNAL_SERVER_ERROR, "Return status code not equal"  
+
+class Test_get_feature_group:
+    def setup_method(self):
+        self.client = trainingmgr_main.APP.test_client(self)
+        self.logger = trainingmgr_main.LOGGER
+
+    result=[('testing', '', 'InfluxSource', True, '21.0.0.21', '12345', '', '', '', '')]
+    @patch('trainingmgr.trainingmgr_main.get_feature_groups_db', return_value=result)
+    def test_get_feature_group(self,mock1):
+        expected_data=b'{"featuregroups": [{"featuregroup_name": "testing", "features": "", "datalake": "InfluxSource", "dme": true}]}'
+        response=self.client.get('/featureGroup')
+        assert response.status_code==200, "status code returned is not equal"
+        assert response.data==expected_data
+
+    @patch('trainingmgr.trainingmgr_main.get_feature_groups_db', side_effect=DBException('Failed to execute query in get_feature_groupsDB ERROR'))
+    def test_negative_get_feature_group(self, mock1):
+        expected_data=b'{"Exception": "Failed to execute query in get_feature_groupsDB ERROR"}'
+        response=self.client.get('/featureGroup')
+        assert response.status_code== status.HTTP_500_INTERNAL_SERVER_ERROR, "status code is not equal"
+        assert response.data == expected_data
+
+class Test_get_feature_group_by_name:
+    def setup_method(self):
+        self.client = trainingmgr_main.APP.test_client(self)
+        self.logger = trainingmgr_main.LOGGER
+
+    result=[('testing', '', 'InfluxSource', True, '21.0.0.21', '12345', '', '', '', '')]
+    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=result)
+    def test_get_feature_group_by_name(self, mock1):
+        expected_data=b'{"featuregroup": [{"featuregroup_name": "testing", "features": [""], "datalake": "InfluxSource", "dme": true, "dme_host": "21.0.0.21", "dme_port": "12345", "bucket": "", "token": "", "source_name": "", "db_org": ""}]}'
+        fg_name='testing'
+        response=self.client.get('/featureGroup/{}'.format(fg_name))
+        assert response.status_code == 200 , "status code is not equal"
+        assert response.data == expected_data
+    
+    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=None)
+    def test_negative_get_feature_group_by_name(self, mock1):
+        expected_data=b'{"Exception": "Failed to fetch feature group info from db"}'
+        fg_name='testing'
+        response=self.client.get('/featureGroup/{}'.format(fg_name))
+        print(response.data)
+        assert response.status_code == 404 , "status code is not equal"
+        assert response.data == expected_data
+    
+    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', side_effect=DBException("Failed to execute query in get_feature_groupsDB ERROR"))
+    def test_negative_get_feature_group_by_name_2(self, mock1):
+        expected_data=b'{"Exception": "Failed to execute query in get_feature_groupsDB ERROR"}'
+        fg_name='testing'
+        response=self.client.get('/featureGroup/{}'.format(fg_name))
+        assert response.status_code == 500 , "status code is not equal"
+        assert response.data == expected_data
