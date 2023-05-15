@@ -956,3 +956,246 @@ class Test_get_feature_group_by_name:
         response=self.client.get('/featureGroup/{}'.format(fg_name))
         assert response.status_code == 500 , "status code is not equal"
         assert response.data == expected_data
+
+class Test_delete_list_of_feature_group:
+    @patch('trainingmgr.common.trainingmgr_config.TMLogger', return_value = TMLogger("tests/common/conf_log.yaml"))
+    def setup_method(self,mock1,mock2):
+        self.client = trainingmgr_main.APP.test_client(self)
+        self.logger = trainingmgr_main.LOGGER
+
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': '123'}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    the_result=[('testing', '', 'InfluxSource', True, '21.0.0.21', '12345', '', '', '', '')]
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=the_result)
+    @patch('trainingmgr.trainingmgr_main.delete_feature_group_by_name')
+    @patch('trainingmgr.trainingmgr_main.delete_dme_filtered_data_job')
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    def test_delete_list_of_feature_group(self, mock1, mock2, mock3, mock4, mock5):
+        delete_req={"featuregroups_list":[{"featureGroup_name":"testing_hash"}]}
+        expected_response=b'{"success count": 1, "failure count": 0}'
+        response=self.client.delete('/featureGroup', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_response, "response is not equal"
+        assert response.status_code==200, "status code not equal"
+    
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value=False)
+    def test_negative_delete_list_of_feature_group(self, mock1):
+        delete_req=delete_req={"featuregroups_list":[{"featureGroup_name":"testing_hash"}]}
+        expected_response=b'{"Exception": "Wrong Request syntax"}'
+        response=self.client.delete('/featureGroup', data=json.dumps(delete_req), content_type="application/json")
+        print("response data", response.data)
+        assert response.data==expected_response
+        assert response.status_code==400, "status code not equal"
+    
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.isinstance', return_value=False)
+    def test_negative_delete_list_of_feature_group_2(self, mock1, mock2):
+        delete_req=delete_req={"featuregroups_list":[{"featureGroup_name":"testing_hash"}]}
+        expected_response=b'{"Exception": "not given as list"}'
+        response=self.client.delete('/featureGroup', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_response
+        assert response.status_code==400, "status code not equal"
+
+    def test_negative_delete_list_of_feature_group_3(self):
+        delete_req=delete_req={"featuregroups_list":[("featureGroup_name")]}
+        expected_response=b'{"success count": 0, "failure count": 1}'
+        response=self.client.delete('/featureGroup', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_response
+        assert response.status_code==200, "status code not equal"
+    
+    def test_negative_delete_list_of_feature_group_4(self):
+        delete_req=delete_req={"featuregroups_list":[{"version":"1"}]}
+        expected_response=b'{"success count": 0, "failure count": 1}'
+        response=self.client.delete('/featureGroup', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_response
+        assert response.status_code==200, "status code not equal"
+
+    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', side_effect=Exception("Mocked Error"))
+    def test_negative_delete_list_of_feature_group_5(self, mock1):
+        delete_req=delete_req={"featuregroups_list":[{"featureGroup_name":"testing_hash"}]}
+        expected_response=b'{"success count": 0, "failure count": 1}'
+        response=self.client.delete('/featureGroup', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_response
+        assert response.status_code==200, "status code not equal"
+
+    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=None)
+    def test_negative_delete_list_of_feature_group_6(self, mock1):
+        delete_req=delete_req={"featuregroups_list":[{"featureGroup_name":"testing_hash"}]}
+        expected_response=b'{"success count": 0, "failure count": 1}'
+        response=self.client.delete('/featureGroup', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_response
+        assert response.status_code==200, "status code not equal"
+
+    the_result2=[('testing', '', 'InfluxSource', True, '21.0.0.21', '12345', '', '', '', '')]
+    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=the_result2)
+    @patch('trainingmgr.trainingmgr_main.delete_feature_group_by_name', side_effect=Exception('Mocked Error'))
+    def test_negative_delete_list_of_feature_group_7(self, mock1, mock2):
+        delete_req=delete_req={"featuregroups_list":[{"featureGroup_name":"testing_hash"}]}
+        expected_response=b'{"success count": 0, "failure count": 1}'
+        response=self.client.delete('/featureGroup', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_response
+        assert response.status_code==200, "status code not equal"
+
+class Test_delete_list_of_trainingjob_version:
+    @patch('trainingmgr.common.trainingmgr_config.TMLogger', return_value = TMLogger("tests/common/conf_log.yaml"))
+    def setup_method(self,mock1,mock2):
+        self.client = trainingmgr_main.APP.test_client(self)
+        self.logger = trainingmgr_main.LOGGER
+    
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': '123'}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    mocked_mm_sdk=mock.Mock(name="MM_SDK")
+    attrs_mm_sdk = {'is_bucket_present.return_value': True}
+    attrs_mm_sdk = {'delete_model_metric.return_value': True}
+    mocked_mm_sdk.configure_mock(**attrs_mm_sdk)
+    the_result=[('usecase7', 'auto test', '*', 'prediction with model name', 'Default', '{"arguments": {"epochs": "1", "usecase": "usecase7"}}', 'Enb=20 and Cellnum=6', datetime.datetime(2022, 9, 20,11, 40, 30), '7d09c0bf-7575-4475-86ff-5573fb3c4716', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FINISHED"}', datetime.datetime(2022, 9, 20, 11, 42, 20), 1, True, 'Near RT RIC', '{"datalake_source": {"CassandraSource": {}}}', '{"datalake_source": {"CassandraSource": {}}}','http://10.0.0.47:32002/model/usecase7/1/Model.zip','','','','','')]
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.isinstance', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.get_info_by_version', return_value=the_result)
+    @patch('trainingmgr.trainingmgr_main.get_one_word_status', return_value="FINISHED")
+    @patch('trainingmgr.trainingmgr_main.change_field_value_by_version')
+    @patch('trainingmgr.trainingmgr_main.MM_SDK', return_value = mocked_mm_sdk)
+    @patch('trainingmgr.trainingmgr_main.delete_trainingjob_version')
+    def test_delete_list_of_trainingjob_version(self, mock1, mock2, mock3, mock4, mock5, mock6, mock7, mock8):
+        delete_req={"list":[{"trainingjob_name":"testing_dme_02","version":1}]}
+        expected_res=b'{"success count": 1, "failure count": 0}'
+        response=self.client.delete('/trainingjobs', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_res
+        assert response.status_code == 200 , "status code is not equal"
+    
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value=False)
+    def test_negative_delete_list_of_trainingjob_version_1(self, mock1):
+        delete_req={"list":[{"trainingjob_name":"testing_dme_02","version":1}]}
+        expected_response=b'{"Exception": "Wrong Request syntax"}'
+        response=self.client.delete('/trainingjobs', data=json.dumps(delete_req), content_type="application/json")
+        print("response data", response.data)
+        assert response.data==expected_response
+        assert response.status_code==400, "status code not equal"
+
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.isinstance', return_value=False)
+    def test_negative_delete_list_of_trainingjob_version_2(self, mock1, mock2):
+        delete_req={"list":[{"trainingjob_name":"testing_dme_02","version":1}]}
+        expected_response=b'{"Exception": "not given as list"}'
+        response=self.client.delete('/trainingjobs', data=json.dumps(delete_req), content_type="application/json")
+        print("response data", response.data)
+        assert response.data==expected_response
+        assert response.status_code==400, "status code not equal"
+    
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value=True)
+    def test_negative_delete_list_of_trainingjob_version_3(self, mock1):
+        delete_req=delete_req={"list":[("trainingjob_name")]}
+        expected_response=b'{"success count": 0, "failure count": 1}'
+        response=self.client.delete('/trainingjobs', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_response
+        assert response.status_code==200, "status code not equal"
+    
+    def test_negative_delete_list_of_trainingjob_version_4(self):
+        delete_req=delete_req={"list":[{"trainingjob_name":"testing_dme_02"}]}
+        expected_response=b'{"success count": 0, "failure count": 1}'
+        response=self.client.delete('/trainingjobs', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_response
+        assert response.status_code==200, "status code not equal"
+    
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': '123'}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.isinstance', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.get_info_by_version', side_effect=Exception("Mocked Error"))
+    def test_negative_delete_list_of_trainingjob_version_5(self, mock1, mock2, mock3,mock4):
+        delete_req=delete_req={"list":[{"trainingjob_name":"testing_dme_02","version":1}]}
+        expected_response=b'{"success count": 0, "failure count": 1}'
+        response=self.client.delete('/trainingjobs', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_response
+        assert response.status_code==200, "status code not equal"
+    
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': '123'}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    the_result2=[('mynetwork', 'testing', '*', 'testing_pipeline', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "mynetwork"}}', '', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 'No data available', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "IN_PROGRESS", "TRAINING": "NOT_STARTED", "TRAINING_AND_TRAINED_MODEL": "NOT_STARTED", "TRAINED_MODEL": "NOT_STARTED"}', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 1, False, '2', '{"datalake_source": {"InfluxSource": {}}}', 'No data available.', '', 'liveCell', 'UEData', True)]
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.isinstance', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.get_info_by_version', return_value=the_result2)
+    def test_negative_delete_list_of_trainingjob_version_6(self, mock1, mock2, mock3,mock4):
+        delete_req=delete_req={"list":[{"trainingjob_name":"testing_dme_02","version":1}]}
+        expected_response=b'{"success count": 0, "failure count": 1}'
+        response=self.client.delete('/trainingjobs', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_response
+        assert response.status_code==200, "status code not equal"
+    
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': '123'}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    the_result3=[('mynetwork', 'testing', '*', 'testing_pipeline', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "mynetwork"}}', '', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 'No data available', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "IN_PROGRESS", "TRAINING": "NOT_STARTED", "TRAINING_AND_TRAINED_MODEL": "NOT_STARTED", "TRAINED_MODEL": "NOT_STARTED"}', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 1, False, '2', '{"datalake_source": {"InfluxSource": {}}}', 'No data available.', '', 'liveCell', 'UEData', False)]
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.isinstance', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.get_info_by_version', return_value=the_result3)
+    @patch('trainingmgr.trainingmgr_main.get_one_word_status', return_value="wrong status")
+    def test_negative_delete_list_of_trainingjob_version_7(self, mock1, mock2, mock3,mock4, mock5):
+        delete_req=delete_req={"list":[{"trainingjob_name":"testing_dme_02","version":1}]}
+        expected_response=b'{"success count": 0, "failure count": 1}'
+        response=self.client.delete('/trainingjobs', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_response
+        assert response.status_code==200, "status code not equal"
+    
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': '123'}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    the_result4=[('mynetwork', 'testing', '*', 'testing_pipeline', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "mynetwork"}}', '', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 'No data available', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "IN_PROGRESS", "TRAINING": "NOT_STARTED", "TRAINING_AND_TRAINED_MODEL": "NOT_STARTED", "TRAINED_MODEL": "NOT_STARTED"}', datetime.datetime(2023, 2, 9, 9, 2, 11, 13916), 1, False, '2', '{"datalake_source": {"InfluxSource": {}}}', 'No data available.', '', 'liveCell', 'UEData', False)]
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.isinstance', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.get_info_by_version', return_value=the_result4)
+    @patch('trainingmgr.trainingmgr_main.get_one_word_status', return_value="FINISHED")
+    @patch('trainingmgr.trainingmgr_main.change_field_value_by_version',side_effect=Exception("Mocked Error"))
+    def test_negative_delete_list_of_trainingjob_version_8(self, mock1, mock2, mock3,mock4, mock5, mock6):
+        delete_req=delete_req={"list":[{"trainingjob_name":"testing_dme_02","version":1}]}
+        expected_response=b'{"success count": 0, "failure count": 1}'
+        response=self.client.delete('/trainingjobs', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_response
+        assert response.status_code==200, "status code not equal"
+
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': '123'}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    mocked_mm_sdk=mock.Mock(name="MM_SDK")
+    attrs_mm_sdk = {'is_bucket_present.return_value': True}
+    attrs_mm_sdk = {'delete_model_metric.return_value': True}
+    mocked_mm_sdk.configure_mock(**attrs_mm_sdk)
+    the_result=[('usecase7', 'auto test', '*', 'prediction with model name', 'Default', '{"arguments": {"epochs": "1", "usecase": "usecase7"}}', 'Enb=20 and Cellnum=6', datetime.datetime(2022, 9, 20,11, 40, 30), '7d09c0bf-7575-4475-86ff-5573fb3c4716', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FINISHED"}', datetime.datetime(2022, 9, 20, 11, 42, 20), 1, True, 'Near RT RIC', '{"datalake_source": {"CassandraSource": {}}}', '{"datalake_source": {"CassandraSource": {}}}','http://10.0.0.47:32002/model/usecase7/1/Model.zip','','','','','')]
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.isinstance', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.get_info_by_version', return_value=the_result)
+    @patch('trainingmgr.trainingmgr_main.get_one_word_status', return_value="FINISHED")
+    @patch('trainingmgr.trainingmgr_main.change_field_value_by_version')
+    @patch('trainingmgr.trainingmgr_main.MM_SDK', return_value = mocked_mm_sdk)
+    @patch('trainingmgr.trainingmgr_main.delete_trainingjob_version', side_effect=Exception("Mocked Error"))
+    def test_negative_delete_list_of_trainingjob_version_9(self, mock1, mock2, mock3, mock4, mock5, mock6, mock7, mock8):
+        delete_req={"list":[{"trainingjob_name":"testing_dme_02","version":1}]}
+        expected_res=b'{"success count": 0, "failure count": 1}'
+        response=self.client.delete('/trainingjobs', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_res
+        assert response.status_code == 200 , "status code is not equal"
+
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': '123'}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.isinstance', return_value=True)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.get_info_by_version', return_value=None)
+    def test_negative_delete_list_of_trainingjob_version_10(self, mock1, mock2, mock3, mock4):
+        delete_req={"list":[{"trainingjob_name":"testing_dme_02","version":1}]}
+        expected_res=b'{"success count": 0, "failure count": 1}'
+        response=self.client.delete('/trainingjobs', data=json.dumps(delete_req), content_type="application/json")
+        assert response.data==expected_res
+        assert response.status_code == 200 , "status code is not equal"
+    

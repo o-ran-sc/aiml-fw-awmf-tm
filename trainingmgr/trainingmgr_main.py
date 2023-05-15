@@ -1091,10 +1091,8 @@ def delete_list_of_trainingjob_version():
         all exception are provided with exception message and HTTP status code.
     """
     LOGGER.debug('request comes for deleting:' + json.dumps(request.json))
-    try:
-        check_key_in_dictionary(["list"], request.json)
-    except Exception as err:
-        raise APIException(status.HTTP_400_BAD_REQUEST, str(err)) from None
+    if not check_key_in_dictionary(["list"], request.json):
+        raise APIException(status.HTTP_400_BAD_REQUEST, "Wrong Request syntax") from None
 
     list_of_trainingjob_version = request.json['list']
     if not isinstance(list_of_trainingjob_version, list):
@@ -1110,11 +1108,9 @@ def delete_list_of_trainingjob_version():
             LOGGER.debug(str(my_dict) + "did not pass dictionary")
             continue
 
-        try:
-            check_key_in_dictionary(["trainingjob_name", "version"], my_dict)
-        except Exception as err:
+        if not check_key_in_dictionary(["trainingjob_name", "version"], my_dict):
             not_possible_to_delete.append(my_dict)
-            LOGGER.debug(str(err))
+            LOGGER.debug("key trainingjob_name or version not in the request")
             continue
 
         trainingjob_name = my_dict['trainingjob_name']
@@ -1502,11 +1498,9 @@ def delete_list_of_feature_group():
         all exception are provided with exception message and HTTP status code.
     """
     LOGGER.debug('request comes for deleting:' + json.dumps(request.json))
-    try:
-        check_key_in_dictionary(["featuregroups_list"], request.json)
-    except Exception as err:
+    if not check_key_in_dictionary(["featuregroups_list"], request.json):
         LOGGER.debug("exception in check_key_in_dictionary")
-        raise APIException(status.HTTP_400_BAD_REQUEST, str(err)) from None
+        raise APIException(status.HTTP_400_BAD_REQUEST, "Wrong Request syntax") from None
 
     list_of_feature_groups = request.json['featuregroups_list']
     if not isinstance(list_of_feature_groups, list):
@@ -1522,11 +1516,9 @@ def delete_list_of_feature_group():
             LOGGER.debug(str(my_dict) + "did not pass dictionary")
             continue
         
-        try:
-            check_key_in_dictionary(["featureGroup_name"], my_dict)
-        except Exception as err:
+        if not check_key_in_dictionary(["featureGroup_name"], my_dict):
             not_possible_to_delete.append(my_dict)
-            LOGGER.debug(str(err))
+            LOGGER.debug("key featureGroup_name is not present in the request")
             continue
 
         featuregroup_name = my_dict['featureGroup_name']
