@@ -29,7 +29,7 @@ from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainin
      get_all_versions_info_by_name, get_all_distinct_trainingjobs, \
      get_all_version_num_by_trainingjob_name, update_model_download_url, \
      add_update_trainingjob, get_all_jobs_latest_status_version, get_info_of_latest_version, \
-     add_featuregroup, get_feature_group_by_name_db, get_feature_groups_db
+     add_featuregroup, get_feature_group_by_name_db, get_feature_groups_db, delete_feature_group_by_name
 
 mimic_db = {
             "usecase_name": "Tester",
@@ -565,3 +565,20 @@ class Test_Common_Db_Fun:
         except Exception as err:
             fxn_name="get_feature_groups"
             assert str(err)=="Failed to execute query in {}DB Error".format(fxn_name)
+
+    def test_delete_feature_group_by_name(self):
+        checker=Check()
+        db_obj = db_helper_fg([[None]], check_success_obj=checker)
+        delete_feature_group_by_name(db_obj, "Tester")
+        assert checker.finished, 'delete_feature_group_by_name FAILED'
+    
+    def test_negative_delete_feature_group_by_name(self):
+        checker=Check()
+        try:
+            db_obj = db_helper([[None]], raise_exception=True,check_success_obj=checker)
+            delete_feature_group_by_name(db_obj, "Tester")
+            assert False
+        except Exception as err:
+            fxn_name="delete_feature_group"
+            assert str(err)=="Failed to execute query in {}DB Error".format(fxn_name)
+            assert checker.finished, 'Cursor Not Closed Properly for fxn {} | Negative Test'.format(fxn_name)
