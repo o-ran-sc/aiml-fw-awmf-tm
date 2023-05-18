@@ -157,7 +157,7 @@ def check_trainingjob_data(trainingjob_name, json_data):
             arguments, query_filter, enable_versioning, pipeline_version,
             datalake_source, _measurement, bucket)
 
-def check_featureGroup_data(json_data):
+def check_feature_group_data(json_data):
     """
     This function checks validation for json_data dictionary and return tuple which conatins
     values of different keys in jsn_data.
@@ -166,10 +166,10 @@ def check_featureGroup_data(json_data):
         if check_key_in_dictionary(["featureGroupName", "feature_list", \
                                     "datalake_source", "enable_Dme", "DmeHost", 
                                     "DmePort", "bucket", "token", "source_name"], json_data):
-            featureGroup_name=json_data["featureGroupName"]
+            feature_group_name=json_data["featureGroupName"]
             features=json_data["feature_list"]
             datalake_source=json_data["datalake_source"]
-            enable_Dme=json_data["enable_Dme"]
+            enable_dme=json_data["enable_Dme"]
             dme_host=json_data["DmeHost"]
             dme_port=json_data["DmePort"]
             bucket=json_data["bucket"]
@@ -184,7 +184,7 @@ def check_featureGroup_data(json_data):
     except Exception as err:
         raise APIException(status.HTTP_400_BAD_REQUEST, str(err)) from None
     
-    return (featureGroup_name, features, datalake_source, enable_Dme, dme_host, dme_port, bucket, token, source_name,db_org)
+    return (feature_group_name, features, datalake_source, enable_dme, dme_host, dme_port, bucket, token, source_name,db_org)
 
 def get_one_key(dictionary):
     '''
