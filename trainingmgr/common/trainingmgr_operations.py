@@ -26,6 +26,8 @@ import requests
 import validators
 from trainingmgr.common.exceptions_utls import TMException
 
+MIMETYPE_JSON = "application/json"
+
 def create_url_host_port(protocol, host, port, path=''):
     """
     This function creates and validates URL based on the inputs.
@@ -82,7 +84,7 @@ def data_extraction_start(training_config_obj, trainingjob_name, feature_list, q
 
     response = requests.post(url,
                              data=json.dumps(dictionary),
-                             headers={'content-type': 'application/json',
+                             headers={'content-type': MIMETYPE_JSON,
                                       'Accept-Charset': 'UTF-8'})
     return response
 
@@ -114,7 +116,7 @@ def training_start(training_config_obj, dict_data, trainingjob_name):
     logger.debug(url)
     response = requests.post(url,
                              data=json.dumps(dict_data),
-                             headers={'content-type': 'application/json',
+                             headers={'content-type': MIMETYPE_JSON,
                                       'Accept-Charset': 'UTF-8'})
 
     return response
@@ -139,7 +141,7 @@ def create_dme_filtered_data_job(training_config_obj, source_name, db_org, bucke
             {"sourceNames":[source_name],
             "measTypes":features}}}
 
-    headers = {'Content-type': 'application/json'}
+    headers = {'Content-type': MIMETYPE_JSON}
 
     url = create_url_host_port('http', host, port, 'data-consumer/v1/info-jobs/{}'.format(feature_group_name))
     logger.debug(url)

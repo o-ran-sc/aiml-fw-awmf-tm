@@ -39,7 +39,7 @@ from trainingmgr.common.trainingmgr_util import get_one_word_status, check_train
     check_key_in_dictionary, get_one_key, \
     response_for_training, get_metrics, \
     handle_async_feature_engineering_status_exception_case, \
-    validate_trainingjob_name, get_all_pipeline_names_svc, check_featureGroup_data
+    validate_trainingjob_name, get_all_pipeline_names_svc, check_feature_group_data
 from trainingmgr.common.exceptions_utls import APIException,TMException
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
@@ -64,6 +64,7 @@ DATAEXTRACTION_JOBS_CACHE = None
 ERROR_TYPE_KF_ADAPTER_JSON = "Kf adapter doesn't sends json type response"
 ERROR_TYPE_DB_STATUS = "Couldn't update the status as failed in db access"
 MIMETYPE_JSON = "application/json"
+NOT_LIST="not given as list"
 
 @APP.errorhandler(APIException)
 def error(err):
@@ -971,7 +972,7 @@ def retraining():
 
     trainingjobs_list = request.json['trainingjobs_list']
     if not isinstance(trainingjobs_list, list):
-        raise APIException(status.HTTP_400_BAD_REQUEST, "not given as list")
+        raise APIException(status.HTTP_400_BAD_REQUEST, NOT_LIST)
 
     for obj in trainingjobs_list:
         try:
@@ -1096,7 +1097,7 @@ def delete_list_of_trainingjob_version():
 
     list_of_trainingjob_version = request.json['list']
     if not isinstance(list_of_trainingjob_version, list):
-        raise APIException(status.HTTP_400_BAD_REQUEST, "not given as list")
+        raise APIException(status.HTTP_400_BAD_REQUEST, NOT_LIST)
 
     not_possible_to_delete = []
     possible_to_delete = []
@@ -1316,20 +1317,21 @@ def create_feature_group():
 
     try:
         json_data=request.json
-        (featureGroup_name, features, datalake_source, enable_Dme, dme_host, dme_port, bucket, token, source_name,db_org)=check_featureGroup_data(json_data)
+        (feature_group_name, features, datalake_source, enable_dme, dme_host, dme_port, bucket, token, source_name,db_org)=check_feature_group_data(json_data)
         # check the data conformance
-        if len(featureGroup_name) < 3 or len(featureGroup_name) > 63:
-            api_response = {"Exception": "Failed to create the feature group since feature group name must be between 3 and 63 characters long."}
+        LOGGER.debug("the db info is : ", get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name))
+        if len(feature_group_name) < 3 or len(feature_group_name) > 63 or get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name):
+            api_response = {"Exception": "Failed to create the feature group since feature group not valid or already present"}
             response_code = status.HTTP_400_BAD_REQUEST
         else:
             # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
             features_list = features.split(",")
-            add_featuregroup(featureGroup_name, features, datalake_source, enable_Dme, PS_DB_OBJ,dme_host, dme_port, bucket, token, source_name,db_org )
-            if enable_Dme == True :
-                response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, source_name, db_org, bucket,  token, features_list, featureGroup_name,  dme_host, dme_port)
+            add_featuregroup(feature_group_name, features, datalake_source, enable_dme, PS_DB_OBJ,dme_host, dme_port, bucket, token, source_name,db_org )
+            if enable_dme == True :
+                response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, source_name, db_org, bucket,  token, features_list, feature_group_name,  dme_host, dme_port)
                 if response.status_code != 201:
                     api_response={"Exception": "Cannot create dme job"}
-                    delete_feature_group_by_name(PS_DB_OBJ, featureGroup_name)
+                    delete_feature_group_by_name(PS_DB_OBJ, feature_group_name)
                     response_code=status.HTTP_400_BAD_REQUEST
                 else:
                     api_response={"result": "Feature Group Created"}
@@ -1338,7 +1340,7 @@ def create_feature_group():
                 api_response={"result": "Feature Group Created"}
                 response_code =status.HTTP_200_OK
     except Exception as err:
-        delete_feature_group_by_name(PS_DB_OBJ, featureGroup_name)
+        delete_feature_group_by_name(PS_DB_OBJ, feature_group_name)
         err_msg = "Failed to create the feature Group "
         api_response = {"Exception":err_msg}
         LOGGER.error(str(err))
@@ -1437,36 +1439,41 @@ def get_feature_group_by_name(featuregroup_name):
         all exception are provided with exception message and HTTP status code.
 
     """
-    LOGGER.debug("Request for getting a feature group with name = "+ featuregroup_name)
     api_response={}
     response_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-    try:
-        result= get_feature_group_by_name_db(PS_DB_OBJ, featuregroup_name)
-        feature_group=[]
-        if result:
-            for res in result:
-                features=res[1].split(",")
-                dict_data={
-                    "featuregroup_name": res[0],
-                    "features": features,
-                    "datalake": res[2],
-                    "dme": res[3],
-                    "dme_host": res[4],
-                    "dme_port": res[5],
-                    "bucket":res[6],
-                    "token":res[7],
-                    "source_name":res[8],
-                    "db_org":res[9]
-                }
-                feature_group.append(dict_data)
-            api_response={"featuregroup":feature_group}
-            response_code=status.HTTP_200_OK
-        else:
-            response_code=status.HTTP_404_NOT_FOUND
-            raise TMException("Failed to fetch feature group info from db")
-    except Exception as err:
-        api_response =   {"Exception": str(err)}
-        LOGGER.error(str(err))
+    pattern = re.compile(r"[a-zA-Z0-9_]+")
+    if not re.fullmatch(pattern, featuregroup_name):
+        api_response={"Exception": "Invalid featuregroup_name"}
+        response_code=status.HTTP_400_BAD_REQUEST 
+    else:
+        LOGGER.debug("Request for getting a feature group with name = "+ featuregroup_name)
+        try:
+            result= get_feature_group_by_name_db(PS_DB_OBJ, featuregroup_name)
+            feature_group=[]
+            if result:
+                for res in result:
+                    features=res[1].split(",")
+                    dict_data={
+                        "featuregroup_name": res[0],
+                        "features": features,
+                        "datalake": res[2],
+                        "dme": res[3],
+                        "dme_host": res[4],
+                        "dme_port": res[5],
+                        "bucket":res[6],
+                        "token":res[7],
+                        "source_name":res[8],
+                        "db_org":res[9]
+                    }
+                    feature_group.append(dict_data)
+                api_response={"featuregroup":feature_group}
+                response_code=status.HTTP_200_OK
+            else:
+                response_code=status.HTTP_404_NOT_FOUND
+                raise TMException("Failed to fetch feature group info from db")
+        except Exception as err:
+            api_response =   {"Exception": str(err)}
+            LOGGER.error(str(err))
     return APP.response_class(response=json.dumps(api_response),
                         status=response_code,
                         mimetype=MIMETYPE_JSON) 
@@ -1505,7 +1512,7 @@ def delete_list_of_feature_group():
     list_of_feature_groups = request.json['featuregroups_list']
     if not isinstance(list_of_feature_groups, list):
         LOGGER.debug("exception in not instance")
-        raise APIException(status.HTTP_400_BAD_REQUEST, "not given as list")
+        raise APIException(status.HTTP_400_BAD_REQUEST, NOT_LIST)
 
     not_possible_to_delete = []
     possible_to_delete = []
