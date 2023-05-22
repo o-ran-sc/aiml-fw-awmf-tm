@@ -20,6 +20,7 @@
 This file contains Training management utility functions
 """
 import json
+import re
 from flask_api import status
 import requests
 from trainingmgr.db.common_db_fun import change_in_progress_to_failed_by_latest_version, \
@@ -243,6 +244,11 @@ def validate_trainingjob_name(trainingjob_name, ps_db_obj):
     """
     results = None
     isavailable = False
+    pattern = re.compile(r"[a-z0-9_]+")
+    if (not re.fullmatch(pattern, trainingjob_name) or
+        len(trainingjob_name) < 3 or len(trainingjob_name) > 63):
+        raise TMException("The name of training job is invalid.")
+
     try:
         results = get_all_versions_info_by_name(trainingjob_name, ps_db_obj)
     except Exception as err:

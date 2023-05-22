@@ -1320,7 +1320,11 @@ def create_feature_group():
         (feature_group_name, features, datalake_source, enable_dme, dme_host, dme_port, bucket, token, source_name,db_org)=check_feature_group_data(json_data)
         # check the data conformance
         LOGGER.debug("the db info is : ", get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name))
-        if len(feature_group_name) < 3 or len(feature_group_name) > 63 or get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name):
+
+        pattern = re.compile(r"[a-z0-9_]+")
+        if (not re.fullmatch(pattern, feature_group_name) or
+            len(feature_group_name) < 3 or len(feature_group_name) > 63 or
+            get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name)):
             api_response = {"Exception": "Failed to create the feature group since feature group not valid or already present"}
             response_code = status.HTTP_400_BAD_REQUEST
         else:
