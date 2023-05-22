@@ -802,7 +802,7 @@ class Test_create_featuregroup:
     @patch('trainingmgr.trainingmgr_main.add_featuregroup')
     def test_create_featuregroup_1(self, mock1, mock2, mock3):
         create_featuregroup_req={
-                            "featureGroupName": "testing_hash",
+                            "featureGroupName": "testinghash",
                             "feature_list": "pdcpBytesDl,pdcpBytesUl",
                             "datalake_source": "InfluxSource",
                             "enable_Dme": False,
@@ -834,7 +834,7 @@ class Test_create_featuregroup:
     @patch('trainingmgr.trainingmgr_main.delete_feature_group_by_name')
     def test_create_featuregroup_2(self, mock1, mock2, mock3,mock4,mock5, mock6):
         create_featuregroup_req={
-                            "featureGroupName": "testing_hash",
+                            "featureGroupName": "testinghash",
                             "feature_list": "pdcpBytesDl,pdcpBytesUl",
                             "datalake_source": "InfluxSource",
                             "enable_Dme": True,
@@ -866,7 +866,7 @@ class Test_create_featuregroup:
     @patch('trainingmgr.trainingmgr_main.delete_feature_group_by_name')
     def test_negative_create_featuregroup_1(self, mock1, mock2, mock3,mock4,mock5, mock6):
         create_featuregroup_req={
-                            "featureGroupName": "testing_hash",
+                            "featureGroupName": "testinghash",
                             "feature_list": "pdcpBytesDl,pdcpBytesUl",
                             "datalake_source": "InfluxSource",
                             "enable_Dme": True,
@@ -891,7 +891,7 @@ class Test_create_featuregroup:
     @patch('trainingmgr.trainingmgr_main.delete_feature_group_by_name')
     def test_neagtive_create_featuregroup_2(self, mock1, mock2, mock3):
         create_featuregroup_req={
-                            "featureGroupName": "testing_hash",
+                            "featureGroupName": "testinghash",
                             "feature_list": "pdcpBytesDl,pdcpBytesUl",
                             "datalake_source": "InfluxSource",
                             "enable_Dme": False,
@@ -1205,4 +1205,3 @@ class Test_delete_list_of_trainingjob_version:
         response=self.client.delete('/trainingjobs', data=json.dumps(delete_req), content_type="application/json")
         assert response.data==expected_res
         assert response.status_code == 200 , "status code is not equal"
-    
