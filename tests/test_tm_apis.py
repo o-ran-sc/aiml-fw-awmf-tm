@@ -1205,4 +1205,3 @@ class Test_delete_list_of_trainingjob_version:
         response=self.client.delete('/trainingjobs', data=json.dumps(delete_req), content_type="application/json")
         assert response.data==expected_res
         assert response.status_code == 200 , "status code is not equal"
-    
