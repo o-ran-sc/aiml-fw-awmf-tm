@@ -41,6 +41,7 @@ from trainingmgr.common.trainingmgr_util import response_for_training, check_key
 from requests.models import Response   
 from trainingmgr import trainingmgr_main
 from trainingmgr.common.tmgr_logger import TMLogger
+from trainingmgr.common.exceptions_utls import APIException,TMException,DBException
 trainingmgr_main.LOGGER = pytest.logger
 
 class Test_response_for_training:
@@ -617,28 +618,33 @@ class Test_validate_trainingjob_name:
         expected_data = True
         assert validate_trainingjob_name(trainingjob_name,ps_db_obj) == expected_data,"data not equal"
 
-    @patch('trainingmgr.common.trainingmgr_util.get_all_versions_info_by_name', return_value = Exception("Could not get info from db for "))
+    @patch('trainingmgr.common.trainingmgr_util.get_all_versions_info_by_name', side_effect = DBException)
     def test_validate_trainingjob_name_2(self,mock1):
         trainingjob_name = "usecase8"
         ps_db_obj = ()
-        expected_data = True
         try:
             validate_trainingjob_name(trainingjob_name,ps_db_obj)
-            assert validate_trainingjob_name(trainingjob_name,ps_db_obj) == expected_data,"data not equal"
-            assert False
-        except Exception:
-            assert True
+        except DBException as err:
+            assert 'Could not get info from db for ' + trainingjob_name in str(err)
     
     def test_negative_validate_trainingjob_name(self):
-        trainingjob_name = "usecase8"
+        short_name = "__"
+        long_name = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
+        print(len(long_name))
+        not_allowed_symbol_name = "case@#"
         ps_db_obj = ()
-        expected_data = True
         try:
-            validate_trainingjob_name(trainingjob_name,ps_db_obj)
-            assert validate_trainingjob_name(trainingjob_name,ps_db_obj) == expected_data,"data not equal"
-            assert False
-        except Exception:
-            assert True
+            validate_trainingjob_name(short_name,ps_db_obj)
+        except TMException as err:
+            assert str(err) == "The name of training job is invalid."
+        try:
+            validate_trainingjob_name(long_name,ps_db_obj)
+        except TMException as err:
+            assert str(err) == "The name of training job is invalid."
+        try:
+            validate_trainingjob_name(not_allowed_symbol_name,ps_db_obj)
+        except TMException as err:
+            assert str(err) == "The name of training job is invalid."
 
 class Test_get_all_pipeline_names_svc:
     # testing the get_all_pipeline service
