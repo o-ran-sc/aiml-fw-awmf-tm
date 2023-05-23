@@ -26,7 +26,7 @@ from trainingmgr.constants.states import States
 from trainingmgr.common.exceptions_utls import DBException
 
 tm_table_name = "trainingjob_info" # Table used by 'Training Manager' for training jobs
-fg_table_name="featuregroup_info"  # Table used by 'Training Manager' for Feature Groups
+fg_table_name = "featuregroup_info"  # Table used by 'Training Manager' for Feature Groups
 DB_QUERY_EXEC_ERROR = "Failed to execute query in "
 
 def get_data_extraction_in_progress_trainingjobs(ps_db_obj):
@@ -109,7 +109,7 @@ def change_field_value_by_version(trainingjob_name, version, ps_db_obj, field, f
         raise DBException("Failed to execute query in change_field_value_by_version," + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
 
 
 def get_field_by_latest_version(trainingjob_name, ps_db_obj, field):
@@ -142,7 +142,7 @@ def get_field_by_latest_version(trainingjob_name, ps_db_obj, field):
         raise DBException("Failed to execute query in get_field_by_latest_version,"  + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
     return results
 
 
@@ -168,7 +168,7 @@ def get_field_of_given_version(trainingjob_name, version, ps_db_obj, field):
         raise DBException("Failed to execute query in get_field_of_given_version" + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
     return results
 
 
@@ -204,7 +204,7 @@ def change_in_progress_to_failed_by_latest_version(trainingjob_name, ps_db_obj):
              "change_in_progress_to_failed_by_latest_version" + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
     return status_changed
 
 
@@ -235,7 +235,7 @@ def change_steps_state_of_latest_version(trainingjob_name, ps_db_obj, key, value
             "change_steps_state_of_latest_version"  + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
 
 
 def change_steps_state_by_version(trainingjob_name, version, ps_db_obj, key, value):
@@ -261,7 +261,7 @@ def change_steps_state_by_version(trainingjob_name, version, ps_db_obj, key, val
             "change_steps_state_by_version"  + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
 
 
 def delete_trainingjob_version(trainingjob_name, version, ps_db_obj):
@@ -283,7 +283,7 @@ def delete_trainingjob_version(trainingjob_name, version, ps_db_obj):
             "delete_trainingjob_version" + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
 
 
 def get_info_by_version(trainingjob_name, version, ps_db_obj):
@@ -307,7 +307,7 @@ def get_info_by_version(trainingjob_name, version, ps_db_obj):
             "get_info_by_version"  + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
     return results
 
 
@@ -337,7 +337,7 @@ def get_trainingjob_info_by_name(trainingjob_name, ps_db_obj):
             "get_trainingjob_info_by_name"  + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
     return results
 
 def get_latest_version_trainingjob_name(trainingjob_name, ps_db_obj):
@@ -362,7 +362,7 @@ def get_latest_version_trainingjob_name(trainingjob_name, ps_db_obj):
             "get_latest_version_trainingjob_name"  + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
     return version
 
 
@@ -387,7 +387,7 @@ def get_all_versions_info_by_name(trainingjob_name, ps_db_obj):
             "get_all_versions_info_by_name"  + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
     return results
 
 
@@ -413,7 +413,7 @@ def get_all_distinct_trainingjobs(ps_db_obj):
             "get_all_distinct_trainingjobs"  + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
 
     return trainingjobs
 
@@ -441,7 +441,7 @@ def get_all_version_num_by_trainingjob_name(trainingjob_name, ps_db_obj):
             "get_all_version_num_by_trainingjob_name"  + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
     
     return versions
 
@@ -467,20 +467,20 @@ def update_model_download_url(trainingjob_name, version, url, ps_db_obj):
             "update_model_download_url"  + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
 
 
 def add_update_trainingjob(description, pipeline_name, experiment_name, feature_list, arguments,
                           query_filter, adding, enable_versioning,
                           pipeline_version, datalake_source, trainingjob_name, ps_db_obj, notification_url="",
                           _measurement="", bucket=""):
-     """
-        This function add the new row or update existing row with given information
-     """
+    """
+    This function add the new row or update existing row with given information
+    """
 
 
-     conn = None
-     try:
+    conn = None
+    try:
         arguments_string = json.dumps({"arguments": arguments})
         datalake_source_dic = {}
         datalake_source_dic[datalake_source] = {}
@@ -549,18 +549,18 @@ def add_update_trainingjob(description, pipeline_name, experiment_name, feature_
                             deletion_in_progress))
         conn.commit()
         cursor.close()
-     except Exception as err:
-         if conn is not None:
-             conn.rollback()
-         raise DBException(DB_QUERY_EXEC_ERROR + \
-             "add_update_trainingjob"  + str(err))
-     finally:
-         if conn is not None:
-                 conn.close()
+    except Exception as err:
+        if conn is not None:
+            conn.rollback()
+        raise DBException(DB_QUERY_EXEC_ERROR + \
+            "add_update_trainingjob"  + str(err))
+    finally:
+        if conn is not None:
+            conn.close()
 
 def add_featuregroup(feature_group_name, feature_list, datalake_source, enable_dme, ps_db_obj , dmehost="", dmeport="", bucket="", token="", source_name="",db_org=""):
     """
-        This function add the new row or update existing row with given information
+    This function add the new row or update existing row with given information
     """
 
     conn = None
@@ -648,7 +648,7 @@ def delete_feature_group_by_name(ps_db_obj, featuregroup_name):
             "delete_feature_group"  + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
      
 def get_all_jobs_latest_status_version(ps_db_obj):
     """
@@ -677,7 +677,7 @@ def get_all_jobs_latest_status_version(ps_db_obj):
             "get_all_jobs_latest_status_version"  + str(err))
     finally:
         if conn is not None:
-                conn.close()
+            conn.close()
     return results
 
 def get_info_of_latest_version(trainingjob_name, ps_db_obj):

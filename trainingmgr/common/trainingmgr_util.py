@@ -65,10 +65,10 @@ def response_for_training(code, message, logger, is_success, trainingjob_name, p
                 response = requests.post(notification_url,
                         data=json.dumps(req_json),
                         headers={
-                            'content-type': 'application/json',
+                            'content-type': MIMETYPE_JSON,
                             'Accept-Charset': 'UTF-8'
                         })
-                if ( response.headers['content-type'] != "application/json" 
+                if ( response.headers['content-type'] != MIMETYPE_JSON
                         or response.status_code != status.HTTP_200_OK ):
                     err_msg = "Failed to notify the subscribed url " + trainingjob_name
                     raise TMException(err_msg)
@@ -189,7 +189,7 @@ def check_feature_group_data(json_data):
 
 def get_one_key(dictionary):
     '''
-    this function finds any one key from dictionary and retuen it.
+    this function finds any one key from dictionary and return it.
     '''
     only_key = None
     for key in dictionary:

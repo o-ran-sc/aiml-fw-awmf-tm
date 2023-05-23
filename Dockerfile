@@ -21,20 +21,17 @@ FROM python:3.8
 # location in the container
 ENV TA_DIR /home/app/
 WORKDIR ${TA_DIR}
+
 # Install dependencies
-RUN apt-get update && apt-get install -y \
-    python3-pip
-RUN apt-get install -y apt-utils
+RUN apt-get update && \
+    apt-get install -y python3-pip apt-utils
 
 # Copy sources into the container
 COPY . .
 
-RUN git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/feature-store"
-RUN git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/model-storage"
-RUN mkdir -p /SDK/featurestoresdk_main/
-RUN mkdir -p /SDK/modelmetricssdk_main/
-RUN cp -R feature-store/. /SDK/featurestoresdk_main/.
-RUN cp -R model-storage/. /SDK/modelmetricssdk_main/.
+RUN git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/feature-store" /SDK/featurestoresdk_main
+RUN git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/model-storage" /SDK/modelmetricssdk_main
+
 RUN pip3 install /SDK/featurestoresdk_main/.
 RUN pip3 install /SDK/modelmetricssdk_main/.
 RUN pip3 install .
