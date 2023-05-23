@@ -832,7 +832,7 @@ class Test_create_featuregroup:
     @patch('trainingmgr.trainingmgr_main.create_dme_filtered_data_job', return_value=the_response1)
     @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.delete_feature_group_by_name')
-    def test_create_featuregroup_2(self, mock1, mock2, mock3,mock4,mock5, mock6):
+    def test_create_featuregroup_2(self, mock1, mock2, mock3, mock4, mock5, mock6):
         create_featuregroup_req={
                             "featureGroupName": "testing_hash",
                             "feature_list": "pdcpBytesDl,pdcpBytesUl",
@@ -864,7 +864,7 @@ class Test_create_featuregroup:
     @patch('trainingmgr.trainingmgr_main.create_dme_filtered_data_job', return_value=the_response2)
     @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.delete_feature_group_by_name')
-    def test_negative_create_featuregroup_1(self, mock1, mock2, mock3,mock4,mock5, mock6):
+    def test_negative_create_featuregroup_1(self, mock1, mock2, mock3, mock4, mock5, mock6):
         create_featuregroup_req={
                             "featureGroupName": "testing_hash",
                             "feature_list": "pdcpBytesDl,pdcpBytesUl",
@@ -887,9 +887,10 @@ class Test_create_featuregroup:
 
     feature_group_data3=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data3)
+    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=False)
     @patch('trainingmgr.trainingmgr_main.add_featuregroup',side_effect = Exception('Mocked error'))
     @patch('trainingmgr.trainingmgr_main.delete_feature_group_by_name')
-    def test_neagtive_create_featuregroup_2(self, mock1, mock2, mock3):
+    def test_neagtive_create_featuregroup_2(self, mock1, mock2, mock3, mock4):
         create_featuregroup_req={
                             "featureGroupName": "testing_hash",
                             "feature_list": "pdcpBytesDl,pdcpBytesUl",
@@ -908,6 +909,29 @@ class Test_create_featuregroup:
         trainingmgr_main.LOGGER.debug(response.data)
         assert response.data==expected_response
         assert response.status_code ==status.HTTP_500_INTERNAL_SERVER_ERROR, "Return status code not equal"  
+
+    feature_group_data3=('testing_hash!@','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','')
+    @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data3)
+    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=True)
+    def test_neagtive_create_featuregroup_3(self, mock1, mock2):
+        create_featuregroup_req={
+                            "featureGroupName": "testing_hash!@",
+                            "feature_list": "pdcpBytesDl,pdcpBytesUl",
+                            "datalake_source": "InfluxSource",
+                            "enable_Dme": False,
+                            "DmeHost": "",
+                            "DmePort": "",
+                            "bucket": "",
+                            "token": "",
+                            "source_name": "",
+                            "dbOrg": ""
+                                }
+        expected_response=b'{"Exception": "Failed to create the feature group since feature group not valid or already present"}'
+        response=self.client.post("/featureGroup", data=json.dumps(create_featuregroup_req),
+                                  content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)
+        assert response.data==expected_response
+        assert response.status_code==status.HTTP_400_BAD_REQUEST, "Return status code not equal"
 
 class Test_get_feature_group:
     def setup_method(self):
