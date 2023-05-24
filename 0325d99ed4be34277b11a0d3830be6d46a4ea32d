@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c5ac5f3_2f5b388f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2023-05-24T06:55:50Z",
+      "side": 1,
+      "message": "indentations were much need to improve the readability of the code.",
+      "revId": "0325d99ed4be34277b11a0d3830be6d46a4ea32d",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
