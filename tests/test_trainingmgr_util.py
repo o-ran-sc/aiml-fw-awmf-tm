@@ -50,316 +50,197 @@ class Test_response_for_training:
         self.logger = trainingmgr_main.LOGGER
 
     fs_result = Response()
-    fs_result.code = "expired"
-    fs_result.error_type = "expired"
     fs_result.status_code = status.HTTP_200_OK
     fs_result.headers={'content-type': 'application/json'}
-    fs_result._content={'Accept-Charset': 'UTF-8'}
 
-    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version',return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
-    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version',return_value=True)
+    fs_content_type_error_result = Response()
+    fs_content_type_error_result.status_code = status.HTTP_200_OK
+    fs_content_type_error_result.headers={'content-type': 'application/jn'}
+
+    fs_status_code_error_result = Response()
+    fs_status_code_error_result.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    fs_status_code_error_result.headers={'content-type': 'application/json'}
+
+    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version', return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
+    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version', return_value=True)
     @patch('trainingmgr.common.trainingmgr_util.get_metrics',return_value="PRESENT")
-    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name',return_value=1)  
-    @patch('trainingmgr.common.trainingmgr_util.requests.post',return_value=fs_result)
-    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version')
-    def test_response_for_training(self,mock1,mock2, mock3, mock4, mock5, mock6):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
-        logger = trainingmgr.trainingmgr_main.LOGGER
+    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name', return_value=1)
+    @patch('trainingmgr.common.trainingmgr_util.requests.post', return_value=fs_result)
+    def test_response_for_training_success(self, mock1, mock2, mock3, mock4, mock5):
+        code_success = status.HTTP_200_OK
+        code_fail = status.HTTP_500_INTERNAL_SERVER_ERROR
+        message_success = "Pipeline notification success."
+        message_fail = "Pipeline not successful for "
+        logger = trainingmgr_main.LOGGER
+        is_success = True
+        is_fail = False
+        trainingjob_name = "usecase7"
+        ps_db_obj = ()
+        mm_sdk = ()
+        result = response_for_training(code_success, message_success, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk)
+        assert message_success == result[0]['result']
+        result = response_for_training(code_fail, message_fail, logger, is_fail, trainingjob_name, ps_db_obj, mm_sdk)
+        assert message_fail == result[0]['Exception']
+
+    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version', return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
+    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version', return_value=True)
+    @patch('trainingmgr.common.trainingmgr_util.get_metrics', return_value="PRESENT")
+    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name', return_value=1)
+    @patch('trainingmgr.common.trainingmgr_util.requests.post', side_effect = Exception)
+    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version', return_value=True)
+    def test_response_for_training_fail_post_req(self, mock1, mock2, mock3, mock4, mock5, mock6):
+        code = status.HTTP_200_OK
+        message = "Pipeline notification success."
+        logger = trainingmgr_main.LOGGER
         is_success = True
         trainingjob_name = "usecase7"
         ps_db_obj = ()
         mm_sdk = ()
-        result = response_for_training(code, message, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk)
-        assert result != None
-
-    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version',return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
-    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version',return_value=True)
-    @patch('trainingmgr.common.trainingmgr_util.get_metrics',return_value="PRESENT")
-    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name',return_value=1)  
-    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version')
-    def test_negative_response_for_training(self,mock1,mock2, mock3, mock4, mock5):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
-        logger = trainingmgr_main.LOGGER
-        is_success = True
-        usecase_name = "usecase7"
-        ps_db_obj = ()
-        mm_sdk = ()
         try:
-            response_for_training(code, message, logger, is_success, usecase_name, ps_db_obj, mm_sdk)
+            response_for_training(code, message, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk)
             assert False
+        except APIException as err:
+            assert err.code == status.HTTP_500_INTERNAL_SERVER_ERROR
         except Exception:
-            assert True
+            assert False
     
-    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version',return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
-    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version',return_value=True)
-    @patch('trainingmgr.common.trainingmgr_util.get_metrics',return_value="PRESENT")
-    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name',return_value=1)  
-    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version')
-    def test_negative_response_for_training_2(self,mock1,mock2, mock3, mock4, mock5):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
+    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version', return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
+    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version', return_value=True)
+    @patch('trainingmgr.common.trainingmgr_util.get_metrics', return_value="PRESENT")
+    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name', return_value=1)
+    @patch('trainingmgr.common.trainingmgr_util.requests.post', return_value=fs_content_type_error_result)
+    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version', return_value=True)
+    def test_response_for_training_fail_res_content_type(self, mock1, mock2, mock3, mock4, mock5, mock6):
+        code = status.HTTP_200_OK
+        message = "Pipeline notification success."
         logger = trainingmgr_main.LOGGER
         is_success = True
-        usecase_name = "usecase7"
+        trainingjob_name = "usecase7"
         ps_db_obj = ()
         mm_sdk = ()
         try:
-            response_for_training(code, message, logger, is_success, usecase_name, ps_db_obj, mm_sdk)
+            response_for_training(code, message, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk)
             assert False
+        except APIException as err:
+            assert "Failed to notify the subscribed url " + trainingjob_name in err.message
         except Exception:
-            assert True
+            assert False
 
-    def test_negative_response_for_training_3(self):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
+    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version', return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
+    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version', return_value=True)
+    @patch('trainingmgr.common.trainingmgr_util.get_metrics', return_value="PRESENT")
+    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name', return_value=1)
+    @patch('trainingmgr.common.trainingmgr_util.requests.post', return_value=fs_status_code_error_result)
+    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version', return_value=True)
+    def test_response_for_training_fail_res_status_code(self, mock1, mock2, mock3, mock4, mock5, mock6):
+        code = status.HTTP_200_OK
+        message = "Pipeline notification success."
         logger = trainingmgr_main.LOGGER
         is_success = True
-        usecase_name = "usecase7"
+        trainingjob_name = "usecase7"
         ps_db_obj = ()
         mm_sdk = ()
         try:
-            response_for_training(code, message, logger, is_success, usecase_name, ps_db_obj, mm_sdk)
+            response_for_training(code, message, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk)
             assert False
+        except APIException as err:
+            assert "Failed to notify the subscribed url " + trainingjob_name in err.message
         except Exception:
-            assert True
+            assert False
     
-    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version',return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
-    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version',return_value=True)
-    def test_negative_response_for_training_4(self,mock1,mock2):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
+    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version', return_value=None)
+    def test_response_for_training_none_get_field_by_latest_version(self, mock1):
+        code_success = status.HTTP_200_OK
+        code_fail = status.HTTP_500_INTERNAL_SERVER_ERROR
+        message_success = "Pipeline notification success."
+        message_fail = "Pipeline not successful for "
         logger = trainingmgr_main.LOGGER
         is_success = True
-        usecase_name = "usecase7"
+        is_fail = False
+        trainingjob_name = "usecase7"
+        ps_db_obj = ()
+        mm_sdk = ()
+        result = response_for_training(code_success, message_success, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk)
+        assert message_success == result[0]['result']
+        result = response_for_training(code_fail, message_fail, logger, is_fail, trainingjob_name, ps_db_obj, mm_sdk)
+        assert message_fail == result[0]['Exception']
+
+    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version', side_effect = Exception)
+    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version', return_value=True)
+    def test_response_for_training_fail_get_field_by_latest_version(self, mock1, mock2):
+        code = status.HTTP_200_OK
+        message = "Pipeline notification success."
+        logger = trainingmgr_main.LOGGER
+        is_success = True
+        trainingjob_name = "usecase7"
         ps_db_obj = ()
         mm_sdk = ()
         try:
-            response_for_training(code, message, logger, is_success, usecase_name, ps_db_obj, mm_sdk)
+            response_for_training(code, message, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk)
+            assert False
+        except APIException as err:
+            assert err.code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        except Exception:
+            assert False
+
+    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version', return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
+    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name', side_effect = Exception)
+    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version', return_value=True)
+    def test_response_for_training_fail_get_latest_version_trainingjob_name(self, mock1, mock2, mock3):
+        code = status.HTTP_200_OK
+        message = "Pipeline notification success."
+        logger = trainingmgr_main.LOGGER
+        is_success = True
+        trainingjob_name = "usecase7"
+        ps_db_obj = ()
+        mm_sdk = ()
+        try:
+            response_for_training(code, message, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk)
+            assert False
+        except APIException as err:
+            assert err.code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        except Exception:
+            assert False
+
+    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version', return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
+    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name', return_value=1)
+    @patch('trainingmgr.common.trainingmgr_util.get_metrics', side_effect = Exception)
+    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version', return_value=True)
+    def test_response_for_training_fail_get_metrics(self, mock1, mock2, mock3, mock4):
+        code = status.HTTP_200_OK
+        message = "Pipeline notification success."
+        logger = trainingmgr_main.LOGGER
+        is_success = True
+        trainingjob_name = "usecase7"
+        ps_db_obj = ()
+        mm_sdk = ()
+        try:
+            response_for_training(code, message, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk)
+            assert False
+        except APIException as err:
+            assert err.code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        except Exception:
+            assert False
+
+    #TODO It needs to check DBException instead of APIException is correct.
+    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version', return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
+    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name', return_value=1)
+    @patch('trainingmgr.common.trainingmgr_util.get_metrics', return_value="PRESENT")
+    @patch('trainingmgr.common.trainingmgr_util.requests.post', return_value=fs_result)
+    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version', side_effect = Exception)
+    def test_response_for_training_fail_change_in_progress_to_failed_by_latest_version(self, mock1, mock2, mock3, mock4, mock5):
+        code = status.HTTP_200_OK
+        message = "Pipeline notification success."
+        logger = trainingmgr_main.LOGGER
+        is_success = True
+        trainingjob_name = "usecase7"
+        ps_db_obj = ()
+        mm_sdk = ()
+        try:
+            response_for_training(code, message, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk)
             assert False
         except Exception:
             assert True
-    
-    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version',return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
-    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version',return_value=True)
-    @patch('trainingmgr.common.trainingmgr_util.get_metrics',return_value="PRESENT")
-    def test_negative_response_for_training_5(self,mock1,mock2,mock3):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
-        logger = trainingmgr_main.LOGGER
-        is_success = True
-        usecase_name = "usecase7"
-        ps_db_obj = ()
-        mm_sdk = ()
-        try:
-            response_for_training(code, message, logger, is_success, usecase_name, ps_db_obj, mm_sdk)
-            assert False
-        except Exception:
-            assert True
-    
-    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version',return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
-    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version',return_value=True)
-    @patch('trainingmgr.common.trainingmgr_util.get_metrics',return_value="PRESENT")
-    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name',return_value=1)  
-    def test_negative_response_for_training_6(self,mock1,mock2,mock3,mock4):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
-        logger = trainingmgr_main.LOGGER
-        is_success = True
-        usecase_name = "usecase7"
-        ps_db_obj = ()
-        mm_sdk = ()
-        try:
-            response_for_training(code, message, logger, is_success, usecase_name, ps_db_obj, mm_sdk)
-            assert False
-        except Exception:
-            assert True
-    
-    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version',return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
-    def test_negative_response_for_training_7(self,mock1):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
-        logger = trainingmgr_main.LOGGER
-        is_success = True
-        usecase_name = "usecase7"
-        ps_db_obj = ()
-        mm_sdk = ()
-        try:
-            response_for_training(code, message, logger, is_success, usecase_name, ps_db_obj, mm_sdk)
-            assert False
-        except Exception:
-            assert True
-    
-    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version',return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
-    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version',return_value=True)
-    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name',return_value=1)
-    def test_negative_response_for_training_8(self,mock1,mock2,mock3):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
-        logger = trainingmgr_main.LOGGER
-        is_success = True
-        usecase_name = "usecase7"
-        ps_db_obj = ()
-        mm_sdk = ()
-        try:
-            response_for_training(code, message, logger, is_success, usecase_name, ps_db_obj, mm_sdk)
-            assert False
-        except Exception:
-            assert True
-     
-    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version')
-    def test_negative_response_for_training_9(self,mock1):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
-        logger = trainingmgr_main.LOGGER
-        is_success = True
-        usecase_name = "usecase7"
-        ps_db_obj = ()
-        mm_sdk = ()
-        try:
-            response_for_training(code, message, logger, is_success, usecase_name, ps_db_obj, mm_sdk)
-            assert False
-        except Exception:
-            assert True
-    
-    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version',return_value=True)
-    def test_negative_response_for_training_10(self,mock1):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
-        logger = trainingmgr_main.LOGGER
-        is_success = True
-        usecase_name = "usecalse7"
-        ps_db_obj = ()
-        mm_sdk = ()
-        try:
-            response_for_training(code, message, logger, is_success, usecase_name, ps_db_obj, mm_sdk)
-            assert False
-        except Exception:
-            assert True
-    
-    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version',return_value=True)
-    @patch('trainingmgr.common.trainingmgr_util.get_metrics',return_value="PRESENT")
-    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name',return_value=1)  
-    @patch('trainingmgr.common.trainingmgr_util.requests.post',return_value=fs_result)
-    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version')
-    def test_negative_response_for_training_11(self,mock1,mock2,mock3,mock4,mock5):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
-        logger = trainingmgr_main.LOGGER
-        is_success = True
-        usecase_name = "usecase7"
-        ps_db_obj = ()
-        mm_sdk = ()
-        try:
-             response_for_training(code, message, logger, is_success, usecase_name, ps_db_obj, mm_sdk)
-             assert False
-        except Exception:
-             assert True
-
-    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version',return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
-    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version',return_value=True)
-    @patch('trainingmgr.common.trainingmgr_util.get_metrics',return_value="PRESENT")
-    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name',return_value=1)  
-    @patch('trainingmgr.common.trainingmgr_util.requests.post',return_value=fs_result)
-    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version')
-    def test_negative_response_for_training_12(self,mock1,mock2,mock3,mock4,mock5,mock6):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
-        logger = trainingmgr_main.LOGGER
-        is_success = True
-        usecase_name = "usecase7"
-        ps_db_obj = ()
-        mm_sdk = ()
-        try:
-             assert False
-        except Exception:
-             assert True
-
-class Test_response_for_training_1:
-    fs_result = Response()
-    fs_result.code = "expired"
-    fs_result.error_type = "expired"
-    fs_result.status_code = status.HTTP_200_OK
-    fs_result.headers={'content-type': 'application/jsn'}
-    fs_result._content={'Accept-Charset': 'UTF-8'}
-
-    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version',return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
-    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version',return_value=True)
-    @patch('trainingmgr.common.trainingmgr_util.get_metrics',return_value="PRESENT")
-    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name',return_value=1)  
-    @patch('trainingmgr.common.trainingmgr_util.requests.post',return_value=fs_result)
-    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version')
-    def test_response_for_training_1(self,mock1,mock2, mock3, mock4, mock5, mock6):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
-        logger = trainingmgr_main.LOGGER
-        is_success = True
-        usecase_name = "usecase7"
-        ps_db_obj = ()
-        mm_sdk = ()
-        try:
-             response_for_training(code, message, logger, is_success, usecase_name, ps_db_obj, mm_sdk)
-             assert False
-        except Exception:
-             assert True
-
-class Test_response_for_training_2:
-    fs_result = Response()
-    fs_result.code = "expired"
-    fs_result.error_type = "expired"
-    fs_result.status_code = status.HTTP_404_NOT_FOUND
-    fs_result.headers={'content-type': 'application/json'}
-    fs_result._content={'Accept-Charset': 'UTF-8'}
-
-    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version',return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
-    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version',return_value=True)
-    @patch('trainingmgr.common.trainingmgr_util.get_metrics',return_value="PRESENT")
-    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name',return_value=1)  
-    @patch('trainingmgr.common.trainingmgr_util.requests.post',return_value=fs_result)
-    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version')
-    def test_response_for_training_2(self,mock1,mock2, mock3, mock4, mock5, mock6):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
-        logger = trainingmgr_main.LOGGER
-        is_success = True
-        usecase_name = "usecase7"
-        ps_db_obj = ()
-        mm_sdk = ()
-        try:
-             response_for_training(code, message, logger, is_success, usecase_name, ps_db_obj, mm_sdk)
-             assert False
-        except Exception:
-             assert True
-
-class Test_response_for_training_3:
-    fs_result = Response()
-    fs_result.code = "expired"
-    fs_result.error_type = "expired"
-    fs_result.status_code = status.HTTP_200_OK
-    fs_result.headers={'content-type': 'application/jsn'}
-    fs_result._content={'Accept-Charset': 'UTF-8'}
-
-    @patch('trainingmgr.common.trainingmgr_util.get_field_by_latest_version',return_value=[['www.google.com','h1','h2'], ['www.google.com','h1','h2'], ['www.google.com','h1','h2']])
-    @patch('trainingmgr.common.trainingmgr_util.change_field_of_latest_version',return_value=True)
-    @patch('trainingmgr.common.trainingmgr_util.get_metrics',return_value="PRESENT")
-    @patch('trainingmgr.common.trainingmgr_util.get_latest_version_trainingjob_name',return_value=1)  
-    @patch('trainingmgr.common.trainingmgr_util.requests.post',return_value=fs_result)
-    @patch('trainingmgr.common.trainingmgr_util.change_in_progress_to_failed_by_latest_version')
-    @patch('requests.post',return_result=Exception(status.HTTP_500_INTERNAL_SERVER_ERROR))
-    def test_negative_response_for_training_3_1(self,mock1,mock2, mock3, mock4, mock5, mock6, mock7):
-        code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = "Run status is not scheduled for "
-        logger = trainingmgr_main.LOGGER
-        is_success = True
-        usecase_name = "usecase7"
-        ps_db_obj = ()
-        mm_sdk = ()
-        try:
-             response_for_training(code, message, logger, is_success, usecase_name, ps_db_obj, mm_sdk)
-             assert False
-        except Exception:
-             assert True
 
 class Test_check_key_in_dictionary:
     def test_check_key_in_dictionary(self):
@@ -624,6 +505,7 @@ class Test_validate_trainingjob_name:
         ps_db_obj = ()
         try:
             validate_trainingjob_name(trainingjob_name,ps_db_obj)
+            assert False
         except DBException as err:
             assert 'Could not get info from db for ' + trainingjob_name in str(err)
     
@@ -634,6 +516,7 @@ class Test_validate_trainingjob_name:
         ps_db_obj = ()
         try:
             validate_trainingjob_name(short_name,ps_db_obj)
+            assert False
         except TMException as err:
             assert str(err) == "The name of training job is invalid."
         try:
