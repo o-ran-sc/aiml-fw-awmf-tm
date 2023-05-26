@@ -16,6 +16,57 @@
       "message": "The changes looks fine",
       "revId": "6ba85016bc5758a81980a336145eea097ef78ca4",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5103619e_60584737",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2023-05-26T07:16:41Z",
+      "side": 1,
+      "message": "run-sonar",
+      "revId": "6ba85016bc5758a81980a336145eea097ef78ca4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d0564097_71a7358b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2023-05-26T07:16:41Z",
+      "side": 1,
+      "message": "run-sonar",
+      "revId": "6ba85016bc5758a81980a336145eea097ef78ca4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eedf8109_055cf059",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2023-05-26T07:16:41Z",
+      "side": 1,
+      "message": "run-sonar",
+      "revId": "6ba85016bc5758a81980a336145eea097ef78ca4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ],
   "submitRequirementResults": [
