@@ -16,6 +16,24 @@
       "message": "What about implementing the `allow_control_access_origin` variable in the TrainingMgrConfig class? \nPlease refer to the [link](https://gerrit.o-ran-sc.org/r/gitweb?p\u003daiml-fw/awmf/tm.git;a\u003dblob;f\u003dtrainingmgr/common/trainingmgr_config.py;h\u003d4b989582e14fa689db3d472ab656ac7749f11447;hb\u003dHEAD#l32).",
       "revId": "919a197afacca9aa21a24436a173d6e31b26a31a",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "24e1dca3_4579f8ca",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2023-05-31T09:30:22Z",
+      "side": 1,
+      "message": "the TrainingMgrConfig is loaded in the main and can\u0027t be accessed in the global.",
+      "parentUuid": "146667ee_0ab2f768",
+      "revId": "919a197afacca9aa21a24436a173d6e31b26a31a",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
