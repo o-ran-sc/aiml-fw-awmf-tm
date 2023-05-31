@@ -99,6 +99,11 @@ class Test_trainingmgr_config:
         result = self.TRAININGMGR_CONFIG_OBJ.ps_port
         assert result == expected_data
 
+    def test_allow_access_allowed_origin(self):
+        expected_data = "http://localhost:32005"
+        result = self.TRAININGMGR_CONFIG_OBJ.allow_control_access_origin
+        assert result == expected_data
+
     def test_is_config_loaded_properly(self):
         expected_data = True
         result = TrainingMgrConfig.is_config_loaded_properly(self.TRAININGMGR_CONFIG_OBJ)

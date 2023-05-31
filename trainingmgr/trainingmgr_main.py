@@ -30,7 +30,7 @@ import time
 from flask import Flask, request, send_file
 from flask_api import status
 import requests
-from flask_cors import cross_origin
+from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from modelmetricsdk.model_metrics_sdk import ModelMetricsSdk
 from trainingmgr.common.trainingmgr_operations import data_extraction_start, training_start, data_extraction_status, create_dme_filtered_data_job, delete_dme_filtered_data_job
@@ -78,7 +78,6 @@ def error(err):
 
 
 @APP.route('/trainingjobs/<trainingjob_name>/<version>', methods=['GET'])
-@cross_origin()
 def get_trainingjob_by_name_version(trainingjob_name, version):
     """
     Rest endpoint to fetch training job details by name and version
@@ -189,7 +188,6 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                                         mimetype=MIMETYPE_JSON)
 
 @APP.route('/trainingjobs/<trainingjob_name>/<version>/steps_state', methods=['GET']) # Handled in GUI
-@cross_origin()
 def get_steps_state(trainingjob_name, version):
     """
     Function handling rest end points to get steps_state information for
@@ -282,7 +280,6 @@ def get_model(trainingjob_name, version):
 
 
 @APP.route('/trainingjobs/<trainingjob_name>/training', methods=['POST']) # Handled in GUI
-@cross_origin()
 def training(trainingjob_name):
     """
     Rest end point to start training job.
@@ -536,7 +533,6 @@ def pipeline_notification():
 
 
 @APP.route('/trainingjobs/latest', methods=['GET'])
-@cross_origin()
 def trainingjobs_operations():
     """
     Rest endpoint to fetch overall status, latest version of all existing training jobs
@@ -585,7 +581,6 @@ def trainingjobs_operations():
                         mimetype=MIMETYPE_JSON)
 
 @APP.route("/pipelines/<pipe_name>/upload", methods=['POST'])
-@cross_origin()
 def upload_pipeline(pipe_name):
     """
     Function handling rest endpoint to upload pipeline.
@@ -684,7 +679,6 @@ def upload_pipeline(pipe_name):
 
 
 @APP.route("/pipelines/<pipeline_name>/versions", methods=['GET'])
-@cross_origin()
 def get_versions_for_pipeline(pipeline_name):
     """
     Function handling rest endpoint to get versions of given pipeline name.
@@ -739,7 +733,6 @@ def get_versions_for_pipeline(pipeline_name):
             mimetype=MIMETYPE_JSON)
  
 @APP.route('/pipelines', methods=['GET'])
-@cross_origin()
 def get_all_pipeline_names():
     """
     Function handling rest endpoint to get all pipeline names.
@@ -773,7 +766,6 @@ def get_all_pipeline_names():
     return APP.response_class(response=json.dumps(api_response),status=response_code,mimetype=MIMETYPE_JSON)
 
 @APP.route('/experiments', methods=['GET'])
-@cross_origin()
 def get_all_experiment_names():
     """
     Function handling rest endpoint to get all experiment names.
@@ -823,7 +815,6 @@ def get_all_experiment_names():
 
 
 @APP.route('/trainingjobs/<trainingjob_name>', methods=['POST', 'PUT']) # Handled in GUI
-@cross_origin()
 def trainingjob_operations(trainingjob_name):
     """
     Rest endpoind to create or update trainingjob
@@ -937,7 +928,6 @@ def trainingjob_operations(trainingjob_name):
                     mimetype=MIMETYPE_JSON)
 
 @APP.route('/trainingjobs/retraining', methods=['POST'])
-@cross_origin()
 def retraining():
     """
     Function handling rest endpoint to retrain trainingjobs in request json. trainingjob's
@@ -1065,7 +1055,6 @@ def retraining():
         mimetype='application/json')
 
 @APP.route('/trainingjobs', methods=['DELETE'])
-@cross_origin()
 def delete_list_of_trainingjob_version():
     """
     Function handling rest endpoint to delete latest version of trainingjob_name trainingjobs which is
@@ -1263,7 +1252,6 @@ def get_metadata(trainingjob_name):
                                         mimetype=MIMETYPE_JSON)
 
 @APP.route('/featureGroup', methods=['POST'])
-@cross_origin()
 def create_feature_group():
     """
     Rest endpoint to create feature group
@@ -1354,7 +1342,6 @@ def create_feature_group():
                                         mimetype=MIMETYPE_JSON)
 
 @APP.route('/featureGroup', methods=['GET'])
-@cross_origin()
 def get_feature_group():
     """
     Rest endpoint to fetch all the feature groups
@@ -1403,7 +1390,6 @@ def get_feature_group():
                         mimetype=MIMETYPE_JSON)
 
 @APP.route('/featureGroup/<featuregroup_name>', methods=['GET'])
-@cross_origin()
 def get_feature_group_by_name(featuregroup_name):
     """
     Rest endpoint to fetch a feature group
@@ -1483,7 +1469,6 @@ def get_feature_group_by_name(featuregroup_name):
                         mimetype=MIMETYPE_JSON) 
 
 @APP.route('/featureGroup', methods=['DELETE'])
-@cross_origin()
 def delete_list_of_feature_group():
     """
     Function handling rest endpoint to delete featureGroup which is
@@ -1645,6 +1630,8 @@ if __name__ == "__main__":
         DATAEXTRACTION_JOBS_CACHE = get_data_extraction_in_progress_trainingjobs(PS_DB_OBJ)
         threading.Thread(target=async_feature_engineering_status, daemon=True).start()
         MM_SDK = ModelMetricsSdk()
+        list_allow_control_access_origin = TRAININGMGR_CONFIG_OBJ.allow_control_access_origin.split(',')
+        CORS(APP, resources={r"/*": {"origins": list_allow_control_access_origin}})
         LOGGER.debug("Starting AIML-WF training manager .....")
         APP.run(debug=True, port=int(TRAININGMGR_CONFIG_OBJ.my_port), host='0.0.0.0')
     except TMException as err:

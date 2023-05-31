@@ -46,6 +46,7 @@ class TrainingMgrConfig:
         self.__ps_password = getenv('PS_PASSWORD').rstrip()
         self.__ps_ip = getenv('PS_IP').rstrip()
         self.__ps_port = getenv('PS_PORT').rstrip()
+        self.__allow_control_access_origin = getenv('ACCESS_CONTROL_ALLOW_ORIGIN').rstrip()
 
         self.tmgr_logger = TMLogger("common/conf_log.yaml")
         self.__logger = self.tmgr_logger.logger
@@ -182,6 +183,19 @@ class TrainingMgrConfig:
         """
         return self.__ps_port
 
+    @property
+    def allow_control_access_origin(self):
+        """
+        Function for getting allow_control_access_origin
+
+        Args: None
+
+        Returns:
+            string allow_control_access_origin
+        
+        """
+        return self.__allow_control_access_origin
+
     def is_config_loaded_properly(self):
         """
         This function checks where all environment variable got value or not.
@@ -193,7 +207,7 @@ class TrainingMgrConfig:
         for var in [self.__kf_adapter_ip, self.__kf_adapter_port,
                     self.__data_extraction_ip, self.__data_extraction_port,
                     self.__my_port, self.__ps_ip, self.__ps_port, self.__ps_user,
-                    self.__ps_password, self.__my_ip, self.__logger]:
+                    self.__ps_password, self.__my_ip, self.__allow_control_access_origin, self.__logger]:
             if var is None:
                 all_present = False
         return all_present
