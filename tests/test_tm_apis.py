@@ -28,6 +28,7 @@ import sys
 import datetime
 from flask_api import status
 from dotenv import load_dotenv
+load_dotenv('tests/test.env')
 from trainingmgr.constants.states import States
 from threading import Lock
 from trainingmgr import trainingmgr_main 
@@ -443,7 +444,6 @@ class Test_get_versions_for_pipeline:
     def setup_method(self,mock1,mock2):
         self.client = trainingmgr_main.APP.test_client(self)
         self.logger = trainingmgr_main.LOGGER
-        load_dotenv('tests/test.env')
         self.TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()   
 
     the_response = Response()
