@@ -16,6 +16,23 @@
       "message": "changes looks good to me!",
       "revId": "48cfd9d0038dcfcfa6237e304779794b16051839",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a4e908a3_a6461f86",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001949
+      },
+      "writtenOn": "2023-06-06T10:10:36Z",
+      "side": 1,
+      "message": "run-sonar",
+      "revId": "48cfd9d0038dcfcfa6237e304779794b16051839",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ],
   "submitRequirementResults": [
