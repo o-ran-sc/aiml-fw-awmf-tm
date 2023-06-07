@@ -59,7 +59,7 @@ class Test_upload_pipeline:
 
         trainingmgr_main.LOGGER.debug(response.data)
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-        assert expected_data in response.json.keys() 
+        assert expected_data in response.json.keys()
 
 
 class Test_data_extraction_notification:
@@ -97,7 +97,7 @@ class Test_data_extraction_notification:
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)
         assert response.status_code == status.HTTP_200_OK
-        
+             
 class Test_trainingjobs_operations:
     def setup_method(self):
         self.client = trainingmgr_main.APP.test_client(self)
@@ -187,7 +187,7 @@ class Test_pipeline_notification:
     def test_get_steps_state_2(self,mock1):
         trainingmgr_main.LOGGER.debug("******* test_get_steps_state get *******")
         expected_data = "test_data1"
-        response = self.client.get("/trainingjobs/<trainingjob_name>/<version>/steps_state".format("usecase1"),
+        response = self.client.get("/trainingjobs/{trainingjobname}/{version}/steps_state".format(trainingjobname="usecase1", version="1"),
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)    
         assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
@@ -197,7 +197,7 @@ class Test_pipeline_notification:
     @patch('trainingmgr.trainingmgr_main.get_field_of_given_version', return_value = db_result5)
     def test_negative_get_steps_state_2(self,mock1):
         expected_data = "Exception"
-        response = self.client.get("/trainingjobs/<trainingjob_name>/<version>/steps_state".format("usecase1"),
+        response = self.client.get("/trainingjobs/{trainingjobname}/{version}/steps_state".format(trainingjobname="usecase1", version="1"),
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)    
         assert response.status_code == status.HTTP_404_NOT_FOUND, "Return status code NOT equal"
@@ -234,6 +234,19 @@ class Test_get_trainingjob_by_name_version:
         trainingmgr_main.LOGGER.debug(response.data)
         assert response.content_type == "application/json", "not equal content type"
         assert response.status_code == 404, "not equal code"
+    
+    def test_negative_get_trainingjob_by_name_version2(self):
+        usecase_name = "usecase7*"
+        version = "1"
+        response = self.client.get("/trainingjobs/{}/{}".format(usecase_name, version))
+        print(response.data)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST, "not equal status code"
+        assert response.data == b'{"Exception":"The trainingjob_name or version in not correct"}\n'
+        usecase_name="usecase7"
+        version="a"
+        response = self.client.get("/trainingjobs/{}/{}".format(usecase_name, version))
+        assert response.status_code == status.HTTP_400_BAD_REQUEST, "not equal status code"
+        assert response.data == b'{"Exception":"The trainingjob_name or version in not correct"}\n'
 
 class Test_unpload_pipeline:
     def setup_method(self):
@@ -286,6 +299,18 @@ class Test_get_steps_state:
           response = self.client.get("/trainingjobs/{}/{}/steps_state".format(usecase_name, version))
           expected_data = b'data_extracted'
           assert response.status_code == 500, "not equal code"
+        
+      def test_negative_get_steps_state_3(self):
+        usecase_name = "usecase7*"
+        version = "1"
+        response = self.client.get("/trainingjobs/{}/{}/steps_state".format(usecase_name, version))
+        assert response.status_code == status.HTTP_400_BAD_REQUEST, "not equal status code"
+        assert response.data == b'{"Exception":"The trainingjob_name or version in not correct"}\n'
+        usecase_name="usecase7"
+        version="a"
+        response = self.client.get("/trainingjobs/{}/{}/steps_state".format(usecase_name, version))
+        assert response.status_code == status.HTTP_400_BAD_REQUEST, "not equal status code"
+        assert response.data == b'{"Exception":"The trainingjob_name or version in not correct"}\n'
           
 class Test_training_main:
     def setup_method(self):
@@ -314,7 +339,7 @@ class Test_training_main:
                     "bucket":"UEData"
                     }
         expected_data = b'{"result": "Information stored in database."}'
-        response = self.client.post("/trainingjobs/<trainingjob_name>".format("usecase1"),
+        response = self.client.post("/trainingjobs/{}".format("usecase1"),
                                     data=json.dumps(trainingjob_req),
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)    
@@ -352,7 +377,7 @@ class Test_training_main:
                     }
             
         expected_data = 'Information updated in database'
-        response = self.client.put("/trainingjobs/<trainingjob_name>".format("usecase1"),
+        response = self.client.put("/trainingjobs/{}".format("usecase1"),
                                     data=json.dumps(trainingjob_req),
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)        
@@ -380,7 +405,7 @@ class Test_training_main:
                     "bucket":"UEData"
                     }
         expected_data = 'is already present in database'
-        response = self.client.post("/trainingjobs/<trainingjob_name>".format("usecase1"),
+        response = self.client.post("/trainingjobs/{}".format("usecase1"),
                                     data=json.dumps(trainingjob_req),
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)           
@@ -408,7 +433,7 @@ class Test_training_main:
     def test_training(self,mock1,mock2,mock3,mock4):
         trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
         expected_data = 'Data Pipeline Execution Completed"'
-        response = self.client.post("/trainingjobs/<trainingjob_name>/training".format("usecase1"),
+        response = self.client.post("/trainingjobs/{}/training".format("usecase1"),
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)    
         assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
@@ -433,11 +458,21 @@ class Test_training_main:
     def test_training_negative_de_failed(self,mock1,mock2,mock3,mock4):
         trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
         expected_data = 'Data Pipeline Execution Failed'
-        response = self.client.post("/trainingjobs/<trainingjob_name>/training".format("usecase1"),
+        response = self.client.post("/trainingjobs/{}/training".format("usecase1"),
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR, "Return status code NOT equal" 
         assert expected_data in str(response.data) 
+    
+    def test_negative_training(self):
+        trainingjob_name="usecase*"
+        response=self.client.post('/trainingjobs/{}'.format(trainingjob_name), content_type="application/json")
+        assert response.status_code==status.HTTP_400_BAD_REQUEST
+        assert response.data == b'{"Exception":"The trainingjob_name is not correct"}\n'
+        response=self.client.post('/trainingjobs/{}/training'.format(trainingjob_name), content_type="application/json")
+        assert response.status_code==status.HTTP_400_BAD_REQUEST
+        assert response.data == b'{"Exception":"The trainingjob_name is not correct"}\n'
+
 
 class Test_get_versions_for_pipeline:
     @patch('trainingmgr.common.trainingmgr_config.TMLogger', return_value = TMLogger("tests/common/conf_log.yaml"))
@@ -620,6 +655,13 @@ class Test_get_metadata:
         assert response.content_type == "application/json", "not equal content type"
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR, "Should have thrown the exception "
 
+    def test_negative_get_metadata_2(self):
+        trainingjob_name="usecase*"
+        response=self.client.get('/trainingjobs/metadata/{}'.format(trainingjob_name), content_type="application/json")
+        print(response.data)
+        assert response.status_code==status.HTTP_400_BAD_REQUEST
+        assert response.data == b'{"Exception":"The trainingjob_name is not correct"}\n'
+
     class Test_get_model:
          def setup_method(self):
             self.client = trainingmgr_main.APP.test_client(self)
@@ -629,10 +671,23 @@ class Test_get_metadata:
          @patch('trainingmgr.trainingmgr_main.send_file', return_value = 'File')
          def test_negative_get_model(self,mock1):
             trainingjob_name = "usecase777"
-            version = 2
+            version = "2"
             result = 'File'
             response = trainingmgr_main.get_model(trainingjob_name,version)
             assert response[1] == 500, "The function get_model Failed" 
+        
+         def test_negative_get_model(self):
+            usecase_name = "usecase7*"
+            version = "1"
+            response = self.client.get("/model/{}/{}/Model.zip".format(usecase_name, version))
+            assert response.status_code == status.HTTP_400_BAD_REQUEST, "not equal status code"
+            assert response.data == b'{"Exception":"The trainingjob_name or version in not correct"}\n'
+            usecase_name="usecase7"
+            version="a"
+            response = self.client.get("/model/{}/{}/Model.zip".format(usecase_name, version))
+            assert response.status_code == status.HTTP_400_BAD_REQUEST, "not equal status code"
+            assert response.data == b'{"Exception":"The trainingjob_name or version in not correct"}\n'
+
 
 class Test_get_metadata_1:
     def setup_method(self):
@@ -674,7 +729,7 @@ class Test_get_metadata_1:
     def test_training_negative_de_notfound(self,mock1):
         trainingmgr_main.LOGGER.debug("******* test_training_404_NotFound *******")
         expected_data = ''
-        response = self.client.post("/trainingjobs/<trainingjob_name>/training".format("usecase1"),
+        response = self.client.post("/trainingjobs/{}/training".format("usecase1"),
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)
         assert response.status_code == status.HTTP_404_NOT_FOUND, "Return status code NOT equal"
@@ -983,6 +1038,12 @@ class Test_get_feature_group_by_name:
         response=self.client.get('/featureGroup/{}'.format(fg_name))
         assert response.status_code == 500 , "status code is not equal"
         assert response.data == expected_data
+    
+    def test_negative_get_feature_group_name_3(self):
+        featuregroup_name="usecase*"
+        response=self.client.get('/featureGroup/<featuregroup_name>'.format(featuregroup_name), content_type="application/json")
+        assert response.status_code==status.HTTP_400_BAD_REQUEST
+        assert response.data == b'{"Exception":"The trainingjob_name is not correct"}\n'
 
 class Test_delete_list_of_feature_group:
     @patch('trainingmgr.common.trainingmgr_config.TMLogger', return_value = TMLogger("tests/common/conf_log.yaml"))
