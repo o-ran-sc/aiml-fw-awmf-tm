@@ -39,7 +39,7 @@ from trainingmgr.common.trainingmgr_util import get_one_word_status, check_train
     check_key_in_dictionary, get_one_key, \
     response_for_training, get_metrics, \
     handle_async_feature_engineering_status_exception_case, \
-    validate_trainingjob_name, get_all_pipeline_names_svc, check_feature_group_data
+    validate_trainingjob_name, get_all_pipeline_names_svc, check_feature_group_data, check_trainingjob_name_and_version, check_trainingjob_name_or_featuregroup_name
 from trainingmgr.common.exceptions_utls import APIException,TMException
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
@@ -141,8 +141,13 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
         all exception are provided with exception message and HTTP status code.
 
     """
+    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    response_data = {}
+    if not check_trainingjob_name_and_version(trainingjob_name, version):
+        return {"Exception":"The trainingjob_name or version is not correct"}, status.HTTP_400_BAD_REQUEST
+    
     LOGGER.debug("Request to fetch trainingjob by name and version(trainingjob:" + \
-                 trainingjob_name + " ,version:" + version + ")")
+                trainingjob_name + " ,version:" + version + ")")
     response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     response_data = {}
     try:
@@ -230,26 +235,28 @@ def get_steps_state(trainingjob_name, version):
     Exceptions:
         all exception are provided with exception message and HTTP status code.
     """
-    LOGGER.debug("Request to get steps_state for (trainingjob:" + \
-                 trainingjob_name + " and version: " + version + ")")
-    reponse_data = {}
     response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    response_data = {}
+    if not check_trainingjob_name_and_version(trainingjob_name, version):
+        return {"Exception":"The trainingjob_name or version is not correct"}, status.HTTP_400_BAD_REQUEST
 
+    LOGGER.debug("Request to get steps_state for (trainingjob:" + \
+                trainingjob_name + " and version: " + version + ")")
     try:
         results = get_field_of_given_version(trainingjob_name, version, PS_DB_OBJ, "steps_state")
         LOGGER.debug("get_field_of_given_version:" + str(results))
         if results:
-            reponse_data = results[0][0]
+            response_data = results[0][0]
             response_code = status.HTTP_200_OK
         else:
-             
+            
             response_code = status.HTTP_404_NOT_FOUND
             raise TMException("Not found given trainingjob in database")
     except Exception as err:
         LOGGER.error(str(err))
-        reponse_data = {"Exception": str(err)}
+        response_data = {"Exception": str(err)}
 
-    return APP.response_class(response=reponse_data,
+    return APP.response_class(response=response_data,
                                       status=response_code,
                                       mimetype=MIMETYPE_JSON)
 
@@ -273,6 +280,9 @@ def get_model(trainingjob_name, version):
     Exceptions:
         all exception are provided with exception message and HTTP status code.
     """
+    if not check_trainingjob_name_and_version(trainingjob_name, version):
+        return {"Exception":"The trainingjob_name or version is not correct"}, status.HTTP_400_BAD_REQUEST
+
     try:
         return send_file(MM_SDK.get_model_zip(trainingjob_name, version), mimetype='application/zip')
     except Exception:
@@ -305,16 +315,17 @@ def training(trainingjob_name):
     Exceptions:
         all exception are provided with exception message and HTTP status code.
     """
-
-    LOGGER.debug("Request for training trainingjob  %s ", trainingjob_name)
-    response_data = {}
     response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    response_data = {}
+    if not check_trainingjob_name_or_featuregroup_name(trainingjob_name):
+        return {"Exception":"The trainingjob_name is not correct"}, status.HTTP_400_BAD_REQUEST
+    LOGGER.debug("Request for training trainingjob  %s ", trainingjob_name)
     try:
         isDataAvaible = validate_trainingjob_name(trainingjob_name, PS_DB_OBJ)
         if not isDataAvaible:
             response_code = status.HTTP_404_NOT_FOUND
             raise TMException("Given trainingjob name is not present in database" + \
-                           "(trainingjob: " + trainingjob_name + ")") from None
+                        "(trainingjob: " + trainingjob_name + ")") from None
         else:
 
             db_results = get_trainingjob_info_by_name(trainingjob_name, PS_DB_OBJ)
@@ -326,8 +337,8 @@ def training(trainingjob_name):
 
             LOGGER.debug('Starting Data Extraction...')
             de_response = data_extraction_start(TRAININGMGR_CONFIG_OBJ, trainingjob_name,
-                                         feature_list, query_filter, datalake_source,
-                                         _measurement, bucket)
+                                        feature_list, query_filter, datalake_source,
+                                        _measurement, bucket)
             if (de_response.status_code == status.HTTP_200_OK ):
                 LOGGER.debug("Response from data extraction for " + \
                         trainingjob_name + " : " + json.dumps(de_response.json()))
@@ -349,7 +360,7 @@ def training(trainingjob_name):
                     raise TMException(errMsg)
             else:
                 raise TMException("Data extraction doesn't send json type response" + \
-                           "(trainingjob name is " + trainingjob_name + ")") from None
+                        "(trainingjob name is " + trainingjob_name + ")") from None
     except Exception as err:
         response_data =  {"Exception": str(err)}
         LOGGER.debug("Error is training, job name:" + trainingjob_name + str(err))         
@@ -386,10 +397,9 @@ def data_extraction_notification():
     try:
         if not check_key_in_dictionary(["trainingjob_name"], request.json) :
             err_msg = "Trainingjob_name key not available in request"
-            Logger.error(err_msg)
-            err_response_code = status.HTTP_400_BAD_REQUEST
-            raise TMException(err_msg)
- 
+            LOGGER.error(err_msg)
+            return {"Exception":err_msg}, status.HTTP_400_BAD_REQUEST
+            
         trainingjob_name = request.json["trainingjob_name"]
         results = get_trainingjob_info_by_name(trainingjob_name, PS_DB_OBJ)
         arguments = json.loads(results[0][5])['arguments']
@@ -436,6 +446,7 @@ def data_extraction_notification():
         return response_for_training(err_response_code,
                                         err_msg + str(err) + "(trainingjob name is " + trainingjob_name + ")",
                                         LOGGER, False, trainingjob_name, PS_DB_OBJ, MM_SDK)
+
     except Exception as err:
         LOGGER.error("Failed to handle dataExtractionNotification. " + str(err))
         if not change_in_progress_to_failed_by_latest_version(trainingjob_name, PS_DB_OBJ) :
@@ -616,8 +627,8 @@ def upload_pipeline(pipe_name):
         else:
             result_string = "Didn't get file"
             raise ValueError("file not found in request.files")
-        pattern = re.compile(r"[a-zA-Z0-9_]+")
-        if not re.fullmatch(pattern, pipe_name):
+
+        if not check_trainingjob_name_or_featuregroup_name(pipe_name):
             err_msg="the pipeline name is not valid"
             raise TMException(err_msg)
         LOGGER.debug("Uploading received for %s", uploaded_file.filename)
@@ -869,8 +880,11 @@ def trainingjob_operations(trainingjob_name):
     Exceptions:
         All exception are provided with exception message and HTTP status code.
     """
-    api_response = {}
     response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    api_response = {}
+    if not check_trainingjob_name_or_featuregroup_name(trainingjob_name):
+        return {"Exception":"The trainingjob_name is not correct"}, status.HTTP_400_BAD_REQUEST
+    
     LOGGER.debug("Training job create/update request(trainingjob name  %s) ", trainingjob_name )
     try:
         json_data = request.json
@@ -1213,18 +1227,19 @@ def get_metadata(trainingjob_name):
     Exceptions:
         all exception are provided with exception message and HTTP status code.
     """
+    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    api_response = {}
+    if not check_trainingjob_name_or_featuregroup_name(trainingjob_name):
+        return {"Exception":"The trainingjob_name is not correct"}, status.HTTP_400_BAD_REQUEST
 
     LOGGER.debug("Request metadata for trainingjob(name of trainingjob is %s) ", trainingjob_name)
-    api_response = {}
-    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     try:
         results = get_all_versions_info_by_name(trainingjob_name, PS_DB_OBJ)
         if results:
             info_list = []
             for trainingjob_info in results:
                 if (get_one_word_status(json.loads(trainingjob_info[9])) == States.FINISHED.name and
-                        not trainingjob_info[19]):
-           
+                        not trainingjob_info[19]):                   
                     LOGGER.debug("Downloading metric for " +trainingjob_name )
                     data = get_metrics(trainingjob_name, trainingjob_info[11], MM_SDK)
                     url = "http://" + str(TRAININGMGR_CONFIG_OBJ.my_ip) + ":" + \
@@ -1309,8 +1324,7 @@ def create_feature_group():
         # check the data conformance
         LOGGER.debug("the db info is : ", get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name))
 
-        pattern = re.compile(r"[a-zA-Z0-9_]+")
-        if (not re.fullmatch(pattern, feature_group_name) or
+        if (not check_trainingjob_name_or_featuregroup_name(feature_group_name) or
             len(feature_group_name) < 3 or len(feature_group_name) > 63 or
             get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name)):
             api_response = {"Exception": "Failed to create the feature group since feature group not valid or already present"}
@@ -1431,39 +1445,36 @@ def get_feature_group_by_name(featuregroup_name):
     """
     api_response={}
     response_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-    pattern = re.compile(r"[a-zA-Z0-9_]+")
-    if not re.fullmatch(pattern, featuregroup_name):
-        api_response={"Exception": "Invalid featuregroup_name"}
-        response_code=status.HTTP_400_BAD_REQUEST 
-    else:
-        LOGGER.debug("Request for getting a feature group with name = "+ featuregroup_name)
-        try:
-            result= get_feature_group_by_name_db(PS_DB_OBJ, featuregroup_name)
-            feature_group=[]
-            if result:
-                for res in result:
-                    features=res[1].split(",")
-                    dict_data={
-                        "featuregroup_name": res[0],
-                        "features": features,
-                        "datalake": res[2],
-                        "dme": res[3],
-                        "dme_host": res[4],
-                        "dme_port": res[5],
-                        "bucket":res[6],
-                        "token":res[7],
-                        "source_name":res[8],
-                        "db_org":res[9]
-                    }
-                    feature_group.append(dict_data)
-                api_response={"featuregroup":feature_group}
-                response_code=status.HTTP_200_OK
-            else:
-                response_code=status.HTTP_404_NOT_FOUND
-                raise TMException("Failed to fetch feature group info from db")
-        except Exception as err:
-            api_response =   {"Exception": str(err)}
-            LOGGER.error(str(err))
+    if not check_trainingjob_name_or_featuregroup_name(featuregroup_name):
+        return {"Exception":"The trainingjob_name is not correct"}, status.HTTP_400_BAD_REQUEST
+    LOGGER.debug("Request for getting a feature group with name = "+ featuregroup_name)
+    try:
+        result= get_feature_group_by_name_db(PS_DB_OBJ, featuregroup_name)
+        feature_group=[]
+        if result:
+            for res in result:
+                features=res[1].split(",")
+                dict_data={
+                    "featuregroup_name": res[0],
+                    "features": features,
+                    "datalake": res[2],
+                    "dme": res[3],
+                    "dme_host": res[4],
+                    "dme_port": res[5],
+                    "bucket":res[6],
+                    "token":res[7],
+                    "source_name":res[8],
+                    "db_org":res[9]
+                }
+                feature_group.append(dict_data)
+            api_response={"featuregroup":feature_group}
+            response_code=status.HTTP_200_OK
+        else:
+            response_code=status.HTTP_404_NOT_FOUND
+            raise TMException("Failed to fetch feature group info from db")
+    except Exception as err:
+        api_response =   {"Exception": str(err)}
+        LOGGER.error(str(err))
     return APP.response_class(response=json.dumps(api_response),
                         status=response_code,
                         mimetype=MIMETYPE_JSON) 

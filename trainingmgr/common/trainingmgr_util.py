@@ -31,6 +31,7 @@ from trainingmgr.common.exceptions_utls import APIException,TMException,DBExcept
 
 ERROR_TYPE_KF_ADAPTER_JSON = "Kf adapter doesn't sends json type response"
 MIMETYPE_JSON = "application/json"
+PATTERN = re.compile(r"\w+")
 
 def response_for_training(code, message, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk):
     """
@@ -244,8 +245,7 @@ def validate_trainingjob_name(trainingjob_name, ps_db_obj):
     """
     results = None
     isavailable = False
-    pattern = re.compile(r"[a-zA-Z0-9_]+")
-    if (not re.fullmatch(pattern, trainingjob_name) or
+    if (not re.fullmatch(PATTERN, trainingjob_name) or
         len(trainingjob_name) < 3 or len(trainingjob_name) > 63):
         raise TMException("The name of training job is invalid.")
 
@@ -280,3 +280,13 @@ def get_all_pipeline_names_svc(training_config_obj):
         logger.error(str(err))
     logger.debug(pipeline_names)
     return pipeline_names
+
+def check_trainingjob_name_and_version(trainingjob_name, version):
+    if (re.fullmatch(PATTERN, trainingjob_name) and version.isnumeric()):
+        return True
+    return False
+
+def check_trainingjob_name_or_featuregroup_name(name):
+    if re.fullmatch(PATTERN, name):
+        return True
+    return False
