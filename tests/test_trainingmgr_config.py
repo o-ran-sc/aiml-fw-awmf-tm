@@ -104,8 +104,15 @@ class Test_trainingmgr_config:
         result = self.TRAININGMGR_CONFIG_OBJ.allow_control_access_origin
         assert result == expected_data
 
-    def test_is_config_loaded_properly(self):
+    def test_is_config_loaded_properly_return_true(self):
         expected_data = True
         result = TrainingMgrConfig.is_config_loaded_properly(self.TRAININGMGR_CONFIG_OBJ)
         assert result == expected_data
 
+    @patch('trainingmgr.common.trainingmgr_config.TMLogger', return_value = TMLogger("tests/common/conf_log.yaml"))
+    def test_is_config_loaded_properly_return_false(self,mock1):
+        os.environ.pop("KF_ADAPTER_IP")
+        self.TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
+        expected_data = False
+        result = TrainingMgrConfig.is_config_loaded_properly(self.TRAININGMGR_CONFIG_OBJ)
+        assert result == expected_data
