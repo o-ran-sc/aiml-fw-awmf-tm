@@ -317,6 +317,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "98913731_83c27592",
+        "filename": "trainingmgr/common/trainingmgr_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2023-06-09T07:15:00Z",
+      "side": 1,
+      "message": "What about declaring it as the constant variable then?\n`PATTERN \u003d re.compile(r\"\\w+\")`\n\nI don\u0027t like to declare global variables since the value can be changed through other functions and same name can be declared in the local functions.",
+      "parentUuid": "51ebf82a_e37d3f36",
+      "revId": "51bc95a1a8208cf6f89d3d9d965410bd831a9475",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "dd5efb6d_4ad00c55",
         "filename": "trainingmgr/common/trainingmgr_util.py",
         "patchSetId": 1
