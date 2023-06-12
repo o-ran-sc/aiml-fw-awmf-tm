@@ -35,6 +35,7 @@ from trainingmgr.common.tmgr_logger import TMLogger
 from trainingmgr.common.exceptions_utls import TMException
 from trainingmgr.common.trainingmgr_util import MIMETYPE_JSON
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
+
 trainingmgr_main.LOGGER = pytest.logger
 trainingmgr_main.LOCK = Lock()
 trainingmgr_main.DATAEXTRACTION_JOBS_CACHE = {}
@@ -42,7 +43,54 @@ trainingmgr_main.DATAEXTRACTION_JOBS_CACHE = {}
 class DummyVariable:
     kf_adapter_ip = "localhost"
     kf_adapter_port = 5001
+    data_extraction_ip = "localhost"
+    data_extraction_port = 32000
     logger = trainingmgr_main.LOGGER
+
+class Test_data_extraction_start:
+    def setup_method(self):
+        self.client = trainingmgr_main.APP.test_client(self)
+        self.logger = trainingmgr_main.LOGGER
+
+    de_result = Response()
+    de_result.status_code = status.HTTP_200_OK
+    de_result.headers={'content-type': MIMETYPE_JSON}
+    @patch('trainingmgr.common.trainingmgr_operations.requests.post', return_value = de_result)
+    def test_success(self, mock1):
+        trainingjob_name = "usecase12"
+        training_config_obj = DummyVariable()
+        feature_list = "*"
+        query_filter = ""
+        datalake_source = {"InfluxSource": {}}
+        _measurement = "liveCell"
+        bucket = "UEData"
+
+        try:
+            response = trainingmgr_operations.data_extraction_start(training_config_obj, trainingjob_name, feature_list,
+                                                                    query_filter, datalake_source, _measurement, bucket)
+            assert response.status_code == status.HTTP_200_OK
+            assert response.headers['content-type'] == MIMETYPE_JSON
+        except:
+            assert False
+
+class Test_data_extraction_status:
+    def setup_method(self):
+        self.client = trainingmgr_main.APP.test_client(self)
+        self.logger = trainingmgr_main.LOGGER
+
+    de_result = Response()
+    de_result.status_code = status.HTTP_200_OK
+    de_result.headers={'content-type': MIMETYPE_JSON}
+    @patch('trainingmgr.common.trainingmgr_operations.requests.get', return_value = de_result)
+    def test_success(self, mock1):
+        trainingjob_name = "usecase12"
+        training_config_obj = DummyVariable()
+        try:
+            response = trainingmgr_operations.data_extraction_status(trainingjob_name, training_config_obj)
+            assert response.status_code == status.HTTP_200_OK
+            assert response.headers['content-type'] == MIMETYPE_JSON
+        except:
+            assert False
 
 class Test_training_start:
     def setup_method(self): 
@@ -61,7 +109,7 @@ class Test_training_start:
             "arguments": "{epoches : 1}",
             "pipeline_version": 1
         }
-        training_config_obj =  DummyVariable()
+        training_config_obj = DummyVariable()
         try:
             response = trainingmgr_operations.training_start(training_config_obj,dict_data,trainingjob_name)
             assert response.headers['content-type'] == MIMETYPE_JSON
@@ -77,9 +125,9 @@ class Test_training_start:
             "arguments": "{epoches : 1}",
             "pipeline_version": 1
         }
-        training_config_obj =  DummyVariable()
+        training_config_obj = DummyVariable()
         try:
-            response = trainingmgr_operations.training_start(training_config_obj,dict_data,trainingjob_name)
+            trainingmgr_operations.training_start(training_config_obj,dict_data,trainingjob_name)
             assert False
         except requests.exceptions.ConnectionError:
             assert True
@@ -87,14 +135,11 @@ class Test_training_start:
             assert False
 
 class Test_create_dme_filtered_data_job:
-
     the_response=Response()
     the_response.status_code=status.HTTP_201_CREATED
     @patch('trainingmgr.common.trainingmgr_operations.requests.put', return_value=the_response)
     def test_success(self, mock1):
-        mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
-        attrs_TRAININGMGR_CONFIG_OBJ = {'kf_adapter_ip.return_value': '123', 'kf_adapter_port.return_value' : '100'}
-        mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+        training_config_obj = DummyVariable()
         source_name=""
         db_org=""
         bucket_name=""
@@ -103,13 +148,11 @@ class Test_create_dme_filtered_data_job:
         feature_group_name="test"
         host="10.0.0.50"
         port="31840"
-        response=trainingmgr_operations.create_dme_filtered_data_job(mocked_TRAININGMGR_CONFIG_OBJ, source_name, db_org, bucket_name, token, features, feature_group_name, host, port)
+        response=trainingmgr_operations.create_dme_filtered_data_job(training_config_obj, source_name, db_org, bucket_name, token, features, feature_group_name, host, port)
         assert response.status_code==status.HTTP_201_CREATED, "create_dme_filtered_data_job failed"
 
     def test_create_url_host_port_fail(self):
-        mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
-        attrs_TRAININGMGR_CONFIG_OBJ = {'kf_adapter_ip.return_value': '123', 'kf_adapter_port.return_value' : '100'}
-        mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+        training_config_obj = DummyVariable()
         source_name=""
         db_org=""
         bucket_name=""
@@ -119,7 +162,7 @@ class Test_create_dme_filtered_data_job:
         host="url error"
         port="31840"
         try:
-            response=trainingmgr_operations.create_dme_filtered_data_job(mocked_TRAININGMGR_CONFIG_OBJ, source_name, db_org, bucket_name, token, features, feature_group_name, host, port)
+            response=trainingmgr_operations.create_dme_filtered_data_job(training_config_obj, source_name, db_org, bucket_name, token, features, feature_group_name, host, port)
             assert False
         except TMException as err:
             assert "URL validation error: " in err.message
@@ -127,29 +170,24 @@ class Test_create_dme_filtered_data_job:
             assert False
 
 class Test_delete_dme_filtered_data_job:
-
     the_response=Response()
     the_response.status_code=status.HTTP_204_NO_CONTENT
     @patch('trainingmgr.common.trainingmgr_operations.requests.delete', return_value=the_response)
     def test_success(self, mock1):
-        mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
-        attrs_TRAININGMGR_CONFIG_OBJ = {'kf_adapter_ip.return_value': '123', 'kf_adapter_port.return_value' : '100'}
-        mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+        training_config_obj = DummyVariable()
         feature_group_name="test"
         host="10.0.0.50"
         port="31840"
-        response=trainingmgr_operations.delete_dme_filtered_data_job(mocked_TRAININGMGR_CONFIG_OBJ, feature_group_name, host, port)
+        response=trainingmgr_operations.delete_dme_filtered_data_job(training_config_obj, feature_group_name, host, port)
         assert response.status_code==status.HTTP_204_NO_CONTENT, "delete_dme_filtered_data_job failed"
 
     def test_create_url_host_port_fail(self):
-        mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
-        attrs_TRAININGMGR_CONFIG_OBJ = {'kf_adapter_ip.return_value': '123', 'kf_adapter_port.return_value' : '100'}
-        mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+        training_config_obj = DummyVariable()
         feature_group_name="test"
         host="url error"
         port="31840"
         try:
-            response=trainingmgr_operations.delete_dme_filtered_data_job(mocked_TRAININGMGR_CONFIG_OBJ, feature_group_name, host, port)
+            response=trainingmgr_operations.delete_dme_filtered_data_job(training_config_obj, feature_group_name, host, port)
             assert False
         except TMException as err:
             assert "URL validation error: " in err.message
