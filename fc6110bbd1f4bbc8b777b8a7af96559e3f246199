@@ -16,6 +16,24 @@
       "message": "Shouldn\u0027t we increase it to 1.1.0?",
       "revId": "fc6110bbd1f4bbc8b777b8a7af96559e3f246199",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3b735c3f_0c69b924",
+        "filename": "releases/container-release-aiml-fw-awmf-tm.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1001949
+      },
+      "writtenOn": "2023-06-16T04:06:29Z",
+      "side": 1,
+      "message": "This is the current tag used for staging repository. container_release_tag indicates the tag with which image is created in release repository.",
+      "parentUuid": "4b38df9c_a038fe7e",
+      "revId": "fc6110bbd1f4bbc8b777b8a7af96559e3f246199",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
