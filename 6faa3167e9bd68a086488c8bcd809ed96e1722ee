@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c99edd21_3173c02b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2023-07-11T10:49:20Z",
+      "side": 1,
+      "message": "Looks good to me.",
+      "revId": "6faa3167e9bd68a086488c8bcd809ed96e1722ee",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9bdb4758_8e889660",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2023-07-11T10:49:20Z",
+      "side": 1,
+      "message": "Looks good to me.",
+      "revId": "6faa3167e9bd68a086488c8bcd809ed96e1722ee",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
