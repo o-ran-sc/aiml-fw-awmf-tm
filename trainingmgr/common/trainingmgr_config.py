@@ -33,20 +33,20 @@ class TrainingMgrConfig:
         """
         This constructor filling configuration varibles.
         """
-        self.__kf_adapter_port = getenv('KF_ADAPTER_PORT').rstrip()
-        self.__kf_adapter_ip = getenv('KF_ADAPTER_IP').rstrip()
+        self.__kf_adapter_port = getenv('KF_ADAPTER_PORT').rstrip() if getenv('KF_ADAPTER_PORT') is not None else None
+        self.__kf_adapter_ip = getenv('KF_ADAPTER_IP').rstrip() if getenv('KF_ADAPTER_IP') is not None else None
 
-        self.__data_extraction_port = getenv('DATA_EXTRACTION_API_PORT').rstrip()
-        self.__data_extraction_ip = getenv('DATA_EXTRACTION_API_IP').rstrip()
+        self.__data_extraction_port = getenv('DATA_EXTRACTION_API_PORT').rstrip() if getenv('DATA_EXTRACTION_API_PORT') is not None else None
+        self.__data_extraction_ip = getenv('DATA_EXTRACTION_API_IP').rstrip() if getenv('DATA_EXTRACTION_API_IP') is not None else None
 
-        self.__my_port = getenv('TRAINING_MANAGER_PORT').rstrip()
-        self.__my_ip = getenv('TRAINING_MANAGER_IP').rstrip()
+        self.__my_port = getenv('TRAINING_MANAGER_PORT').rstrip() if getenv('TRAINING_MANAGER_PORT') is not None else None
+        self.__my_ip = getenv('TRAINING_MANAGER_IP').rstrip() if getenv('TRAINING_MANAGER_IP') is not None else None
 
-        self.__ps_user = getenv('PS_USER').rstrip()
-        self.__ps_password = getenv('PS_PASSWORD').rstrip()
-        self.__ps_ip = getenv('PS_IP').rstrip()
-        self.__ps_port = getenv('PS_PORT').rstrip()
-        self.__allow_control_access_origin = getenv('ACCESS_CONTROL_ALLOW_ORIGIN').rstrip()
+        self.__ps_user = getenv('PS_USER').rstrip() if getenv('PS_USER') is not None else None
+        self.__ps_password = getenv('PS_PASSWORD').rstrip() if getenv('PS_PASSWORD') is not None else None
+        self.__ps_ip = getenv('PS_IP').rstrip() if getenv('PS_IP') is not None else None
+        self.__ps_port = getenv('PS_PORT').rstrip() if getenv('PS_PORT') is not None else None
+        self.__allow_control_access_origin = getenv('ACCESS_CONTROL_ALLOW_ORIGIN').rstrip() if getenv('ACCESS_CONTROL_ALLOW_ORIGIN') is not None else None
 
         self.tmgr_logger = TMLogger("common/conf_log.yaml")
         self.__logger = self.tmgr_logger.logger
