@@ -131,6 +131,7 @@ class PSDB():
                         "datalake_source varchar(2000) NOT NULL," + \
                         "enable_dme BOOLEAN NOT NULL," + \
                         "DmeHost varchar(128) NOT NULL," + \
+                        "measured_obj_class varchar(128) NOT NULL," + \
                         "DmePort varchar(128) NOT NULL," + \
                         "bucket varchar(128) NOT NULL," + \
                         "token varchar(2000) NOT NULL," + \

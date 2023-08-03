@@ -851,7 +851,7 @@ class Test_create_featuregroup:
         self.client = trainingmgr_main.APP.test_client(self)
         self.logger = trainingmgr_main.LOGGER
     
-    feature_group_data2=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',False,'','','','','','')
+    feature_group_data2=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',False,'','','','','','', '')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data2)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=False)
     @patch('trainingmgr.trainingmgr_main.add_featuregroup')
@@ -866,6 +866,7 @@ class Test_create_featuregroup:
                             "bucket": "",
                             "token": "",
                             "source_name": "",
+                            "measured_obj_class":"",
                             "dbOrg": ""
                                 }
         expected_response=b'{"result": "Feature Group Created"}'
@@ -880,7 +881,7 @@ class Test_create_featuregroup:
     the_response1.headers={"content-type": "application/json"}
     the_response1._content = b''
     mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
-    feature_group_data2=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','')
+    feature_group_data2=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data2)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=False)
     @patch('trainingmgr.trainingmgr_main.add_featuregroup')
@@ -898,6 +899,7 @@ class Test_create_featuregroup:
                             "bucket": "",
                             "token": "",
                             "source_name": "",
+                            "measured_obj_class":"",
                             "dbOrg": ""
                                 }
         expected_response=b'{"result": "Feature Group Created"}'
@@ -912,7 +914,7 @@ class Test_create_featuregroup:
     the_response2.headers={"content-type": "application/json"}
     the_response2._content = b''
     mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
-    feature_group_data3=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','')
+    feature_group_data3=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data3)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=False)
     @patch('trainingmgr.trainingmgr_main.add_featuregroup')
@@ -930,6 +932,7 @@ class Test_create_featuregroup:
                             "bucket": "",
                             "token": "",
                             "source_name": "",
+                            "measured_obj_class":"",
                             "dbOrg": ""
                                 }
         expected_response=b'{"Exception": "Cannot create dme job"}'
@@ -940,7 +943,7 @@ class Test_create_featuregroup:
         assert response.status_code ==status.HTTP_400_BAD_REQUEST, "Return status code not equal"
 
 
-    feature_group_data3=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','')
+    feature_group_data3=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data3)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=False)
     @patch('trainingmgr.trainingmgr_main.add_featuregroup',side_effect = Exception('Mocked error'))
@@ -956,6 +959,7 @@ class Test_create_featuregroup:
                             "bucket": "",
                             "token": "",
                             "source_name": "",
+                            "measured_obj_class":"",
                             "dbOrg": ""
                                 }
         expected_response=b'{"Exception": "Failed to create the feature Group "}'
@@ -965,7 +969,7 @@ class Test_create_featuregroup:
         assert response.data==expected_response
         assert response.status_code ==status.HTTP_500_INTERNAL_SERVER_ERROR, "Return status code not equal"  
 
-    feature_group_data3=('testing_hash!@','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','')
+    feature_group_data3=('testing_hash!@','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data3)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=True)
     def test_neagtive_create_featuregroup_3(self, mock1, mock2):
@@ -979,6 +983,7 @@ class Test_create_featuregroup:
                             "bucket": "",
                             "token": "",
                             "source_name": "",
+                            "measured_obj_class":"",
                             "dbOrg": ""
                                 }
         expected_response=b'{"Exception": "Failed to create the feature group since feature group not valid or already present"}'

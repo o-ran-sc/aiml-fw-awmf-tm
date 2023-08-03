@@ -558,7 +558,7 @@ def add_update_trainingjob(description, pipeline_name, experiment_name, feature_
         if conn is not None:
             conn.close()
 
-def add_featuregroup(feature_group_name, feature_list, datalake_source, enable_dme, ps_db_obj , dmehost="", dmeport="", bucket="", token="", source_name="",db_org=""):
+def add_featuregroup(feature_group_name, feature_list, datalake_source, enable_dme, ps_db_obj, measured_obj_class="" , dmehost="", dmeport="", bucket="", token="", source_name="",db_org=""):
     """
     This function add the new row or update existing row with given information
     """
@@ -569,8 +569,8 @@ def add_featuregroup(feature_group_name, feature_list, datalake_source, enable_d
     
     try:
         cursor.execute(''' INSERT INTO {} VALUES '''.format(fg_table_name) +
-                       '''(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',
-                       (feature_group_name, feature_list, datalake_source, enable_dme, dmehost, dmeport, bucket, token, source_name, db_org))
+                       '''(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, %s)''',
+                       (feature_group_name, feature_list, datalake_source, enable_dme, dmehost, measured_obj_class, dmeport, bucket, token, source_name, db_org))
         conn.commit()
         cursor.close()
     except Exception as err:

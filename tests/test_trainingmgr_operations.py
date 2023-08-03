@@ -141,28 +141,24 @@ class Test_create_dme_filtered_data_job:
     def test_success(self, mock1):
         training_config_obj = DummyVariable()
         source_name=""
-        db_org=""
-        bucket_name=""
-        token=""
         features=[]
         feature_group_name="test"
         host="10.0.0.50"
         port="31840"
-        response=trainingmgr_operations.create_dme_filtered_data_job(training_config_obj, source_name, db_org, bucket_name, token, features, feature_group_name, host, port)
+        measured_obj_class="NRCellDU"
+        response=trainingmgr_operations.create_dme_filtered_data_job(training_config_obj, source_name, features, feature_group_name, host, port, measured_obj_class)
         assert response.status_code==status.HTTP_201_CREATED, "create_dme_filtered_data_job failed"
 
     def test_create_url_host_port_fail(self):
         training_config_obj = DummyVariable()
         source_name=""
-        db_org=""
-        bucket_name=""
-        token=""
         features=[]
         feature_group_name="test"
+        measured_obj_class="NRCellDU"
         host="url error"
         port="31840"
         try:
-            response=trainingmgr_operations.create_dme_filtered_data_job(training_config_obj, source_name, db_org, bucket_name, token, features, feature_group_name, host, port)
+            response=trainingmgr_operations.create_dme_filtered_data_job(training_config_obj, source_name, features, feature_group_name, host, port, measured_obj_class)
             assert False
         except TMException as err:
             assert "URL validation error: " in err.message
