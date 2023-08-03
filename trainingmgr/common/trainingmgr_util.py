@@ -167,7 +167,7 @@ def check_feature_group_data(json_data):
     try:
         if check_key_in_dictionary(["featureGroupName", "feature_list", \
                                     "datalake_source", "enable_Dme", "DmeHost", 
-                                    "DmePort", "bucket", "token", "source_name"], json_data):
+                                    "DmePort", "bucket", "token", "source_name", "measured_obj_class"], json_data):
             feature_group_name=json_data["featureGroupName"]
             features=json_data["feature_list"]
             datalake_source=json_data["datalake_source"]
@@ -178,6 +178,7 @@ def check_feature_group_data(json_data):
             token=json_data["token"]
             source_name=json_data["source_name"]
             db_org=json_data["dbOrg"]
+            measured_obj_class = json_data["measured_obj_class"]
             
         else :
             raise TMException("check_featuregroup_data- supplied data doesn't have" + \
@@ -186,7 +187,7 @@ def check_feature_group_data(json_data):
     except Exception as err:
         raise APIException(status.HTTP_400_BAD_REQUEST, str(err)) from None
     
-    return (feature_group_name, features, datalake_source, enable_dme, dme_host, dme_port, bucket, token, source_name,db_org)
+    return (feature_group_name, features, datalake_source, enable_dme, dme_host, dme_port, bucket, token, source_name,db_org, measured_obj_class)
 
 def get_one_key(dictionary):
     '''

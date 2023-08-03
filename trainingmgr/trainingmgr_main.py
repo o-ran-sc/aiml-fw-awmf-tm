@@ -1320,9 +1320,9 @@ def create_feature_group():
 
     try:
         json_data=request.json
-        (feature_group_name, features, datalake_source, enable_dme, dme_host, dme_port, bucket, token, source_name,db_org)=check_feature_group_data(json_data)
+        (feature_group_name, features, datalake_source, enable_dme, dme_host, dme_port,bucket, token, source_name,db_org, measured_obj_class)=check_feature_group_data(json_data)
         # check the data conformance
-        LOGGER.debug("the db info is : ", get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name))
+        # LOGGER.debug("the db info is : ", get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name)
 
         if (not check_trainingjob_name_or_featuregroup_name(feature_group_name) or
             len(feature_group_name) < 3 or len(feature_group_name) > 63 or
@@ -1332,9 +1332,10 @@ def create_feature_group():
         else:
             # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
             features_list = features.split(",")
-            add_featuregroup(feature_group_name, features, datalake_source, enable_dme, PS_DB_OBJ,dme_host, dme_port, bucket, token, source_name,db_org )
+            add_featuregroup(feature_group_name, features, datalake_source, enable_dme, PS_DB_OBJ,measured_obj_class,dme_host, dme_port, bucket, token, source_name,db_org )
             if enable_dme == True :
-                response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, source_name, db_org, bucket,  token, features_list, feature_group_name,  dme_host, dme_port)
+                response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, source_name, features_list, feature_group_name, dme_host, dme_port, measured_obj_class)
+                print("response status code from create dme is : ", response.status_code)
                 if response.status_code != 201:
                     api_response={"Exception": "Cannot create dme job"}
                     delete_feature_group_by_name(PS_DB_OBJ, feature_group_name)
