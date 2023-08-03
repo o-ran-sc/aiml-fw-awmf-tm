@@ -564,9 +564,11 @@ class Test_check_feature_group_data:
                             "bucket": "",
                             "token": "",
                             "source_name": "",
-                            "dbOrg": ""
+                            "dbOrg": "", 
+                            "measured_obj_class":""
+
                                 }
-        expected_data=("test", "", "",False,"","","","","","")
+        expected_data=("test", "", "",False,"","","","","","","")
         assert check_feature_group_data(json_data)==expected_data, "data not equal"
 
     @patch('trainingmgr.common.trainingmgr_util.check_key_in_dictionary',return_value=False)
@@ -581,9 +583,10 @@ class Test_check_feature_group_data:
                 "bucket": "",
                 "token": "",
                 "source_name": "",
-                "dbOrg": ""
+                "dbOrg": "",
+                "measured_obj_class":""
                     }
-        expected_data=("test", "", "",False,"","","","","","")
+        expected_data=("test", "", "",False,"","","","","","","")
         try:
             assert check_feature_group_data(json_data)==expected_data, 'data not equal'
             assert False

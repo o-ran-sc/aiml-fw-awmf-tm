@@ -121,25 +121,32 @@ def training_start(training_config_obj, dict_data, trainingjob_name):
 
     return response
 
-def create_dme_filtered_data_job(training_config_obj, source_name, db_org, bucket_name,
-                                 token, features, feature_group_name, host, port):
+def create_dme_filtered_data_job(training_config_obj, source_name, features, feature_group_name,host, port ,measured_obj_class):
     """
     This function calls Non-RT RIC DME APIs for creating filter PM data jobs.
     """
     logger = training_config_obj.logger
-
-    job_json =  {
-        "info_type_id": "json-file-data-from-filestore-to-influx",
+    job_json = {
+        "info_type_id": "PmData",
         "job_owner": "console",
-        "status_notification_uri": "http://callback.nonrtric:80/post",
-        "job_definition": { "db-url":"http://influxdb2.nonrtric:8086",
-        "db-org":db_org,
-        "db-bucket":bucket_name,
-        "db-token": token,
-        "filterType":"pmdata",
-        "filter":
-            {"sourceNames":[source_name],
-            "measTypes":features}}}
+        "job_definition": {
+          "filter":{
+              "sourceNames":[source_name],
+               "measObjInstIds": [],
+               "measTypeSpecs": [{
+                  "measuredObjClass": measured_obj_class,
+                  "measTypes":features
+                }],
+                "measuredEntityDns": []
+          },
+          "deliveryInfo": {
+             "topic": "pmreports",
+             "bootStrapServers": "kafka-1-kafka-bootstrap.nonrtric:9097"
+          }
+
+        }
+    }
+
 
     headers = {'Content-type': MIMETYPE_JSON}
 
@@ -147,7 +154,6 @@ def create_dme_filtered_data_job(training_config_obj, source_name, db_org, bucke
     logger.debug(url)
     logger.debug(json.dumps(job_json))
     response = requests.put(url, data=json.dumps(job_json), headers=headers)
-
     return response
 
 def delete_dme_filtered_data_job(training_config_obj, feature_group_name, host, port):
