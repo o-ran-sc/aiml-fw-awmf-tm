@@ -52,6 +52,24 @@
       "parentUuid": "24e1dca3_4579f8ca",
       "revId": "919a197afacca9aa21a24436a173d6e31b26a31a",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c7046ec_a4536dd1",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2023-08-04T05:16:26Z",
+      "side": 1,
+      "message": "Hey Taewan, I have made the changes according to the TrainingMgrConfig class recommendation, Thanks.",
+      "parentUuid": "24e1dca3_4579f8ca",
+      "revId": "919a197afacca9aa21a24436a173d6e31b26a31a",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
