@@ -1018,10 +1018,10 @@ class Test_get_feature_group_by_name:
         self.client = trainingmgr_main.APP.test_client(self)
         self.logger = trainingmgr_main.LOGGER
 
-    result=[('testing', '', 'InfluxSource', True, '21.0.0.21', '12345', '', '', '', '')]
+    result=[('testing', '', 'InfluxSource', True, '21.0.0.21', '12345', '', '', '', '','')]
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=result)
     def test_get_feature_group_by_name(self, mock1):
-        expected_data=b'{"featuregroup": [{"featuregroup_name": "testing", "features": [""], "datalake": "InfluxSource", "dme": true, "dme_host": "21.0.0.21", "dme_port": "12345", "bucket": "", "token": "", "source_name": "", "db_org": ""}]}'
+        expected_data=b'{"featuregroup": [{"featuregroup_name": "testing", "features": [""], "datalake": "InfluxSource", "dme": true, "dme_host": "21.0.0.21", "measured_obj_class": "12345", "dme_port": "", "bucket": "", "token": "", "source_name": "", "db_org": ""}]}'
         fg_name='testing'
         response=self.client.get('/featureGroup/{}'.format(fg_name))
         assert response.status_code == 200 , "status code is not equal"
