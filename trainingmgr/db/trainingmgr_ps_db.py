@@ -129,14 +129,15 @@ class PSDB():
                         "featureGroup_name varchar(128) NOT NULL," + \
                         "feature_list varchar(2000) NOT NULL," + \
                         "datalake_source varchar(2000) NOT NULL," + \
-                        "enable_dme BOOLEAN NOT NULL," + \
-                        "DmeHost varchar(128) NOT NULL," + \
-                        "measured_obj_class varchar(128) NOT NULL," + \
-                        "DmePort varchar(128) NOT NULL," + \
+                        "host varchar(128) NOT NULL," + \
+                        "port varchar(128) NOT NULL," + \
                         "bucket varchar(128) NOT NULL," + \
                         "token varchar(2000) NOT NULL," + \
-                        "source_name varchar(2000) NOT NULL," + \
                         "db_org varchar(128) NOT NULL," + \
+                        "enable_dme BOOLEAN NOT NULL," + \
+                        "measured_obj_class varchar(128) NOT NULL," + \
+                        "dme_port varchar(128) NOT NULL," + \
+                        "source_name varchar(2000) NOT NULL," + \
                         "PRIMARY KEY (featureGroup_name)" + \
                         ")")
             conn3.commit()
