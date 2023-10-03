@@ -1320,10 +1320,9 @@ def create_feature_group():
 
     try:
         json_data=request.json
-        (feature_group_name, features, datalake_source, enable_dme, dme_host, dme_port,bucket, token, source_name,db_org, measured_obj_class)=check_feature_group_data(json_data)
+        (feature_group_name, features, datalake_source, enable_dme, host, port,dme_port,bucket, token, source_name,db_org, measured_obj_class)=check_feature_group_data(json_data)
         # check the data conformance
         LOGGER.debug("the db info is : ", get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name))
-
         if (not check_trainingjob_name_or_featuregroup_name(feature_group_name) or
             len(feature_group_name) < 3 or len(feature_group_name) > 63 or
             get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name)):
@@ -1332,9 +1331,11 @@ def create_feature_group():
         else:
             # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
             features_list = features.split(",")
-            add_featuregroup(feature_group_name, features, datalake_source, enable_dme, PS_DB_OBJ,measured_obj_class,dme_host, dme_port, bucket, token, source_name,db_org )
+            add_featuregroup(feature_group_name, features, datalake_source , host, port, bucket, token, db_org, enable_dme, PS_DB_OBJ, measured_obj_class, dme_port, source_name)
+            api_response={"result": "Feature Group Created"}
+            response_code =status.HTTP_200_OK
             if enable_dme == True :
-                response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, source_name, features_list, feature_group_name, dme_host, dme_port, measured_obj_class)
+                response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, source_name, features_list, feature_group_name, host, dme_port, measured_obj_class)
                 if response.status_code != 201:
                     api_response={"Exception": "Cannot create dme job"}
                     delete_feature_group_by_name(PS_DB_OBJ, feature_group_name)
@@ -1390,7 +1391,7 @@ def get_feature_group():
                 "featuregroup_name": res[0],
                 "features": res[1],
                 "datalake": res[2],
-                "dme": res[3]                
+                "dme": res[8]                
                 }
             feature_groups.append(dict_data)
         api_response={"featuregroups":feature_groups}
@@ -1453,19 +1454,19 @@ def get_feature_group_by_name(featuregroup_name):
         feature_group=[]
         if result:
             for res in result:
-                features=res[1].split(",")
                 dict_data={
                     "featuregroup_name": res[0],
-                    "features": features,
+                    "features": res[1],
                     "datalake": res[2],
-                    "dme": res[3],
-                    "dme_host": res[4],
-                    "measured_obj_class":res[5],
-                    "dme_port": res[6],
-                    "bucket":res[7],
-                    "token":res[8],
-                    "source_name":res[9],
-                    "db_org":res[10]
+                    "dme": res[8],
+                    "host": res[3],
+                    "measured_obj_class":res[9],
+                    "port": res[4],
+                    "dme_port":res[10],
+                    "bucket":res[5],
+                    "token":res[6],
+                    "source_name":res[11],
+                    "db_org":res[7]
                 }
                 feature_group.append(dict_data)
             api_response={"featuregroup":feature_group}
@@ -1539,12 +1540,12 @@ def delete_list_of_feature_group():
             continue
 
         if results:
-            dme=results[0][3]
+            dme=results[0][8]
             try:
                 delete_feature_group_by_name(PS_DB_OBJ, featuregroup_name)
                 if dme :
-                    dme_host=results[0][4]
-                    dme_port=results[0][6]
+                    dme_host=results[0][3]
+                    dme_port=results[0][10]
                     resp=delete_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, featuregroup_name, dme_host, dme_port)
                     if(resp.status_code !=status.HTTP_204_NO_CONTENT):
                         not_possible_to_delete.append(my_dict)  

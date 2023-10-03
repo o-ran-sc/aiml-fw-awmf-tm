@@ -166,20 +166,20 @@ def check_feature_group_data(json_data):
     """
     try:
         if check_key_in_dictionary(["featureGroupName", "feature_list", \
-                                    "datalake_source", "enable_Dme", "DmeHost", 
-                                    "DmePort", "bucket", "token", "source_name", "measured_obj_class"], json_data):
+                                    "datalake_source", "enable_Dme", "Host", 
+                                    "Port", "dmePort","bucket", "token", "source_name", "measured_obj_class"], json_data):
             feature_group_name=json_data["featureGroupName"]
             features=json_data["feature_list"]
             datalake_source=json_data["datalake_source"]
             enable_dme=json_data["enable_Dme"]
-            dme_host=json_data["DmeHost"]
-            dme_port=json_data["DmePort"]
+            host=json_data["Host"]
+            port=json_data["Port"]
+            dme_port=json_data["dmePort"]
             bucket=json_data["bucket"]
             token=json_data["token"]
             source_name=json_data["source_name"]
             db_org=json_data["dbOrg"]
             measured_obj_class = json_data["measured_obj_class"]
-            
         else :
             raise TMException("check_featuregroup_data- supplied data doesn't have" + \
                                 " all the required fields ")
@@ -187,7 +187,7 @@ def check_feature_group_data(json_data):
     except Exception as err:
         raise APIException(status.HTTP_400_BAD_REQUEST, str(err)) from None
     
-    return (feature_group_name, features, datalake_source, enable_dme, dme_host, dme_port, bucket, token, source_name,db_org, measured_obj_class)
+    return (feature_group_name, features, datalake_source, enable_dme, host, port,dme_port, bucket, token, source_name,db_org, measured_obj_class)
 
 def get_one_key(dictionary):
     '''

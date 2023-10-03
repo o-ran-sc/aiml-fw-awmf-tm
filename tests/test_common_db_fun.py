@@ -518,14 +518,14 @@ class Test_Common_Db_Fun:
     def test_add_featuregroup(self):
         checker = Check()
         db_obj = db_helper_fg([[None]], check_success_obj=checker)
-        add_featuregroup('Testing', '', '', True, db_obj, '', '', '', '', '')
+        add_featuregroup('Testing', '', '', '','','','','', '',db_obj, '', '', '')
         assert checker.finished, 'add_featuregroup FAILED when dme true'      
 
     def test_negative_add_featuregroup(self):
         checker = Check()
         try:
             db_obj = db_helper_fg([[None]], raise_exception=True, check_success_obj=checker)
-            add_featuregroup('Testing', '', '', True, db_obj, '', '', '', '', '')
+            add_featuregroup('Testing', '', '', '','','','','', '',db_obj, '', '', '')
             assert False
         except Exception as err:
             fxn_name = "add_featuregroup"
