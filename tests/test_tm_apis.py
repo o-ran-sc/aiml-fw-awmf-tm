@@ -851,24 +851,23 @@ class Test_create_featuregroup:
         self.client = trainingmgr_main.APP.test_client(self)
         self.logger = trainingmgr_main.LOGGER
     
-    feature_group_data2=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',False,'','','','','','', '')
+    feature_group_data2=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',False,'','','','','','', '','')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data2)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=False)
     @patch('trainingmgr.trainingmgr_main.add_featuregroup')
     def test_create_featuregroup_1(self, mock1, mock2, mock3):
-        create_featuregroup_req={
-                            "featureGroupName": "testing_hash",
-                            "feature_list": "pdcpBytesDl,pdcpBytesUl",
-                            "datalake_source": "InfluxSource",
-                            "enable_Dme": False,
-                            "DmeHost": "",
-                            "DmePort": "",
-                            "bucket": "",
-                            "token": "",
-                            "source_name": "",
-                            "measured_obj_class":"",
-                            "dbOrg": ""
-                                }
+        create_featuregroup_req={"featureGroupName":"testing_hash",
+                                 "feature_list":"pdcpBytesDl,pdcpBytesUl",
+                                 "datalake_source":"InfluxSource",
+                                 "enable_Dme":False,
+                                 "Host":"",
+                                 "Port":"",
+                                 "dmePort":"",
+                                 "bucket":"",
+                                 "token":"",
+                                 "source_name":"",
+                                 "measured_obj_class":"",
+                                 "dbOrg":""}
         expected_response=b'{"result": "Feature Group Created"}'
         response=self.client.post("/featureGroup", data=json.dumps(create_featuregroup_req),
                                   content_type="application/json")
@@ -881,7 +880,7 @@ class Test_create_featuregroup:
     the_response1.headers={"content-type": "application/json"}
     the_response1._content = b''
     mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
-    feature_group_data2=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','')
+    feature_group_data2=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','','')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data2)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=False)
     @patch('trainingmgr.trainingmgr_main.add_featuregroup')
@@ -894,9 +893,10 @@ class Test_create_featuregroup:
                             "feature_list": "pdcpBytesDl,pdcpBytesUl",
                             "datalake_source": "InfluxSource",
                             "enable_Dme": True,
-                            "DmeHost": "",
-                            "DmePort": "",
+                            "host": "",
+                            "port": "",
                             "bucket": "",
+                            "dmePort":"",
                             "token": "",
                             "source_name": "",
                             "measured_obj_class":"",
@@ -914,7 +914,7 @@ class Test_create_featuregroup:
     the_response2.headers={"content-type": "application/json"}
     the_response2._content = b''
     mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
-    feature_group_data3=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','')
+    feature_group_data3=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','','')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data3)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=False)
     @patch('trainingmgr.trainingmgr_main.add_featuregroup')
@@ -927,9 +927,10 @@ class Test_create_featuregroup:
                             "feature_list": "pdcpBytesDl,pdcpBytesUl",
                             "datalake_source": "InfluxSource",
                             "enable_Dme": True,
-                            "DmeHost": "",
-                            "DmePort": "",
+                            "host": "",
+                            "port": "",
                             "bucket": "",
+                            "dmePort":"",
                             "token": "",
                             "source_name": "",
                             "measured_obj_class":"",
@@ -943,7 +944,7 @@ class Test_create_featuregroup:
         assert response.status_code ==status.HTTP_400_BAD_REQUEST, "Return status code not equal"
 
 
-    feature_group_data3=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','')
+    feature_group_data3=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','','')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data3)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=False)
     @patch('trainingmgr.trainingmgr_main.add_featuregroup',side_effect = Exception('Mocked error'))
@@ -954,9 +955,10 @@ class Test_create_featuregroup:
                             "feature_list": "pdcpBytesDl,pdcpBytesUl",
                             "datalake_source": "InfluxSource",
                             "enable_Dme": False,
-                            "DmeHost": "",
-                            "DmePort": "",
+                            "host": "",
+                            "port": "",
                             "bucket": "",
+                            "dmePort":"",
                             "token": "",
                             "source_name": "",
                             "measured_obj_class":"",
@@ -969,7 +971,7 @@ class Test_create_featuregroup:
         assert response.data==expected_response
         assert response.status_code ==status.HTTP_500_INTERNAL_SERVER_ERROR, "Return status code not equal"  
 
-    feature_group_data3=('testing_hash!@','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','')
+    feature_group_data3=('testing_hash!@','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','','')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data3)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=True)
     def test_neagtive_create_featuregroup_3(self, mock1, mock2):
@@ -978,9 +980,10 @@ class Test_create_featuregroup:
                             "feature_list": "pdcpBytesDl,pdcpBytesUl",
                             "datalake_source": "InfluxSource",
                             "enable_Dme": False,
-                            "DmeHost": "",
-                            "DmePort": "",
+                            "host": "",
+                            "port": "",
                             "bucket": "",
+                            "dmePort":"",
                             "token": "",
                             "source_name": "",
                             "measured_obj_class":"",
@@ -998,7 +1001,7 @@ class Test_get_feature_group:
         self.client = trainingmgr_main.APP.test_client(self)
         self.logger = trainingmgr_main.LOGGER
 
-    result=[('testing', '', 'InfluxSource', True, '21.0.0.21', '12345', '', '', '', '')]
+    result=[('testing', '', 'InfluxSource', '', '', '', '', '', True, '', '', '')]
     @patch('trainingmgr.trainingmgr_main.get_feature_groups_db', return_value=result)
     def test_get_feature_group(self,mock1):
         expected_data=b'{"featuregroups": [{"featuregroup_name": "testing", "features": "", "datalake": "InfluxSource", "dme": true}]}'
@@ -1018,10 +1021,10 @@ class Test_get_feature_group_by_name:
         self.client = trainingmgr_main.APP.test_client(self)
         self.logger = trainingmgr_main.LOGGER
 
-    result=[('testing', '', 'InfluxSource', True, '21.0.0.21', '12345', '', '', '', '','')]
+    result=[('testing', '', 'InfluxSource', '10.0.0.53', '31812', '', '', '', '', '', '', '')]
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=result)
     def test_get_feature_group_by_name(self, mock1):
-        expected_data=b'{"featuregroup": [{"featuregroup_name": "testing", "features": [""], "datalake": "InfluxSource", "dme": true, "dme_host": "21.0.0.21", "measured_obj_class": "12345", "dme_port": "", "bucket": "", "token": "", "source_name": "", "db_org": ""}]}'
+        expected_data=b'{"featuregroup": [{"featuregroup_name": "testing", "features": "", "datalake": "InfluxSource", "dme": "", "host": "10.0.0.53", "measured_obj_class": "", "port": "31812", "dme_port": "", "bucket": "", "token": "", "source_name": "", "db_org": ""}]}'
         fg_name='testing'
         response=self.client.get('/featureGroup/{}'.format(fg_name))
         assert response.status_code == 200 , "status code is not equal"
@@ -1061,7 +1064,7 @@ class Test_delete_list_of_feature_group:
     mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
     resp=Response()
     resp.status_code=status.HTTP_204_NO_CONTENT
-    the_result=[('testing', '', 'InfluxSource', True, '21.0.0.21', '12345', '', '', '', '')]
+    the_result=[('testing_hash', '', 'InfluxSource', '10.0.0.53', '31812', '', '', '', False, '', '', '')]
     @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value=True)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=the_result)
     @patch('trainingmgr.trainingmgr_main.delete_feature_group_by_name')
@@ -1122,11 +1125,9 @@ class Test_delete_list_of_feature_group:
         assert response.data==expected_response
         assert response.status_code==200, "status code not equal"
 
-    the_result2=[('testing', '', 'InfluxSource', True, '21.0.0.21', '12345', '', '', '', '')]
-    resp2=Response()
-    resp2.status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+    the_result2=[('testing_hash', '', 'InfluxSource', '10.0.0.53', '31812', '', '', '', False, '', '', '')]
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=the_result2)
-    @patch('trainingmgr.trainingmgr_main.delete_feature_group_by_name', return_value=resp2)
+    @patch('trainingmgr.trainingmgr_main.delete_feature_group_by_name', side_effect=Exception("Mocked Error"))
     def test_negative_delete_list_of_feature_group_7(self, mock1, mock2):
         delete_req=delete_req={"featuregroups_list":[{"featureGroup_name":"testing_hash"}]}
         expected_response=b'{"success count": 0, "failure count": 1}'

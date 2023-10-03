@@ -559,34 +559,35 @@ class Test_check_feature_group_data:
                             "feature_list": "",
                             "datalake_source": "",
                             "enable_Dme": False,
-                            "DmeHost": "",
-                            "DmePort": "",
+                            "Host": "",
+                            "Port": "",
                             "bucket": "",
+                            "dmePort":"",
                             "token": "",
                             "source_name": "",
-                            "dbOrg": "", 
-                            "measured_obj_class":""
-
+                            "measured_obj_class":"",
+                            "dbOrg": ""
                                 }
-        expected_data=("test", "", "",False,"","","","","","","")
+        expected_data=("test", "", "",False,"","","","","","","","")
         assert check_feature_group_data(json_data)==expected_data, "data not equal"
 
     @patch('trainingmgr.common.trainingmgr_util.check_key_in_dictionary',return_value=False)
     def test_negative_check_feature_group_data(self, mock1):
         json_data={
-                "featureGroupName": "test",
-                "feature_list": "",
-                "datalake_source": "",
-                "enable_Dme": False,
-                "DmeHost": "",
-                "DmePort": "",
-                "bucket": "",
-                "token": "",
-                "source_name": "",
-                "dbOrg": "",
-                "measured_obj_class":""
-                    }
-        expected_data=("test", "", "",False,"","","","","","","")
+                            "featureGroupName": "test",
+                            "feature_list": "",
+                            "datalake_source": "",
+                            "enable_Dme": False,
+                            "Host": "",
+                            "Port": "",
+                            "bucket": "",
+                            "dmePort":"",
+                            "token": "",
+                            "source_name": "",
+                            "measured_obj_class":"",
+                            "dbOrg": ""
+                                }
+        expected_data=("test", "", "",False,"","","","","","","","")
         try:
             assert check_feature_group_data(json_data)==expected_data, 'data not equal'
             assert False
