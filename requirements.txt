@@ -26,3 +26,4 @@ pandas
 PyYAML
 kubernetes
 validators==0.20.0
+Werkzeug==2.2.2

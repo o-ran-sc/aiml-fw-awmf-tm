@@ -329,16 +329,23 @@ def training(trainingjob_name):
         else:
 
             db_results = get_trainingjob_info_by_name(trainingjob_name, PS_DB_OBJ)
-            feature_list = db_results[0][2]
+            featuregroup_name = db_results[0][2]
+            result= get_feature_group_by_name_db(PS_DB_OBJ, featuregroup_name)
+            feature_list_string = result[0][1]
+            influxdb_info_dic={}
+            influxdb_info_dic["host"]=result[0][3]
+            influxdb_info_dic["port"]=result[0][4]
+            influxdb_info_dic["bucket"]=result[0][5]
+            influxdb_info_dic["token"]=result[0][6]
+            influxdb_info_dic["db_org"] = result[0][7]
+            influxdb_info_dic["source_name"]= result[0][11]
             query_filter = db_results[0][6]
             datalake_source = json.loads(db_results[0][14])['datalake_source']
             _measurement = db_results[0][17]
-            bucket = db_results[0][18]
-
             LOGGER.debug('Starting Data Extraction...')
             de_response = data_extraction_start(TRAININGMGR_CONFIG_OBJ, trainingjob_name,
-                                        feature_list, query_filter, datalake_source,
-                                        _measurement, bucket)
+                                         feature_list_string, query_filter, datalake_source,
+                                         _measurement, influxdb_info_dic)
             if (de_response.status_code == status.HTTP_200_OK ):
                 LOGGER.debug("Response from data extraction for " + \
                         trainingjob_name + " : " + json.dumps(de_response.json()))

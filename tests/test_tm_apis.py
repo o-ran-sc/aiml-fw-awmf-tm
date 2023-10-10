@@ -425,12 +425,14 @@ class Test_training_main:
     de_response.status_code = status.HTTP_200_OK
     de_response.headers={"content-type": "application/json"}
     de_response._content = b'{"task_status": "Completed", "result": "Data Pipeline Execution Completed"}'
+    db_result2=[('testing_hash', '', 'InfluxSource', '127.0.0.21', '8080', '', '', '', False, '', '', '')]
 
     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
     @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result)
+    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value = db_result2)
     @patch('trainingmgr.trainingmgr_main.data_extraction_start', return_value = de_response)
     @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')
-    def test_training(self,mock1,mock2,mock3,mock4):
+    def test_training(self,mock1,mock2,mock3,mock4, mock5):
         trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
         expected_data = 'Data Pipeline Execution Completed"'
         response = self.client.post("/trainingjobs/{}/training".format("usecase1"),
@@ -453,9 +455,10 @@ class Test_training_main:
 
     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
     @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result1)
+    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value = db_result2)
     @patch('trainingmgr.trainingmgr_main.data_extraction_start', return_value = de_response1)
     @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')
-    def test_training_negative_de_failed(self,mock1,mock2,mock3,mock4):
+    def test_training_negative_de_failed(self,mock1,mock2,mock3,mock4, mock5):
         trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
         expected_data = 'Data Pipeline Execution Failed'
         response = self.client.post("/trainingjobs/{}/training".format("usecase1"),
