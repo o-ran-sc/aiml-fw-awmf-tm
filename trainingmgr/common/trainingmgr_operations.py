@@ -37,8 +37,8 @@ def create_url_host_port(protocol, host, port, path=''):
         raise TMException('URL validation error: '+ url)
     return url
 
-def data_extraction_start(training_config_obj, trainingjob_name, feature_list, query_filter,
-                          datalake_source, _measurement, bucket):
+def data_extraction_start(training_config_obj, trainingjob_name, feature_list_str, query_filter,
+                          datalake_source, _measurement, influxdb_info_dic):
     """
     This function calls data extraction module for data extraction of trainingjob_name training and
     returns response which we is gotten by calling data extraction module.
@@ -54,7 +54,7 @@ def data_extraction_start(training_config_obj, trainingjob_name, feature_list, q
     source['source'] = datalake_source
     if 'InfluxSource' in datalake_source:
         source['source']['InfluxSource']['query']='''from(bucket:"'''+\
-                                                  bucket + '''") |> '''+\
+                                                  influxdb_info_dic["bucket"] + '''") |> '''+\
                                                   '''range(start: 0, stop: now()) '''+\
                                                   '''|> filter(fn: (r) => r._measurement == "'''+\
                                                   _measurement + '''") '''+\
@@ -66,7 +66,7 @@ def data_extraction_start(training_config_obj, trainingjob_name, feature_list, q
     transform['transform'] = []
     transform_inner_dic = {}
     transform_inner_dic['operation'] = "SQLTransform"
-    transform_inner_dic['FeatureList'] = feature_list
+    transform_inner_dic['FeatureList'] = feature_list_str
     transform_inner_dic['SQLFilter'] = query_filter
     transform['transform'].append(transform_inner_dic)
 
@@ -79,6 +79,7 @@ def data_extraction_start(training_config_obj, trainingjob_name, feature_list, q
     dictionary.update(source)
     dictionary.update(transform)
     dictionary['sink'] = sink
+    dictionary['influxdb_info']= influxdb_info_dic
    
     logger.debug(json.dumps(dictionary))
 

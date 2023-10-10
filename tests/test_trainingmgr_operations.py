@@ -63,11 +63,10 @@ class Test_data_extraction_start:
         query_filter = ""
         datalake_source = {"InfluxSource": {}}
         _measurement = "liveCell"
-        bucket = "UEData"
-
+        influxdb_info_dict={'host': '', 'port': '', 'token': '', 'dmeport': '', 'source_name': '', 'org_name': '', 'bucket': ''}
         try:
             response = trainingmgr_operations.data_extraction_start(training_config_obj, trainingjob_name, feature_list,
-                                                                    query_filter, datalake_source, _measurement, bucket)
+                                                                    query_filter, datalake_source, _measurement, influxdb_info_dict)
             assert response.status_code == status.HTTP_200_OK
             assert response.headers['content-type'] == MIMETYPE_JSON
         except:
