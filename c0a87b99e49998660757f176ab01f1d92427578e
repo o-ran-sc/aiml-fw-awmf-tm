@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5bb3fb8a_d4a91c0d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2023-10-11T03:53:45Z",
+      "side": 1,
+      "message": "It seems like the same data has various names.",
+      "revId": "c0a87b99e49998660757f176ab01f1d92427578e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bedd0149_ab30ae56",
+        "filename": "tests/test_trainingmgr_operations.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2023-10-11T03:53:45Z",
+      "side": 1,
+      "message": "It seems necessary to check the names of `dmeport` and `org_name`.",
+      "revId": "c0a87b99e49998660757f176ab01f1d92427578e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1d10cb2f_1ca61204",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2023-10-11T03:53:45Z",
+      "side": 1,
+      "message": "I found `db_org` from the other file. https://gerrit.o-ran-sc.org/r/c/aiml-fw/awmf/tm/+/11825/2/trainingmgr/db/trainingmgr_ps_db.py#b139\nWhich one is more suitable,`org_name` or `db_org`?",
+      "revId": "c0a87b99e49998660757f176ab01f1d92427578e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4174fb75_42aa8cbf",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2023-10-11T03:53:45Z",
+      "side": 1,
+      "message": "I found `dme_port` from the other file. https://gerrit.o-ran-sc.org/r/c/aiml-fw/awmf/tm/+/11825/2/trainingmgr/db/trainingmgr_ps_db.py#139\nWhich one is more suitable,`dmeport` or `dme_port`?",
+      "revId": "c0a87b99e49998660757f176ab01f1d92427578e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
