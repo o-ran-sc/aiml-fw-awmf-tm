@@ -18,6 +18,23 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f2a2c7d3_2d021526",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2023-10-11T11:04:25Z",
+      "side": 1,
+      "message": "Hey Taewan! I have edited the variable names.",
+      "revId": "c0a87b99e49998660757f176ab01f1d92427578e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bedd0149_ab30ae56",
@@ -31,6 +48,24 @@
       "writtenOn": "2023-10-11T03:53:45Z",
       "side": 1,
       "message": "It seems necessary to check the names of `dmeport` and `org_name`.",
+      "revId": "c0a87b99e49998660757f176ab01f1d92427578e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f9816307_d7b93e8c",
+        "filename": "tests/test_trainingmgr_operations.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2023-10-11T11:04:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bedd0149_ab30ae56",
       "revId": "c0a87b99e49998660757f176ab01f1d92427578e",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
@@ -52,6 +87,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "930c1112_00a1f270",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2023-10-11T11:04:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1d10cb2f_1ca61204",
+      "revId": "c0a87b99e49998660757f176ab01f1d92427578e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4174fb75_42aa8cbf",
@@ -65,6 +118,24 @@
       "writtenOn": "2023-10-11T03:53:45Z",
       "side": 1,
       "message": "I found `dme_port` from the other file. https://gerrit.o-ran-sc.org/r/c/aiml-fw/awmf/tm/+/11825/2/trainingmgr/db/trainingmgr_ps_db.py#139\nWhich one is more suitable,`dmeport` or `dme_port`?",
+      "revId": "c0a87b99e49998660757f176ab01f1d92427578e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c769c95c_0165b042",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2023-10-11T11:04:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4174fb75_42aa8cbf",
       "revId": "c0a87b99e49998660757f176ab01f1d92427578e",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
