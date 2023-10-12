@@ -156,6 +156,24 @@
       "parentUuid": "c769c95c_0165b042",
       "revId": "c0a87b99e49998660757f176ab01f1d92427578e",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6fa0d8d1_d1741359",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2023-10-12T06:12:33Z",
+      "side": 1,
+      "message": "Yes!",
+      "parentUuid": "67501721_74bdada2",
+      "revId": "c0a87b99e49998660757f176ab01f1d92427578e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
