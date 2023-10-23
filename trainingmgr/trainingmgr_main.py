@@ -97,8 +97,8 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                              name of trainingjob
                          description: str
                              description
-                         feature_list: str
-                             feature names
+                         featuregroup name: str
+                             featuregroup name
                          pipeline_name: str
                              name of pipeline
                          experiment_name: str
@@ -1287,22 +1287,28 @@ def create_feature_group():
                     description
                 feature_list: str
                     feature names
+                datalake: str
+                    name of datalake
+                bucket: str
+                    bucket name
+                host: str
+                    db host
+                port: str
+                    db port
+                token: str
+                    token for the bucket
+                db org:
+                    db org name
                 enable_Dme: boolean
                     whether to enable dme
                 source_name: str
                     name of source
-                dbOrg: str
-                    name of db org
-                bucket: str
-                    bucket name
                 DmePort: str
                     DME port
-                DmeHost: str
-                    DME Host
+                measured_obj_class: str
+                    obj class for dme.
                 datalake_source: str
                     string indicating datalake source
-                token: str
-                    token for the bucket
 
     Returns:
         1. For post request
@@ -1430,20 +1436,24 @@ def get_feature_group_by_name(featuregroup_name):
                              features
                          datalake: str
                              name of datalake
-                         dme: str
-                             whether dme enabled or not
-                         dme_host: str
-                             dme host
-                         dme_port: str
-                             dme_port
+                         host: str
+                             host
+                         port: str
+                             port
                          bucket: str
                              bucket name
                          token: str
                              token for the bucket
-                         source_name: dict
-                             source name
                          db_org: str
                              db org
+                         dme: str
+                             whether dme enabled or not
+                         dme_port: str
+                             dme_port
+                         source_name: dict
+                             source name
+                         measured_obj_class: str
+                             obj class for dme
         status code:
             HTTP status code 200
 
