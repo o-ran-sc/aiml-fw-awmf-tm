@@ -1,0 +1,8 @@
+Code-Review+2: Joseph Thaliath <jo.thaliath@samsung.com>
+Verified+1: ORAN Jobbuilder <releng+oran-jobbuilder@linuxfoundation.org>
+Verified+1: ORAN Required GHA <releng+oran.required.gha@linuxfoundation.org>
+Submitted-by: Joseph Thaliath <jo.thaliath@samsung.com>
+Submitted-at: Wed, 25 Oct 2023 05:43:46 +0000
+Reviewed-on: https://gerrit.o-ran-sc.org/r/c/aiml-fw/awmf/tm/+/11959
+Project: aiml-fw/awmf/tm
+Branch: refs/heads/master
