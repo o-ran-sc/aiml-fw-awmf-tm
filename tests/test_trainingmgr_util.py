@@ -279,16 +279,16 @@ class Test_check_trainingjob_data:
     @patch('trainingmgr.common.trainingmgr_util.isinstance',return_value=True)  
     def test_check_trainingjob_data(self,mock1,mock2):
         usecase_name = "usecase8"
-        json_data = { "description":"unittest", "feature_list": ["apple", "banana", "cherry"] , "pipeline_name":"qoe" , "experiment_name":"experiment1" , "arguments":"arguments1" , "query_filter":"query1" , "enable_versioning":True , "target_deployment":"Near RT RIC" , "pipeline_version":1 , "datalake_source":"cassandra db" , "incremental_training":True , "model":"usecase7" , "model_version":1 , "_measurement":2 , "bucket":"bucket1"}
+        json_data = { "description":"unittest", "featureGroup_name": "group1" , "pipeline_name":"qoe" , "experiment_name":"experiment1" , "arguments":"arguments1" , "query_filter":"query1" , "enable_versioning":True , "target_deployment":"Near RT RIC" , "pipeline_version":1 , "datalake_source":"cassandra db" , "incremental_training":True , "model":"usecase7" , "model_version":1 , "_measurement":2 , "bucket":"bucket1"}
     
-        expected_data = (['apple', 'banana', 'cherry'], 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db', 2, 'bucket1')
+        expected_data = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db', 2, 'bucket1')
         assert check_trainingjob_data(usecase_name, json_data) == expected_data,"data not equal"
     
     def test_negative_check_trainingjob_data_1(self):
         usecase_name = "usecase8"
-        json_data = { "description":"unittest", "feature_list": ["apple", "banana", "cherry"] , "pipeline_name":"qoe" , "experiment_name":"experiment1" , "arguments":"arguments1" , "query_filter":"query1" , "enable_versioning":True , "target_deployment":"Near RT RIC" , "pipeline_version":1 , "datalake_source":"cassandra db" , "incremental_training":True , "model":"usecase7" , "model_version":1 , "_measurement":2 , "bucket":"bucket1"}
+        json_data = { "description":"unittest", "featureGroup_name": "group1" , "pipeline_name":"qoe" , "experiment_name":"experiment1" , "arguments":"arguments1" , "query_filter":"query1" , "enable_versioning":True , "target_deployment":"Near RT RIC" , "pipeline_version":1 , "datalake_source":"cassandra db" , "incremental_training":True , "model":"usecase7" , "model_version":1 , "_measurement":2 , "bucket":"bucket1"}
     
-        expected_data = (['apple', 'banana', 'cherry'], 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db', 2, 'bucket1')
+        expected_data = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db', 2, 'bucket1')
         try:
             assert check_trainingjob_data(usecase_name, json_data) == expected_data,"data not equal"
             assert False
@@ -298,9 +298,9 @@ class Test_check_trainingjob_data:
     @patch('trainingmgr.common.trainingmgr_util.check_key_in_dictionary',return_value=True)
     def test_negative_check_trainingjob_data_2(self,mock1):
         usecase_name = "usecase8"
-        json_data = { "description":"unittest", "feature_list": ["apple", "banana", "cherry"] , "pipeline_name":"qoe" , "experiment_name":"experiment1" , "arguments":"arguments1" , "query_filter":"query1" , "enable_versioning":True , "target_deployment":"Near RT RIC" , "pipeline_version":1 , "datalake_source":"cassandra db" , "incremental_training":True , "model":"usecase7" , "model_version":1 , "_measurement":2 , "bucket":"bucket1"}
+        json_data = { "description":"unittest", "featureGroup_name": "group1" , "pipeline_name":"qoe" , "experiment_name":"experiment1" , "arguments":"arguments1" , "query_filter":"query1" , "enable_versioning":True , "target_deployment":"Near RT RIC" , "pipeline_version":1 , "datalake_source":"cassandra db" , "incremental_training":True , "model":"usecase7" , "model_version":1 , "_measurement":2 , "bucket":"bucket1"}
     
-        expected_data = (['apple', 'banana', 'cherry'], 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db', 2, 'bucket1')
+        expected_data = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db', 2, 'bucket1')
         try:
             assert check_trainingjob_data(usecase_name, json_data) == expected_data,"data not equal"
             assert False
@@ -311,7 +311,7 @@ class Test_check_trainingjob_data:
     def test_negative_check_trainingjob_data_3(self,mock1):
         usecase_name = "usecase8"
         json_data = None
-        expected_data = (['apple', 'banana', 'cherry'], 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db', 2, 'bucket1')
+        expected_data = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db', 2, 'bucket1')
         try:
             assert check_trainingjob_data(usecase_name, json_data) == expected_data,"data not equal"
             assert False

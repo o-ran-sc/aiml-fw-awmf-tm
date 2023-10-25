@@ -325,7 +325,7 @@ class Test_training_main:
                     "trainingjob_name":"usecase1",
                     "pipeline_name":"qoe Pipeline lat v2",
                     "experiment_name":"Default",
-                    "feature_list":"*",
+                    "featureGroup_name":"group",
                     "query_filter":"",
                     "arguments":{
                         "epochs":"1",
@@ -362,7 +362,7 @@ class Test_training_main:
                     "trainingjob_name":"usecase1",
                     "pipeline_name":"qoe Pipeline lat v2",
                     "experiment_name":"Default",
-                    "feature_list":"*",
+                    "featureGroup_name":"group",
                     "query_filter":"",
                     "arguments":{
                         "epochs":"1",
@@ -391,7 +391,7 @@ class Test_training_main:
                     "trainingjob_name":"usecase1",
                     "pipeline_name":"qoe Pipeline lat v2",
                     "experiment_name":"Default",
-                    "feature_list":"*",
+                    "featureGroup_name":"group",
                     "query_filter":"",
                     "arguments":{
                         "epochs":"1",
