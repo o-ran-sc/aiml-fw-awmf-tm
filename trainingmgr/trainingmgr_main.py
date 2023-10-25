@@ -848,8 +848,8 @@ def trainingjob_operations(trainingjob_name):
             json with below fields are given:
                 description: str
                     description
-                feature_list: str
-                    feature names
+                featuregroup_name: str
+                    feature group name
                 pipeline_name: str
                     name of pipeline
                 experiment_name: str
@@ -902,11 +902,11 @@ def trainingjob_operations(trainingjob_name):
                 response_code = status.HTTP_409_CONFLICT
                 raise TMException("trainingjob name(" + trainingjob_name + ") is already present in database")
             else:
-                (feature_list, description, pipeline_name, experiment_name,
+                (featuregroup_name, description, pipeline_name, experiment_name,
                 arguments, query_filter, enable_versioning, pipeline_version,
                 datalake_source, _measurement, bucket) = \
                 check_trainingjob_data(trainingjob_name, json_data)
-                add_update_trainingjob(description, pipeline_name, experiment_name, feature_list,
+                add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, True, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
                                     PS_DB_OBJ, _measurement=_measurement,
@@ -930,11 +930,11 @@ def trainingjob_operations(trainingjob_name):
                             not in [States.FAILED.name, States.FINISHED.name]):
                         raise TMException("Trainingjob(" + trainingjob_name + ") is not in finished or failed status")
 
-                (feature_list, description, pipeline_name, experiment_name,
+                (featuregroup_name, description, pipeline_name, experiment_name,
                 arguments, query_filter, enable_versioning, pipeline_version,
                 datalake_source, _measurement, bucket) = check_trainingjob_data(trainingjob_name, json_data)
 
-                add_update_trainingjob(description, pipeline_name, experiment_name, feature_list,
+                add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                         arguments, query_filter, False, enable_versioning,
                                         pipeline_version, datalake_source, trainingjob_name, PS_DB_OBJ, _measurement=_measurement,
                                         bucket=bucket)
@@ -1024,7 +1024,7 @@ def retraining():
             description = results[0][1]
             pipeline_name = results[0][3]
             experiment_name = results[0][4]
-            feature_list = results[0][2]
+            featuregroup_name = results[0][2]
             arguments = json.loads(results[0][5])['arguments']
             query_filter = results[0][6]
             datalake_source = get_one_key(json.loads(results[0][14])["datalake_source"])
@@ -1040,7 +1040,7 @@ def retraining():
 
             try:
                 add_update_trainingjob(description, pipeline_name, experiment_name,
-                                      feature_list, arguments, query_filter, False,
+                                      featuregroup_name, arguments, query_filter, False,
                                       enable_versioning, pipeline_version,
                                       datalake_source, trainingjob_name, PS_DB_OBJ,
                                       notification_url, _measurement, bucket)
