@@ -128,7 +128,7 @@ def check_trainingjob_data(trainingjob_name, json_data):
     values of different keys in jsn_data.
     """
     try:
-        if check_key_in_dictionary(["feature_list", "pipeline_version", \
+        if check_key_in_dictionary(["featureGroup_name", "pipeline_version", \
                                  "pipeline_name", "experiment_name",
                                  "arguments", "enable_versioning",
                                  "datalake_source", "description",
@@ -136,7 +136,7 @@ def check_trainingjob_data(trainingjob_name, json_data):
                                  "bucket"], json_data):
 
             description = json_data["description"]
-            feature_list = json_data["feature_list"]
+            feature_list = json_data["featureGroup_name"]
             pipeline_name = json_data["pipeline_name"]
             experiment_name = json_data["experiment_name"]
             arguments = json_data["arguments"]
