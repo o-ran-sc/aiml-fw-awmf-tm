@@ -55,7 +55,10 @@ mimic_db = {
             "notification_url": "",
             "_measurement": "liveCell",
             "bucket": "UEdata",
-            "accuracy": 70
+            "deletion_in_progress": False,
+            "is_mme": False,
+            "model_name": "",
+            "model_info": ""
         }
 
 mimic_fg_db={
@@ -422,20 +425,20 @@ class Test_Common_Db_Fun:
     def test_add_update_trainingjob(self):
         checker = Check()
         db_obj = db_helper([[None]], check_success_obj=checker)
-        add_update_trainingjob('Testing', 'qoe-pipeline', 'Default', '*', '{epoches : 1}', '', True, True, 1, 'InfluxSource', 'Tester',db_obj)
+        add_update_trainingjob('description','qoe-pipeline', 'Default','featuregroup', '{epoches : 1}', '', True, True, 1, 'InfluxSource', 'Tester',db_obj)
         assert checker.finished, 'add_update_trainingjob FAILED, When adding = True'
     
     def test_negative_add_update_trainingjob_2(self):
         checker = Check()
         db_obj = db_helper([[None]], check_success_obj=checker)
-        add_update_trainingjob('Testing', 'qoe-pipeline', 'Default', '*', '{epoches : 1}', '', True, False, 1, 'InfluxSource', 'Tester',db_obj)
+        add_update_trainingjob('description','qoe-pipeline', 'Default','featuregroup', '{epoches : 1}', '', True, True, 1, 'InfluxSource', 'Tester',db_obj)
         assert checker.finished, 'add_update_trainingjob FAILED, When adding = True'
     
     def test_negative_add_update_trainingjob_3(self):
         checker = Check()
         db_obj = db_helper([[None]], check_success_obj=checker)
         try:
-            add_update_trainingjob('Testing', 'qoe-pipeline', 'Default', '*', '{epoches : 1}', '', False, True, 1, 'InfluxSource', 'Tester',db_obj)
+            add_update_trainingjob('description','qoe-pipeline', 'Default','featuregroup', '{epoches : 1}', '', True, True, 1, 'InfluxSource', 'Tester',db_obj)
             assert checker.finished, 'add_update_trainingjob FAILED, When adding = True'
             assert False
         except Exception:
@@ -445,7 +448,7 @@ class Test_Common_Db_Fun:
         checker = Check()
         db_obj = db_helper([[None]], check_success_obj=checker)
         try:
-            add_update_trainingjob('Testing', 'qoe-pipeline', 'Default', '*', '{epoches : 1}', '', False, False, 1, 'InfluxSource', 'Tester',db_obj)
+            add_update_trainingjob('description','qoe-pipeline', 'Default','featuregroup', '{epoches : 1}', '', True, True, 1, 'InfluxSource', 'Tester',db_obj)
             assert checker.finished, 'add_update_trainingjob FAILED, When adding = True'
             assert False
         except Exception:
@@ -460,7 +463,7 @@ class Test_Common_Db_Fun:
             assert checker.finished, 'add_update_trainingjob FAILED, When adding = True'
         except Exception as err:
             fxn_name = "add_update_trainingjob"
-            assert str(err) == "add_update_trainingjob() takes from 12 to 15 positional arguments but 19 were given", 'Negative test {} FAILED when  adding = True , Doesnt returned required error'.format(fxn_name)
+            assert str(err) == "add_update_trainingjob() takes from 12 to 18 positional arguments but 19 were given", 'Negative test {} FAILED when  adding = True , Doesnt returned required error'.format(fxn_name)
     
     def test_get_all_jobs_latest_status_version(self):
         db_obj = db_helper([["usecase_name"]])
