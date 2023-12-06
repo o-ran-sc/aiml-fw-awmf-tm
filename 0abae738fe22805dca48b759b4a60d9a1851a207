@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad713cd0_5beaa176",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001940
+      },
+      "writtenOn": "2023-12-06T06:48:53Z",
+      "side": 1,
+      "message": "Looks good, the Werkzeug\u003d\u003d2.2.2 is needed in test environment(Jenkins).",
+      "revId": "0abae738fe22805dca48b759b4a60d9a1851a207",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
