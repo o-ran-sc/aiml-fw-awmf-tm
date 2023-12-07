@@ -135,6 +135,12 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                              _measurement of influx db datalake
                         bucket: str
                              bucket name of influx db datalake
+                        is_mme: boolean
+                            whether the mme is enabled
+                        model_name: str
+                            model name 
+                        model_info: str
+                            model info provided by the mme
         status code:
             HTTP status code 200
 
@@ -176,6 +182,9 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                 "notification_url": trainingjob_info[16],
                 "_measurement": trainingjob_info[17],
                 "bucket": trainingjob_info[18],
+                "is_mme": trainingjob_info[20], 
+                "model_name": trainingjob_info[21],
+                "model_info": trainingjob_info[22],
                 "accuracy": data
             }
             response_data = {"trainingjob": dict_data}
