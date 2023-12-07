@@ -336,7 +336,9 @@ class Test_training_main:
                     "pipeline_version":"3",
                     "datalake_source":"InfluxSource",
                     "_measurement":"liveCell",
-                    "bucket":"UEData"
+                    "bucket":"UEData",
+                    "is_mme":False,
+                    "model_name": ""
                     }
         expected_data = b'{"result": "Information stored in database."}'
         response = self.client.post("/trainingjobs/{}".format("usecase1"),
@@ -349,9 +351,9 @@ class Test_training_main:
     db_result = [('usecase1', 'uc1', '*', 'qoe Pipeline lat v2', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "usecase1"}}',
      '', datetime.datetime(2022, 10, 12, 10, 0, 59, 923588), '51948a12-aee9-42e5-93a0-b8f4a15bca33',
       '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FAILED"}',
-       datetime.datetime(2022, 10, 12, 10, 2, 31, 888830), 1, False, '3', '{"datalake_source": {"InfluxSource": {}}}', 'No data available.', '', 'liveCell', 'UEData', False)]
+       datetime.datetime(2022, 10, 12, 10, 2, 31, 888830), 1, False, '3', '{"datalake_source": {"InfluxSource": {}}}', 'No data available.', '', 'liveCell', 'UEData', False, False, "","")]
     
-    training_data = ('','','','','','','','','','','')
+    training_data = ('','','','','','','','','','','', '','')
     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
     @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result)
     @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = training_data)
@@ -373,7 +375,9 @@ class Test_training_main:
                     "pipeline_version":"3",
                     "datalake_source":"InfluxSource",
                     "_measurement":"liveCell",
-                    "bucket":"UEData"
+                    "bucket":"UEData", 
+                    "is_mme": False,
+                    "model_name":""
                     }
             
         expected_data = 'Information updated in database'

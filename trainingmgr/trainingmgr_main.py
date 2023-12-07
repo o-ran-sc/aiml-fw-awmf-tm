@@ -33,7 +33,8 @@ import requests
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from modelmetricsdk.model_metrics_sdk import ModelMetricsSdk
-from trainingmgr.common.trainingmgr_operations import data_extraction_start, training_start, data_extraction_status, create_dme_filtered_data_job, delete_dme_filtered_data_job
+from trainingmgr.common.trainingmgr_operations import data_extraction_start, training_start, data_extraction_status, create_dme_filtered_data_job, delete_dme_filtered_data_job, \
+get_model_info
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.trainingmgr_util import get_one_word_status, check_trainingjob_data, \
     check_key_in_dictionary, get_one_key, \
@@ -869,6 +870,10 @@ def trainingjob_operations(trainingjob_name):
                     _measurement for influx db datalake
                 bucket: str
                     bucket name for influx db datalake
+                is_mme: boolean
+                    whether mme is enabled 
+                model_name: str
+                    name of the model
 
     Returns:
         1. For post request
@@ -904,13 +909,31 @@ def trainingjob_operations(trainingjob_name):
             else:
                 (featuregroup_name, description, pipeline_name, experiment_name,
                 arguments, query_filter, enable_versioning, pipeline_version,
-                datalake_source, _measurement, bucket) = \
+                datalake_source, _measurement, bucket, is_mme, model_name) = \
                 check_trainingjob_data(trainingjob_name, json_data)
+                model_info=""
+                if is_mme: 
+                    pipeline_dict =json.loads(TRAININGMGR_CONFIG_OBJ.pipeline)
+                    model_info=get_model_info(TRAININGMGR_CONFIG_OBJ, model_name)
+                    s=model_info["meta-info"]["feature-list"]
+                    model_type=model_info["meta-info"]["model-type"]
+                    try:
+                        pipeline_name=pipeline_dict[str(model_type)]
+                    except Exception as err:
+                        err="Doesn't support the model type"
+                        raise TMException(err)
+                    pipeline_version=pipeline_name
+                    feature_list=','.join(s)
+                    result= get_feature_groups_db(PS_DB_OBJ)
+                    for res in result:
+                        if feature_list==res[1]:
+                            featuregroup_name=res[0]
+                            break 
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, True, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
                                     PS_DB_OBJ, _measurement=_measurement,
-                                    bucket=bucket)
+                                    bucket=bucket, is_mme=is_mme, model_name=model_name, model_info=model_info)
                 api_response =  {"result": "Information stored in database."}                 
                 response_code = status.HTTP_201_CREATED
         elif(request.method == 'PUT'):
@@ -930,14 +953,18 @@ def trainingjob_operations(trainingjob_name):
                             not in [States.FAILED.name, States.FINISHED.name]):
                         raise TMException("Trainingjob(" + trainingjob_name + ") is not in finished or failed status")
 
-                (featuregroup_name, description, pipeline_name, experiment_name,
-                arguments, query_filter, enable_versioning, pipeline_version,
-                datalake_source, _measurement, bucket) = check_trainingjob_data(trainingjob_name, json_data)
-
+                    (featuregroup_name, description, pipeline_name, experiment_name,
+                    arguments, query_filter, enable_versioning, pipeline_version,
+                    datalake_source, _measurement, bucket, is_mme, model_name) = check_trainingjob_data(trainingjob_name, json_data)
+                if is_mme:
+                    featuregroup_name=results[0][2]
+                    pipeline_name, pipeline_version=results[0][3], results[0][13]
+                # model name is not changing hence model info is unchanged.
+                model_info = results[0][22]
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                         arguments, query_filter, False, enable_versioning,
                                         pipeline_version, datalake_source, trainingjob_name, PS_DB_OBJ, _measurement=_measurement,
-                                        bucket=bucket)
+                                        bucket=bucket, is_mme=is_mme, model_name=model_name, model_info=model_info)
                 api_response = {"result": "Information updated in database."}
                 response_code = status.HTTP_200_OK
     except Exception as err:

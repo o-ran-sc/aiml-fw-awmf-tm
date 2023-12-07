@@ -46,7 +46,12 @@ class TrainingMgrConfig:
         self.__ps_password = getenv('PS_PASSWORD').rstrip() if getenv('PS_PASSWORD') is not None else None
         self.__ps_ip = getenv('PS_IP').rstrip() if getenv('PS_IP') is not None else None
         self.__ps_port = getenv('PS_PORT').rstrip() if getenv('PS_PORT') is not None else None
+
+        self.__model_management_service_ip = getenv('MODEL_MANAGEMENT_SERVICE_IP').rstrip() if getenv('MODEL_MANAGEMENT_SERVICE_IP') is not None else None
+        self.__model_management_service_port = getenv('MODEL_MANAGEMENT_SERVICE_PORT').rstrip() if getenv('MODEL_MANAGEMENT_SERVICE_PORT') is not None else None
+
         self.__allow_control_access_origin = getenv('ACCESS_CONTROL_ALLOW_ORIGIN').rstrip() if getenv('ACCESS_CONTROL_ALLOW_ORIGIN') is not None else None
+        self.__pipeline = getenv('PIPELINE').rstrip() if getenv('PIPELINE') is not None else None
 
         self.tmgr_logger = TMLogger("common/conf_log.yaml")
         self.__logger = self.tmgr_logger.logger
@@ -182,6 +187,29 @@ class TrainingMgrConfig:
             port number where postgres db is accessible
         """
         return self.__ps_port
+    
+    @property
+    def model_management_service_port(self):
+        """
+        Function for getting model management service port
+        Args:None
+
+        Returns:
+            string model_management_service_port
+        """
+        return self.__model_management_service_port
+    
+
+    @property
+    def model_management_service_ip(self):
+        """
+        Function for getting model management service ip
+        Args:None
+
+        Returns:
+            string model_management_service_ip
+        """
+        return self.__model_management_service_ip
 
     @property
     def allow_control_access_origin(self):
@@ -196,6 +224,19 @@ class TrainingMgrConfig:
         """
         return self.__allow_control_access_origin
 
+    @property
+    def pipeline(self):
+        """
+        Function for getting pipelines
+
+        Args: None
+
+        Returns:
+            string pipelines
+        
+        """
+        return self.__pipeline
+
     def is_config_loaded_properly(self):
         """
         This function checks where all environment variable got value or not.
@@ -207,7 +248,8 @@ class TrainingMgrConfig:
         for var in [self.__kf_adapter_ip, self.__kf_adapter_port,
                     self.__data_extraction_ip, self.__data_extraction_port,
                     self.__my_port, self.__ps_ip, self.__ps_port, self.__ps_user,
-                    self.__ps_password, self.__my_ip, self.__allow_control_access_origin, self.__logger]:
+                    self.__ps_password, self.__my_ip,self.__model_management_service_ip, self.__model_management_service_port, 
+                    self.__allow_control_access_origin,self.__pipeline, self.__logger]:
             if var is None:
                 all_present = False
         return all_present
