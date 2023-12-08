@@ -1066,6 +1066,9 @@ def retraining():
             datalake_source = get_one_key(json.loads(results[0][14])["datalake_source"])
             _measurement = results[0][17]
             bucket = results[0][18]
+            is_mme=results[0][20]
+            model_name=results[0][21]
+            model_info=results[0][22]
 
             notification_url = ""
             if "notification_url" in obj:
@@ -1075,11 +1078,11 @@ def retraining():
                 query_filter = obj['feature_filter']
 
             try:
-                add_update_trainingjob(description, pipeline_name, experiment_name,
-                                      featuregroup_name, arguments, query_filter, False,
-                                      enable_versioning, pipeline_version,
-                                      datalake_source, trainingjob_name, PS_DB_OBJ,
-                                      notification_url, _measurement, bucket)
+                add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
+                                    arguments, query_filter, False, enable_versioning,
+                                    pipeline_version, datalake_source, trainingjob_name, 
+                                    PS_DB_OBJ, _measurement=_measurement,
+                                    bucket=bucket, is_mme=is_mme, model_name=model_name, model_info=model_info)
             except Exception as err:
                 not_possible_to_retrain.append(trainingjob_name)
                 LOGGER.debug(str(err) + "(training job is " + trainingjob_name + ")")
