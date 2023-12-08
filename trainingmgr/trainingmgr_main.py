@@ -536,6 +536,22 @@ def pipeline_notification():
                 change_steps_state_of_latest_version(trainingjob_name, PS_DB_OBJ,
                                                         Steps.TRAINED_MODEL.name,
                                                         States.FINISHED.name)
+                # upload to the mme
+                trainingjob_info=get_trainingjob_info_by_name(trainingjob_name, PS_DB_OBJ)
+
+                is_mme= trainingjob_info[0][20]
+                if is_mme:   
+                    model_name=trainingjob_info[0][21] #model_name
+                    file=MM_SDK.get_model_zip(trainingjob_name, str(version))
+                    url ="http://"+str(TRAININGMGR_CONFIG_OBJ.model_management_service_ip)+":"+str(TRAININGMGR_CONFIG_OBJ.model_management_service_port)+"/uploadModel/{}".format(model_name)
+                    LOGGER.debug("url for upload is: ", url)
+                    resp2=requests.post(url=url, files={"file":('Model.zip', file, 'application/zip')})
+                    if resp2.status_code != status.HTTP_200_OK :
+                        errMsg= "Upload to mme failed"
+                        LOGGER.error(errMsg + trainingjob_name)
+                        raise TMException(errMsg + trainingjob_name)
+                    
+                    LOGGER.debug("Model uploaded to the MME")
             else:
                 errMsg = "Trained model is not available  "
                 LOGGER.error(errMsg + trainingjob_name)
