@@ -18,7 +18,7 @@
 import json
 import requests
 from unittest import mock
-from mock import patch
+from mock import patch, MagicMock
 import pytest
 import flask
 from requests.models import Response
@@ -188,3 +188,30 @@ class Test_delete_dme_filtered_data_job:
             assert "URL validation error: " in err.message
         except Exception:
             assert False
+
+class Test_get_model_info:
+
+    @patch('trainingmgr.common.trainingmgr_operations.requests.get')
+    def test_get_model_info(self,mock_requests_get):
+        training_config_obj = DummyVariable()
+        model_name="abc"
+        mock_response=MagicMock(spec=Response)
+        mock_response.status_code=200
+        mock_response.json.return_value={'message':'{"abc":"bca"}'}
+        mock_requests_get.return_value= mock_response
+        model_info=trainingmgr_operations.get_model_info(training_config_obj, model_name)
+        expected_model_info={'abc': 'bca'}
+        assert model_info==expected_model_info, "get model info failed"
+
+    @patch('trainingmgr.common.trainingmgr_operations.requests.get')
+    def test_negative_get_model_info(self,mock_requests_get):
+        training_config_obj = DummyVariable()
+        model_name="abc"
+        mock_response=MagicMock(spec=Response)
+        mock_response.status_code=500
+        mock_response.json.return_value={'message':'{"abc":"bca"}'}
+        mock_requests_get.return_value= mock_response
+        try:
+            model_info=trainingmgr_operations.get_model_info(training_config_obj, model_name)
+        except TMException as err:
+            assert "model info can't be fetched, model_name:" in err.message
