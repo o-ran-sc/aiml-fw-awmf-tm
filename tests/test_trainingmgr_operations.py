@@ -45,6 +45,8 @@ class DummyVariable:
     kf_adapter_port = 5001
     data_extraction_ip = "localhost"
     data_extraction_port = 32000
+    model_management_service_ip="localhost"
+    model_management_service_port=123123
     logger = trainingmgr_main.LOGGER
 
 class Test_data_extraction_start:
