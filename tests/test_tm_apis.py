@@ -34,7 +34,7 @@ from threading import Lock
 from trainingmgr import trainingmgr_main 
 from trainingmgr.common.tmgr_logger import TMLogger
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
-from trainingmgr.common.exceptions_utls import DBException
+from trainingmgr.common.exceptions_utls import DBException, TMException
 trainingmgr_main.LOGGER = pytest.logger
 trainingmgr_main.LOCK = Lock()
 trainingmgr_main.DATAEXTRACTION_JOBS_CACHE = {}
@@ -131,10 +131,10 @@ class Test_pipeline_notification:
         self.logger = trainingmgr_main.LOGGER
         
     mocked_mm_sdk=mock.Mock(name="MM_SDK")
-    attrs_mm_sdk = {'check_object.return_value': True}
+    attrs_mm_sdk = {'check_object.return_value': True, 'get_model_zip.return_value':""}
     mocked_mm_sdk.configure_mock(**attrs_mm_sdk)
     mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
-    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': 123, 'my_port.return_value' : 100}
+    attrs_TRAININGMGR_CONFIG_OBJ = {'my_ip.return_value': 123, 'my_port.return_value' : 100, 'model_management_service_ip.return_value': 123, 'model_management_service_port.return_value' : 100}
     mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
     message1="Pipeline notification success."
     code1=status.HTTP_200_OK
@@ -162,6 +162,59 @@ class Test_pipeline_notification:
         trainingmgr_main.LOGGER.debug(response.data)    
         assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
         assert expected_data in str(response.data)
+
+    db_result = [('usecase1', 'uc1', '*', 'qoe Pipeline lat v2', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "usecase1"}}',
+     '', datetime.datetime(2022, 10, 12, 10, 0, 59, 923588), '51948a12-aee9-42e5-93a0-b8f4a15bca33',
+      '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FAILED"}',
+       datetime.datetime(2022, 10, 12, 10, 2, 31, 888830), 1, False, '3', '{"datalake_source": {"InfluxSource": {}}}', 'No data available.', '', 'liveCell', 'UEData', False, True, "","")]
+    the_response_upload=Response()
+    the_response_upload.status_code=200
+    @patch('trainingmgr.trainingmgr_main.MM_SDK', return_value = mocked_mm_sdk)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ) 
+    @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')
+    @patch('trainingmgr.trainingmgr_main.update_model_download_url')
+    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value=db_result)
+    @patch('trainingmgr.trainingmgr_main.requests.post', return_value=the_response_upload)
+    @patch('trainingmgr.trainingmgr_main.get_latest_version_trainingjob_name', return_value = "usecase1")
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = response_tuple1)
+    def test_pipeline_notification_mme(self,mock1, mock2, mock3, mock4, mock5, mock6, mock7, mock8):
+        trainingmgr_main.LOGGER.debug("******* test_pipeline_notification post *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    "run_status":"Succeeded",
+                    }
+        expected_data = "Pipeline notification success."
+        response = self.client.post("/trainingjob/pipelineNotification".format("usecase1"),data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)    
+        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
+        assert expected_data in str(response.data)
+
+    db_result = [('usecase1', 'uc1', '*', 'qoe Pipeline lat v2', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "usecase1"}}',
+     '', datetime.datetime(2022, 10, 12, 10, 0, 59, 923588), '51948a12-aee9-42e5-93a0-b8f4a15bca33',
+      '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FAILED"}',
+       datetime.datetime(2022, 10, 12, 10, 2, 31, 888830), 1, False, '3', '{"datalake_source": {"InfluxSource": {}}}', 'No data available.', '', 'liveCell', 'UEData', False, True, "","")]
+    the_response_upload=Response()
+    the_response_upload.status_code=500
+    @patch('trainingmgr.trainingmgr_main.MM_SDK', return_value = mocked_mm_sdk)
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ) 
+    @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')
+    @patch('trainingmgr.trainingmgr_main.update_model_download_url')
+    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value=db_result)
+    @patch('trainingmgr.trainingmgr_main.requests.post', return_value=the_response_upload)
+    @patch('trainingmgr.trainingmgr_main.get_latest_version_trainingjob_name', return_value = "usecase1")
+    @patch('trainingmgr.trainingmgr_main.response_for_training', return_value = response_tuple1)
+    def test__negative_pipeline_notification_mme(self,mock1, mock2, mock3, mock4, mock5, mock6, mock7, mock8):
+        trainingmgr_main.LOGGER.debug("******* test_pipeline_notification post *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    "run_status":"Succeeded",
+                    }
+        try:
+            response = self.client.post("/trainingjob/pipelineNotification".format("usecase1"),data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        except TMException as err:
+            assert "Upload to mme failed" in err.message
 
     message2="Pipeline notification -Training failed "
     code2=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -207,6 +260,7 @@ class Test_pipeline_notification:
         trainingmgr_main.LOGGER.debug(response.data)    
         assert response.status_code == status.HTTP_404_NOT_FOUND, "Return status code NOT equal"
         assert expected_data in str(response.data)
+
 
 class Test_get_trainingjob_by_name_version:
     def setup_method(self):
