@@ -31,3 +31,5 @@
   python-dotenv
   kubernetes
   pg8000
+  validators==0.20.0
+  Werkzeug==2.2.2
