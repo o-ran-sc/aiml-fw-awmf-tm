@@ -29,20 +29,42 @@ Version history
 | 2023-08-10         | 1.1.3              | Joseph Thaliath    | H Maintenance release|
 |                    |                    |                    |                      |
 +--------------------+--------------------+--------------------+----------------------+
+| 2023-12-14         | 1.2.0              | Sandeep Jaisawal   | I release            |
+|                    |                    |                    |                      |
++--------------------+--------------------+--------------------+----------------------+
 
 
 Summary
 =======
 
-The H release of AIMLFW Training manager supports the new functionalities like
+The I release of AIMLFW Training manager supports the new functionalities like
 
-#. Feature group creation,
-#. Support for obtaining training data from DME,
-#. Editing training jobs and Retraining support
+#. Integration with Model Management Service
+#. feature group enhancements 
 
 
 Release Data
 ============
+
+I Release
+---------------------
+
++--------------------------------------+------------------------------------------------+
+| **Project**                          | AIMLFW Training manager                        |
+|                                      |                                                |
++--------------------------------------+------------------------------------------------+
+| **Repo/commit-ID**                   | aiml-fw/awmf/tm                                |
+|                                      | /ff553c375fab491e7c73bad09b0addabf49421bd      |
++--------------------------------------+------------------------------------------------+
+| **Release designation**              | I release                                      |
+|                                      |                                                |
++--------------------------------------+------------------------------------------------+
+| **Release date**                     | 2023-12-29                                     |
+|                                      |                                                |
++--------------------------------------+------------------------------------------------+
+| **Purpose of the delivery**          | Integration with Model Management Service      |
++--------------------------------------+------------------------------------------------+
+
 
 H Maintenance Release
 ---------------------
