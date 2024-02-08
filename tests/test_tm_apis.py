@@ -999,7 +999,7 @@ class Test_create_featuregroup:
         self.client = trainingmgr_main.APP.test_client(self)
         self.logger = trainingmgr_main.LOGGER
     
-    feature_group_data2=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',False,'','','','','','', '','')
+    feature_group_data2=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',False,'','','','','','', '','', '')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data2)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=False)
     @patch('trainingmgr.trainingmgr_main.add_featuregroup')
@@ -1012,6 +1012,7 @@ class Test_create_featuregroup:
                                  "Port":"",
                                  "dmePort":"",
                                  "bucket":"",
+                                 "_measurement":"",
                                  "token":"",
                                  "source_name":"",
                                  "measured_obj_class":"",
@@ -1028,7 +1029,7 @@ class Test_create_featuregroup:
     the_response1.headers={"content-type": "application/json"}
     the_response1._content = b''
     mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
-    feature_group_data2=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','','')
+    feature_group_data2=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','','','')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data2)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=False)
     @patch('trainingmgr.trainingmgr_main.add_featuregroup')
@@ -1044,6 +1045,7 @@ class Test_create_featuregroup:
                             "host": "",
                             "port": "",
                             "bucket": "",
+                            "_measurement":"",
                             "dmePort":"",
                             "token": "",
                             "source_name": "",
@@ -1062,7 +1064,7 @@ class Test_create_featuregroup:
     the_response2.headers={"content-type": "application/json"}
     the_response2._content = b''
     mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
-    feature_group_data3=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','','')
+    feature_group_data3=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','','','')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data3)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=False)
     @patch('trainingmgr.trainingmgr_main.add_featuregroup')
@@ -1078,6 +1080,7 @@ class Test_create_featuregroup:
                             "host": "",
                             "port": "",
                             "bucket": "",
+                            "_measurement":"",
                             "dmePort":"",
                             "token": "",
                             "source_name": "",
@@ -1092,7 +1095,7 @@ class Test_create_featuregroup:
         assert response.status_code ==status.HTTP_400_BAD_REQUEST, "Return status code not equal"
 
 
-    feature_group_data3=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','','')
+    feature_group_data3=('testing_hash','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','','','')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data3)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=False)
     @patch('trainingmgr.trainingmgr_main.add_featuregroup',side_effect = Exception('Mocked error'))
@@ -1106,6 +1109,7 @@ class Test_create_featuregroup:
                             "host": "",
                             "port": "",
                             "bucket": "",
+                            "_measurement":"",
                             "dmePort":"",
                             "token": "",
                             "source_name": "",
@@ -1119,7 +1123,7 @@ class Test_create_featuregroup:
         assert response.data==expected_response
         assert response.status_code ==status.HTTP_500_INTERNAL_SERVER_ERROR, "Return status code not equal"  
 
-    feature_group_data3=('testing_hash!@','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','','')
+    feature_group_data3=('testing_hash!@','pdcpBytesDl,pdcpBytesUl','InfluxSource',True,'127.0.0.1','31823','pm-bucket','','','','','','')
     @patch('trainingmgr.trainingmgr_main.check_feature_group_data', return_value=feature_group_data3)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=True)
     def test_neagtive_create_featuregroup_3(self, mock1, mock2):
@@ -1132,6 +1136,7 @@ class Test_create_featuregroup:
                             "port": "",
                             "bucket": "",
                             "dmePort":"",
+                            "_measurement":"",
                             "token": "",
                             "source_name": "",
                             "measured_obj_class":"",
@@ -1183,7 +1188,6 @@ class Test_get_feature_group_by_name:
         expected_data=b'{"Exception": "Failed to fetch feature group info from db"}'
         fg_name='testing'
         response=self.client.get('/featureGroup/{}'.format(fg_name))
-        print(response.data)
         assert response.status_code == 404 , "status code is not equal"
         assert response.data == expected_data
     
@@ -1230,7 +1234,6 @@ class Test_delete_list_of_feature_group:
         delete_req=delete_req={"featuregroups_list":[{"featureGroup_name":"testing_hash"}]}
         expected_response=b'{"Exception": "Wrong Request syntax"}'
         response=self.client.delete('/featureGroup', data=json.dumps(delete_req), content_type="application/json")
-        print("response data", response.data)
         assert response.data==expected_response
         assert response.status_code==400, "status code not equal"
     
@@ -1317,7 +1320,6 @@ class Test_delete_list_of_trainingjob_version:
         delete_req={"list":[{"trainingjob_name":"testing_dme_02","version":1}]}
         expected_response=b'{"Exception": "Wrong Request syntax"}'
         response=self.client.delete('/trainingjobs', data=json.dumps(delete_req), content_type="application/json")
-        print("response data", response.data)
         assert response.data==expected_response
         assert response.status_code==400, "status code not equal"
 
@@ -1327,7 +1329,6 @@ class Test_delete_list_of_trainingjob_version:
         delete_req={"list":[{"trainingjob_name":"testing_dme_02","version":1}]}
         expected_response=b'{"Exception": "not given as list"}'
         response=self.client.delete('/trainingjobs', data=json.dumps(delete_req), content_type="application/json")
-        print("response data", response.data)
         assert response.data==expected_response
         assert response.status_code==400, "status code not equal"
     
