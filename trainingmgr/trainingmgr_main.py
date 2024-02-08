@@ -1388,7 +1388,7 @@ def create_feature_group():
 
     try:
         json_data=request.json
-        (feature_group_name, features, datalake_source, enable_dme, host, port,dme_port,bucket, token, source_name,db_org, measured_obj_class)=check_feature_group_data(json_data)
+        (feature_group_name, features, datalake_source, enable_dme, host, port,dme_port,bucket, token, source_name,db_org, measured_obj_class, _measurement)=check_feature_group_data(json_data)
         # check the data conformance
         LOGGER.debug("the db info is : ", get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name))
         if (not check_trainingjob_name_or_featuregroup_name(feature_group_name) or
@@ -1399,7 +1399,7 @@ def create_feature_group():
         else:
             # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
             features_list = features.split(",")
-            add_featuregroup(feature_group_name, features, datalake_source , host, port, bucket, token, db_org, enable_dme, PS_DB_OBJ, measured_obj_class, dme_port, source_name)
+            add_featuregroup(feature_group_name, features, datalake_source , host, port, bucket, token, db_org, _measurement, enable_dme, PS_DB_OBJ, measured_obj_class, dme_port, source_name)
             api_response={"result": "Feature Group Created"}
             response_code =status.HTTP_200_OK
             if enable_dme == True :
