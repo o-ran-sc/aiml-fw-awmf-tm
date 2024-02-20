@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "986c0eb3_6e1b1ffe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-02-20T09:24:49Z",
+      "side": 1,
+      "message": "refer the code review: https://gerrit.o-ran-sc.org/r/c/aiml-fw/awmf/tm/+/12520",
+      "revId": "ad23c107475c043f5182ebbd454bd0eab8bfbee0",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
