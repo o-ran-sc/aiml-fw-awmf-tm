@@ -16,7 +16,7 @@
 #
 # ==================================================================================
 #Base Image
-FROM python:3.8
+FROM python:3.10
 
 # location in the container
 ENV TA_DIR /home/app/
