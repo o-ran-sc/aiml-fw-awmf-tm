@@ -137,6 +137,7 @@ class PSDB():
                         "bucket varchar(128) NOT NULL," + \
                         "token varchar(2000) NOT NULL," + \
                         "db_org varchar(128) NOT NULL," + \
+                        "_measurement varchar(100) NOT NULL," + \
                         "enable_dme BOOLEAN NOT NULL," + \
                         "measured_obj_class varchar(128) NOT NULL," + \
                         "dme_port varchar(128) NOT NULL," + \
