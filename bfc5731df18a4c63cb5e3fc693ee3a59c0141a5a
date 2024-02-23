@@ -24,6 +24,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4815da2e_0ff6cd93",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1391,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-02-23T08:41:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5e45fb4b_739d7c37",
+      "range": {
+        "startLine": 1391,
+        "startChar": 143,
+        "endLine": 1391,
+        "endChar": 155
+      },
+      "revId": "bfc5731df18a4c63cb5e3fc693ee3a59c0141a5a",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bc658384_f5d3dae4",
@@ -37,6 +61,30 @@
       "writtenOn": "2024-02-20T09:23:47Z",
       "side": 1,
       "message": "replace `_measurement` with `measurement`.",
+      "range": {
+        "startLine": 1402,
+        "startChar": 112,
+        "endLine": 1402,
+        "endChar": 124
+      },
+      "revId": "bfc5731df18a4c63cb5e3fc693ee3a59c0141a5a",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8c6bfb6_8eb0adb9",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1402,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-02-23T08:41:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc658384_f5d3dae4",
       "range": {
         "startLine": 1402,
         "startChar": 112,
