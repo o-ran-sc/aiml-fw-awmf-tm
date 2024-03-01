@@ -1461,7 +1461,7 @@ def get_feature_group():
                 "featuregroup_name": res[0],
                 "features": res[1],
                 "datalake": res[2],
-                "dme": res[8]                
+                "dme": res[9]                 
                 }
             feature_groups.append(dict_data)
         api_response={"featuregroups":feature_groups}
@@ -1532,14 +1532,15 @@ def get_feature_group_by_name(featuregroup_name):
                     "featuregroup_name": res[0],
                     "features": res[1],
                     "datalake": res[2],
-                    "dme": res[8],
+                    "dme": res[9],
                     "host": res[3],
-                    "measured_obj_class":res[9],
+                    "measured_obj_class":res[10],
                     "port": res[4],
-                    "dme_port":res[10],
+                    "dme_port":res[11],
                     "bucket":res[5],
                     "token":res[6],
-                    "source_name":res[11],
+                    "source_name":res[12],
+                    "measurement":res[8],
                     "db_org":res[7]
                 }
                 feature_group.append(dict_data)
