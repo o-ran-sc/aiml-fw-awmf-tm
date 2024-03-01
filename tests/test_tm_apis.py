@@ -1154,7 +1154,7 @@ class Test_get_feature_group:
         self.client = trainingmgr_main.APP.test_client(self)
         self.logger = trainingmgr_main.LOGGER
 
-    result=[('testing', '', 'InfluxSource', '', '', '', '', '', True, '', '', '')]
+    result=[('testing', '', 'InfluxSource', '', '', '', '', '', '',True, '', '', '')]
     @patch('trainingmgr.trainingmgr_main.get_feature_groups_db', return_value=result)
     def test_get_feature_group(self,mock1):
         expected_data=b'{"featuregroups": [{"featuregroup_name": "testing", "features": "", "datalake": "InfluxSource", "dme": true}]}'
@@ -1174,10 +1174,10 @@ class Test_get_feature_group_by_name:
         self.client = trainingmgr_main.APP.test_client(self)
         self.logger = trainingmgr_main.LOGGER
 
-    result=[('testing', '', 'InfluxSource', '127.0.0.21', '8080', '', '', '', '', '', '', '')]
+    result=[('testing', '', 'InfluxSource', '127.0.0.21', '8080', '', '', '', '', '', '', '','')]
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=result)
     def test_get_feature_group_by_name(self, mock1):
-        expected_data=b'{"featuregroup": [{"featuregroup_name": "testing", "features": "", "datalake": "InfluxSource", "dme": "", "host": "127.0.0.21", "measured_obj_class": "", "port": "8080", "dme_port": "", "bucket": "", "token": "", "source_name": "", "db_org": ""}]}'
+        expected_data=b'{"featuregroup": [{"featuregroup_name": "testing", "features": "", "datalake": "InfluxSource", "dme": "", "host": "127.0.0.21", "measured_obj_class": "", "port": "8080", "dme_port": "", "bucket": "", "token": "", "source_name": "", "measurement": "", "db_org": ""}]}'
         fg_name='testing'
         response=self.client.get('/featureGroup/{}'.format(fg_name))
         assert response.status_code == 200 , "status code is not equal"
