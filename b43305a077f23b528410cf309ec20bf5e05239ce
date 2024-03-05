@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "beadbd42_c823c54b",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1490,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-03-05T02:04:52Z",
+      "side": 1,
+      "message": "\u003e Can you add \u0027measure\u0027 to the above description? It would be nice if you could sort the keys in the order stored in the DB.\n\nCorrected with `measurement`, not `measure`.",
+      "parentUuid": "caa05c99_81d21160",
+      "revId": "b43305a077f23b528410cf309ec20bf5e05239ce",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "aab9b0c9_6c87b399",
         "filename": "trainingmgr/trainingmgr_main.py",
         "patchSetId": 2
