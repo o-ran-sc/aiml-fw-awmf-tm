@@ -36,6 +36,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "107d73af_6d003930",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1490,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-03-06T10:58:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "beadbd42_c823c54b",
+      "revId": "b43305a077f23b528410cf309ec20bf5e05239ce",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "aab9b0c9_6c87b399",
@@ -49,6 +67,24 @@
       "writtenOn": "2024-03-05T01:58:44Z",
       "side": 1,
       "message": "I\u0027m not sure which one is correct because of https://gerrit.o-ran-sc.org/r/c/aiml-fw/awmf/tm/+/12549/2/trainingmgr/common/trainingmgr_util.py#177.",
+      "revId": "b43305a077f23b528410cf309ec20bf5e05239ce",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "617b619f_f5c942f6",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1543,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-03-06T10:58:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aab9b0c9_6c87b399",
       "revId": "b43305a077f23b528410cf309ec20bf5e05239ce",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
