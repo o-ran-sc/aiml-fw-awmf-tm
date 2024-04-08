@@ -131,10 +131,6 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                              url for downloading model
                         notification_url: str
                              url of notification server
-                        _measurement: str
-                             _measurement of influx db datalake
-                        bucket: str
-                             bucket name of influx db datalake
                         is_mme: boolean
                             whether the mme is enabled
                         model_name: str
@@ -180,11 +176,9 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                 "datalake_source": get_one_key(json.loads(trainingjob_info[14])['datalake_source']),
                 "model_url": trainingjob_info[15],
                 "notification_url": trainingjob_info[16],
-                "_measurement": trainingjob_info[17],
-                "bucket": trainingjob_info[18],
-                "is_mme": trainingjob_info[20], 
-                "model_name": trainingjob_info[21],
-                "model_info": trainingjob_info[22],
+                "is_mme": trainingjob_info[17], 
+                "model_name": trainingjob_info[18],
+                "model_info": trainingjob_info[19],
                 "accuracy": data
             }
             response_data = {"trainingjob": dict_data}
