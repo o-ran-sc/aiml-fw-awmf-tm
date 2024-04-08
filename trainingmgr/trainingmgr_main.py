@@ -345,7 +345,7 @@ def training(trainingjob_name):
             influxdb_info_dic["source_name"]= result[0][11]
             query_filter = db_results[0][6]
             datalake_source = json.loads(db_results[0][14])['datalake_source']
-            _measurement = db_results[0][17]
+            _measurement = result[0][8]
             LOGGER.debug('Starting Data Extraction...')
             de_response = data_extraction_start(TRAININGMGR_CONFIG_OBJ, trainingjob_name,
                                          feature_list_string, query_filter, datalake_source,
@@ -377,7 +377,6 @@ def training(trainingjob_name):
         LOGGER.debug("Error is training, job name:" + trainingjob_name + str(err))         
     return APP.response_class(response=json.dumps(response_data),status=response_code,
                             mimetype=MIMETYPE_JSON)
-
 @APP.route('/trainingjob/dataExtractionNotification', methods=['POST'])
 def data_extraction_notification():
     """
