@@ -458,12 +458,12 @@ class Test_Common_Db_Fun:
         checker = Check()
         try:
             db_obj = db_helper([[None]], raise_exception=True, check_success_obj=checker)
-            add_update_trainingjob('Testing ', 'qoe-pipeline', 'Default', '*', '{epoches : 1}', '', True, True, 'Near RT-RIC', 1, 'InfluxSource', 'Tester'
-            ,True, '', '', db_obj, '', 'liveCell', 'UEData')
+            add_update_trainingjob('Testing ', 'qoe-pipeline', 'Default', '*', '{epoches : 1}', '', True, True, 1, 'InfluxSource', 'Tester'
+            ,db_obj, '','','','','')
             assert checker.finished, 'add_update_trainingjob FAILED, When adding = True'
         except Exception as err:
             fxn_name = "add_update_trainingjob"
-            assert str(err) == "add_update_trainingjob() takes from 12 to 18 positional arguments but 19 were given", 'Negative test {} FAILED when  adding = True , Doesnt returned required error'.format(fxn_name)
+            assert str(err) == "add_update_trainingjob() takes from 12 to 16 positional arguments but 17 were given", 'Negative test {} FAILED when  adding = True , Doesnt returned required error'.format(fxn_name)
     
     def test_get_all_jobs_latest_status_version(self):
         db_obj = db_helper([["usecase_name"]])

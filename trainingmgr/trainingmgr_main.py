@@ -934,7 +934,7 @@ def trainingjob_operations(trainingjob_name):
             else:
                 (featuregroup_name, description, pipeline_name, experiment_name,
                 arguments, query_filter, enable_versioning, pipeline_version,
-                datalake_source, _measurement, bucket, is_mme, model_name) = \
+                datalake_source, is_mme, model_name) = \
                 check_trainingjob_data(trainingjob_name, json_data)
                 model_info=""
                 if is_mme: 
@@ -957,8 +957,7 @@ def trainingjob_operations(trainingjob_name):
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, True, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
-                                    PS_DB_OBJ, _measurement=_measurement,
-                                    bucket=bucket, is_mme=is_mme, model_name=model_name, model_info=model_info)
+                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_info=model_info)
                 api_response =  {"result": "Information stored in database."}                 
                 response_code = status.HTTP_201_CREATED
         elif(request.method == 'PUT'):

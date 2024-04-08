@@ -470,10 +470,10 @@ def update_model_download_url(trainingjob_name, version, url, ps_db_obj):
             conn.close()
 
 
-def add_update_trainingjob(description, pipeline_name, experiment_name, feature_list, arguments,
+def add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name, arguments,
                           query_filter, adding, enable_versioning,
                           pipeline_version, datalake_source, trainingjob_name, ps_db_obj, notification_url="",
-                          _measurement="", bucket="", is_mme="", model_name="", model_info=""):
+                          is_mme="", model_name="", model_info=""):
     """
     This function add the new row or update existing row with given information
     """
@@ -511,14 +511,14 @@ def add_update_trainingjob(description, pipeline_name, experiment_name, feature_
                 version = version + 1
                 cursor.execute('''INSERT INTO {} VALUES '''.format(tm_table_name) + \
                                '''(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,''' + \
-                               ''' %s,%s,%s,%s,%s,%s,%s,%s,%s, %s)''',
-                               (trainingjob_name, description, feature_list, pipeline_name,
+                               ''' %s,%s,%s,%s,%s,%s,%s,%s)''',
+                               (trainingjob_name, description, featuregroup_name, pipeline_name,
                                 experiment_name, arguments_string, query_filter,
                                 creation_time, run_id, json.dumps(steps_state),
                                 updation_time, version,
                                 enable_versioning, pipeline_version,
                                 datalake_source_string, model_url, notification_url,
-                                _measurement, bucket, deletion_in_progress, is_mme, model_name, model_info))
+                                deletion_in_progress, is_mme, model_name, model_info))
             else:
                 cursor.execute('''update {} set description=%s, feature_list=%s, '''.format(tm_table_name) + \
                                '''pipeline_name=%s,experiment_name=%s,arguments=%s,''' + \
@@ -526,26 +526,26 @@ def add_update_trainingjob(description, pipeline_name, experiment_name, feature_
                                '''steps_state=%s,''' + \
                                '''pipeline_version=%s,updation_time=%s,enable_versioning=%s,''' + \
                                '''datalake_source=%s,''' + \
-                               '''model_url=%s, notification_url=%s, _measurement=%s, ''' + \
-                               '''bucket=%s, deletion_in_progress=%s, is_mme=%s, model_name=%s , model_info=%s where ''' + \
+                               '''model_url=%s, notification_url=%s, ''' + \
+                               '''deletion_in_progress=%s, is_mme=%s, model_name=%s , model_info=%s where ''' + \
                                '''trainingjob_name=%s and version=%s''',
-                               (description, feature_list, pipeline_name, experiment_name,
+                               (description, featuregroup_name, pipeline_name, experiment_name,
                                 arguments_string, query_filter, creation_time, run_id,
                                 json.dumps(steps_state),
                                 pipeline_version, updation_time, enable_versioning,
                                 datalake_source_string, model_url, notification_url,
-                                _measurement, bucket, deletion_in_progress, is_mme, model_name, model_info, trainingjob_name, version))
+                                deletion_in_progress, is_mme, model_name, model_info, trainingjob_name, version))
 
         else:
             cursor.execute(''' INSERT INTO {} VALUES '''.format(tm_table_name) + \
                            '''(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,''' + \
-                           '''%s,%s,%s,%s,%s,%s,%s,%s, %s, %s, %s)''',
-                           (trainingjob_name, description, feature_list, pipeline_name,
+                           '''%s,%s,%s,%s,%s,%s,%s,%s, %s)''',
+                           (trainingjob_name, description, featuregroup_name, pipeline_name,
                             experiment_name, arguments_string, query_filter, creation_time,
                             run_id, json.dumps(steps_state),
                             updation_time, version, enable_versioning,
                             pipeline_version, datalake_source_string,
-                            model_url, notification_url, _measurement, bucket,
+                            model_url, notification_url,
                             deletion_in_progress, is_mme, model_name, model_info))
         conn.commit()
         cursor.close()

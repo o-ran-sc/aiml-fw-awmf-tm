@@ -413,7 +413,7 @@ class Test_training_main:
     attrs_TRAININGMGR_CONFIG_OBJ = {'pipeline.return_value':''}
     mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = False)
-    @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db', 2, 'bucket1',True, ""))
+    @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db',True, ""))
     @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.get_model_info', return_value=model_info_json)
     @patch('trainingmgr.trainingmgr_main.json.loads',return_value={'timeseries':''})
@@ -435,8 +435,6 @@ class Test_training_main:
                     "description":"uc1",
                     "pipeline_version":"3",
                     "datalake_source":"InfluxSource",
-                    "_measurement":"liveCell",
-                    "bucket":"UEData",
                     "is_mme":True,
                     "model_name": ""
                     }
@@ -454,7 +452,7 @@ class Test_training_main:
     attrs_TRAININGMGR_CONFIG_OBJ = {'pipeline.return_value':''}
     mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = False)
-    @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db', 2, 'bucket1',True, ""))
+    @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db',True, ""))
     @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.get_model_info', return_value=model_info_json)
     @patch('trainingmgr.trainingmgr_main.json.loads',return_value='')
