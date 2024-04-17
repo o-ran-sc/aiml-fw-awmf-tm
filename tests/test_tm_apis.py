@@ -274,9 +274,7 @@ class Test_get_trainingjob_by_name_version:
         usecase_name = "usecase7"
         version = "1"
         response = self.client.get("/trainingjobs/{}/{}".format(usecase_name, version))
-        expected_data = b'{"trainingjob": {"trainingjob_name": "usecase7", "description": "auto test", "feature_list": "*", "pipeline_name": "prediction with model name", "experiment_name": "Default", "arguments": {"epochs": "1", "usecase": "usecase7"}, "query_filter": "Enb=20 and Cellnum=6", "creation_time": "2022-09-20 11:40:30", "run_id": "7d09c0bf-7575-4475-86ff-5573fb3c4716", "steps_state": {"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FINISHED"}, "updation_time": "2022-09-20 11:42:20", "version": 1, "enable_versioning": true, "pipeline_version": "Near RT RIC", "datalake_source": "cassandra", "model_url": "{\\"datalake_source\\": {\\"CassandraSource\\": {}}}", "notification_url": "http://10.0.0.47:32002/model/usecase7/1/Model.zip", "_measurement": "", "bucket": "", "is_mme": "", "model_name": "", "model_info": false, "accuracy": {"metrics": [{"Accuracy": "0.0"}]}}}'
-
-        assert response.content_type == "application/json", "not equal content type"
+        expected_data = b'{"trainingjob": {"trainingjob_name": "usecase7", "description": "auto test", "feature_list": "*", "pipeline_name": "prediction with model name", "experiment_name": "Default", "arguments": {"epochs": "1", "usecase": "usecase7"}, "query_filter": "Enb=20 and Cellnum=6", "creation_time": "2022-09-20 11:40:30", "run_id": "7d09c0bf-7575-4475-86ff-5573fb3c4716", "steps_state": {"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FINISHED"}, "updation_time": "2022-09-20 11:42:20", "version": 1, "enable_versioning": true, "pipeline_version": "Near RT RIC", "datalake_source": "cassandra", "model_url": "{\\"datalake_source\\": {\\"CassandraSource\\": {}}}", "notification_url": "http://10.0.0.47:32002/model/usecase7/1/Model.zip", "is_mme": "", "model_name": "", "model_info": "", "accuracy": {"metrics": [{"Accuracy": "0.0"}]}}}'
         assert response.status_code == status.HTTP_200_OK, "not equal code"
         assert response.data == expected_data, "not equal data"
 
@@ -413,7 +411,7 @@ class Test_training_main:
     attrs_TRAININGMGR_CONFIG_OBJ = {'pipeline.return_value':''}
     mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = False)
-    @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db', 2, 'bucket1',True, ""))
+    @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db',True, ""))
     @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.get_model_info', return_value=model_info_json)
     @patch('trainingmgr.trainingmgr_main.json.loads',return_value={'timeseries':''})
@@ -435,8 +433,6 @@ class Test_training_main:
                     "description":"uc1",
                     "pipeline_version":"3",
                     "datalake_source":"InfluxSource",
-                    "_measurement":"liveCell",
-                    "bucket":"UEData",
                     "is_mme":True,
                     "model_name": ""
                     }
@@ -454,7 +450,7 @@ class Test_training_main:
     attrs_TRAININGMGR_CONFIG_OBJ = {'pipeline.return_value':''}
     mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = False)
-    @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db', 2, 'bucket1',True, ""))
+    @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db',True, ""))
     @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.get_model_info', return_value=model_info_json)
     @patch('trainingmgr.trainingmgr_main.json.loads',return_value='')

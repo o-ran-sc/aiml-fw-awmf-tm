@@ -131,10 +131,6 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                              url for downloading model
                         notification_url: str
                              url of notification server
-                        _measurement: str
-                             _measurement of influx db datalake
-                        bucket: str
-                             bucket name of influx db datalake
                         is_mme: boolean
                             whether the mme is enabled
                         model_name: str
@@ -180,11 +176,9 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                 "datalake_source": get_one_key(json.loads(trainingjob_info[14])['datalake_source']),
                 "model_url": trainingjob_info[15],
                 "notification_url": trainingjob_info[16],
-                "_measurement": trainingjob_info[17],
-                "bucket": trainingjob_info[18],
-                "is_mme": trainingjob_info[20], 
-                "model_name": trainingjob_info[21],
-                "model_info": trainingjob_info[22],
+                "is_mme": trainingjob_info[17], 
+                "model_name": trainingjob_info[18],
+                "model_info": trainingjob_info[19],
                 "accuracy": data
             }
             response_data = {"trainingjob": dict_data}
@@ -351,7 +345,7 @@ def training(trainingjob_name):
             influxdb_info_dic["source_name"]= result[0][11]
             query_filter = db_results[0][6]
             datalake_source = json.loads(db_results[0][14])['datalake_source']
-            _measurement = db_results[0][17]
+            _measurement = result[0][8]
             LOGGER.debug('Starting Data Extraction...')
             de_response = data_extraction_start(TRAININGMGR_CONFIG_OBJ, trainingjob_name,
                                          feature_list_string, query_filter, datalake_source,
@@ -383,7 +377,6 @@ def training(trainingjob_name):
         LOGGER.debug("Error is training, job name:" + trainingjob_name + str(err))         
     return APP.response_class(response=json.dumps(response_data),status=response_code,
                             mimetype=MIMETYPE_JSON)
-
 @APP.route('/trainingjob/dataExtractionNotification', methods=['POST'])
 def data_extraction_notification():
     """
@@ -934,7 +927,7 @@ def trainingjob_operations(trainingjob_name):
             else:
                 (featuregroup_name, description, pipeline_name, experiment_name,
                 arguments, query_filter, enable_versioning, pipeline_version,
-                datalake_source, _measurement, bucket, is_mme, model_name) = \
+                datalake_source, is_mme, model_name) = \
                 check_trainingjob_data(trainingjob_name, json_data)
                 model_info=""
                 if is_mme: 
@@ -957,8 +950,7 @@ def trainingjob_operations(trainingjob_name):
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, True, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
-                                    PS_DB_OBJ, _measurement=_measurement,
-                                    bucket=bucket, is_mme=is_mme, model_name=model_name, model_info=model_info)
+                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_info=model_info)
                 api_response =  {"result": "Information stored in database."}                 
                 response_code = status.HTTP_201_CREATED
         elif(request.method == 'PUT'):

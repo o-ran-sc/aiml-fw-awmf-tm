@@ -132,8 +132,8 @@ def check_trainingjob_data(trainingjob_name, json_data):
                                  "pipeline_name", "experiment_name",
                                  "arguments", "enable_versioning",
                                  "datalake_source", "description",
-                                 "query_filter", "_measurement",
-                                 "bucket", "is_mme", "model_name"], json_data):
+                                 "query_filter",
+                                 "is_mme", "model_name"], json_data):
 
             description = json_data["description"]
             feature_list = json_data["featureGroup_name"]
@@ -147,8 +147,6 @@ def check_trainingjob_data(trainingjob_name, json_data):
             enable_versioning = json_data["enable_versioning"]
             pipeline_version = json_data["pipeline_version"]
             datalake_source = json_data["datalake_source"]
-            _measurement = json_data["_measurement"]
-            bucket = json_data["bucket"]
             is_mme=json_data["is_mme"]
             model_name=json_data["model_name"]
         else :
@@ -159,7 +157,7 @@ def check_trainingjob_data(trainingjob_name, json_data):
                            str(err)) from None
     return (feature_list, description, pipeline_name, experiment_name,
             arguments, query_filter, enable_versioning, pipeline_version,
-            datalake_source, _measurement, bucket, is_mme, model_name)
+            datalake_source, is_mme, model_name)
 
 def check_feature_group_data(json_data):
     """

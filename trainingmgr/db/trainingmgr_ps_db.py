@@ -97,8 +97,6 @@ class PSDB():
                         "datalake_source varchar(2000) NOT NULL," + \
                         "model_url varchar(100) NOT NULL," + \
                         "notification_url varchar(1000) NOT NULL," + \
-                        "_measurement varchar(100) NOT NULL," + \
-                        "bucket varchar(50) NOT NULL," + \
                         "deletion_in_progress BOOLEAN NOT NULL," + \
                         "is_mme BOOLEAN NOT NULL," + \
                         "model_name varchar(128) NOT NULL," + \
