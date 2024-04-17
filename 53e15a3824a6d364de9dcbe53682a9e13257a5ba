@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "44fcb79e_f4f5c8b6",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 897,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-04-17T07:04:37Z",
+      "side": 1,
+      "message": "remove these comment as well, as the code has been updated to remove these parameters from json body.",
+      "range": {
+        "startLine": 894,
+        "startChar": 0,
+        "endLine": 897,
+        "endChar": 54
+      },
+      "revId": "53e15a3824a6d364de9dcbe53682a9e13257a5ba",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
