@@ -22,6 +22,30 @@
       },
       "revId": "53e15a3824a6d364de9dcbe53682a9e13257a5ba",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dc7561ab_ad1130b9",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 897,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-04-17T07:32:55Z",
+      "side": 1,
+      "message": "this is covered in subsequent commit.",
+      "parentUuid": "44fcb79e_f4f5c8b6",
+      "range": {
+        "startLine": 894,
+        "startChar": 0,
+        "endLine": 897,
+        "endChar": 54
+      },
+      "revId": "53e15a3824a6d364de9dcbe53682a9e13257a5ba",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
