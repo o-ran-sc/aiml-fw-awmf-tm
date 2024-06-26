@@ -485,12 +485,10 @@ class Test_training_main:
         assert response.data == expected_data
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR, "Return status code NOT equal" 
 
-    db_result = [('usecase1', 'uc1', '*', 'qoe Pipeline lat v2', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "usecase1"}}',
-     '', datetime.datetime(2022, 10, 12, 10, 0, 59, 923588), '51948a12-aee9-42e5-93a0-b8f4a15bca33',
-      '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FAILED"}',
-       datetime.datetime(2022, 10, 12, 10, 2, 31, 888830), 1, False, '3', '{"datalake_source": {"InfluxSource": {}}}', 'No data available.', '', 'liveCell', 'UEData', False, False, "","")]
+    db_result = [('my_testing_new_7', 'testing', 'testing_influxdb', 'pipeline_kfp2.2.0_5', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "my_testing_new_7"}}', '', datetime.datetime(2024, 6, 21, 8, 57, 48, 408725), '432516c9-29d2-4f90-9074-407fe8f77e4f', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FINISHED"}', datetime.datetime(2024, 6, 21, 9, 1, 54, 388278), 1, False, 'pipeline_kfp2.2.0_5', '{"datalake_source": {"InfluxSource": {}}}', 'http://10.0.0.10:32002/model/my_testing_new_7/1/Model.zip', '', False, False, '', '')]
+
     
-    training_data = ('','','','','','','','','','','', '','')
+    training_data = ('','','','','','','','','',False,'')
     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
     @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result)
     @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = training_data)
@@ -498,27 +496,25 @@ class Test_training_main:
     def test_trainingjob_operations_put(self,mock1,mock2,mock3,mock4):
         trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations_put *******")
         trainingjob_req = {
-                    "trainingjob_name":"usecase1",
-                    "pipeline_name":"qoe Pipeline lat v2",
-                    "experiment_name":"Default",
-                    "featureGroup_name":"group",
-                    "query_filter":"",
-                    "arguments":{
-                        "epochs":"1",
-                        "trainingjob_name":"usecase1"
-                    },
-                    "enable_versioning":False,
-                    "description":"updated",
-                    "pipeline_version":"3",
-                    "datalake_source":"InfluxSource",
-                    "_measurement":"liveCell",
-                    "bucket":"UEData", 
-                    "is_mme": False,
-                    "model_name":""
-                    }
+                "trainingjob_name": "my_testing_new_7",
+                "is_mme": False,
+                "model_name": False,
+                "pipeline_name": "pipeline",
+                "experiment_name": "Default",
+                "featureGroup_name": "testing",
+                "query_filter": "",
+                "arguments": {
+                    "epochs": "1",
+                    "trainingjob_name": "my_testing"
+                },
+                "enable_versioning": False,
+                "description": "testing",
+                "pipeline_version": "pipeline",
+                "datalake_source": "InfluxSource"
+            }
             
         expected_data = 'Information updated in database'
-        response = self.client.put("/trainingjobs/{}".format("usecase1"),
+        response = self.client.put("/trainingjobs/{}".format("my_testing_new_7"),
                                     data=json.dumps(trainingjob_req),
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)        

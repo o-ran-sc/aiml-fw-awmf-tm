@@ -963,7 +963,7 @@ def trainingjob_operations(trainingjob_name):
                 results = None
                 results = get_trainingjob_info_by_name(trainingjob_name, PS_DB_OBJ)
                 if results:
-                    if results[0][19]:
+                    if results[0][17]:
                         raise TMException("Failed to process request for trainingjob(" + trainingjob_name + ") " + \
                                         " deletion in progress")
                     if (get_one_word_status(json.loads(results[0][9]))
@@ -972,16 +972,16 @@ def trainingjob_operations(trainingjob_name):
 
                     (featuregroup_name, description, pipeline_name, experiment_name,
                     arguments, query_filter, enable_versioning, pipeline_version,
-                    datalake_source, _measurement, bucket, is_mme, model_name) = check_trainingjob_data(trainingjob_name, json_data)
+                    datalake_source, is_mme, model_name)= check_trainingjob_data(trainingjob_name, json_data)
                 if is_mme:
                     featuregroup_name=results[0][2]
                     pipeline_name, pipeline_version=results[0][3], results[0][13]
                 # model name is not changing hence model info is unchanged.
-                model_info = results[0][22]
+                model_info = results[0][20]
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
-                                        arguments, query_filter, False, enable_versioning,
-                                        pipeline_version, datalake_source, trainingjob_name, PS_DB_OBJ, _measurement=_measurement,
-                                        bucket=bucket, is_mme=is_mme, model_name=model_name, model_info=model_info)
+                                    arguments, query_filter, False, enable_versioning,
+                                    pipeline_version, datalake_source, trainingjob_name, 
+                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_info=model_info)
                 api_response = {"result": "Information updated in database."}
                 response_code = status.HTTP_200_OK
     except Exception as err:
