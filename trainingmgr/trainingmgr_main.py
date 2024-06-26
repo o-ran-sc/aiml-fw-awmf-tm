@@ -1049,8 +1049,7 @@ def retraining():
             continue
         
         if results:
-
-            if results[0][19]:
+            if results[0][17]:
                 not_possible_to_retrain.append(trainingjob_name)
                 LOGGER.debug("Failed to retrain because deletion in progress" + \
                              "(trainingjob_name is " + trainingjob_name + ")")
@@ -1072,11 +1071,9 @@ def retraining():
             arguments = json.loads(results[0][5])['arguments']
             query_filter = results[0][6]
             datalake_source = get_one_key(json.loads(results[0][14])["datalake_source"])
-            _measurement = results[0][17]
-            bucket = results[0][18]
-            is_mme=results[0][20]
-            model_name=results[0][21]
-            model_info=results[0][22]
+            is_mme=results[0][18]
+            model_name=results[0][19]
+            model_info=results[0][20]
 
             notification_url = ""
             if "notification_url" in obj:
@@ -1089,8 +1086,7 @@ def retraining():
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, False, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
-                                    PS_DB_OBJ, _measurement=_measurement,
-                                    bucket=bucket, is_mme=is_mme, model_name=model_name, model_info=model_info)
+                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_info=model_info)
             except Exception as err:
                 not_possible_to_retrain.append(trainingjob_name)
                 LOGGER.debug(str(err) + "(training job is " + trainingjob_name + ")")
