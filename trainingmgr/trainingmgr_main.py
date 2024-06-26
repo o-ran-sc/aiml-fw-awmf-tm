@@ -502,7 +502,7 @@ def pipeline_notification():
         trainingjob_name = request.json["trainingjob_name"]
         run_status = request.json["run_status"]
 
-        if run_status == 'Succeeded':
+        if run_status == 'SUCCEEDED':
             change_steps_state_of_latest_version(trainingjob_name, PS_DB_OBJ,
                                                     Steps.TRAINING.name,
                                                     States.FINISHED.name)

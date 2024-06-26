@@ -154,7 +154,7 @@ class Test_pipeline_notification:
         trainingmgr_main.LOGGER.debug("******* test_pipeline_notification post *******")
         trainingjob_req = {
                     "trainingjob_name":"usecase1",
-                    "run_status":"Succeeded",
+                    "run_status":"SUCCEEDED",
                     }
         expected_data = "Pipeline notification success."
         response = self.client.post("/trainingjob/pipelineNotification".format("usecase1"),data=json.dumps(trainingjob_req),
@@ -181,7 +181,7 @@ class Test_pipeline_notification:
         trainingmgr_main.LOGGER.debug("******* test_pipeline_notification post *******")
         trainingjob_req = {
                     "trainingjob_name":"usecase1",
-                    "run_status":"Succeeded",
+                    "run_status":"SUCCEEDED",
                     }
         expected_data = "Pipeline notification success."
         response = self.client.post("/trainingjob/pipelineNotification".format("usecase1"),data=json.dumps(trainingjob_req),
@@ -208,7 +208,7 @@ class Test_pipeline_notification:
         trainingmgr_main.LOGGER.debug("******* test_pipeline_notification post *******")
         trainingjob_req = {
                     "trainingjob_name":"usecase1",
-                    "run_status":"Succeeded",
+                    "run_status":"SUCCEEDED",
                     }
         try:
             response = self.client.post("/trainingjob/pipelineNotification".format("usecase1"),data=json.dumps(trainingjob_req),
