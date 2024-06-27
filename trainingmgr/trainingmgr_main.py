@@ -1181,7 +1181,7 @@ def delete_list_of_trainingjob_version():
 
         if results:
 
-            if results[0][19]:
+            if results[0][17]:
                 not_possible_to_delete.append(my_dict)
                 LOGGER.debug("Failed to process deletion request because deletion is " + \
                              "already in progress" + \
