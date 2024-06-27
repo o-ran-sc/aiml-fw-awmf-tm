@@ -1605,12 +1605,12 @@ def delete_list_of_feature_group():
             continue
 
         if results:
-            dme=results[0][8]
+            dme=results[0][9]
             try:
                 delete_feature_group_by_name(PS_DB_OBJ, featuregroup_name)
                 if dme :
                     dme_host=results[0][3]
-                    dme_port=results[0][10]
+                    dme_port=results[0][11]
                     resp=delete_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, featuregroup_name, dme_host, dme_port)
                     if(resp.status_code !=status.HTTP_204_NO_CONTENT):
                         not_possible_to_delete.append(my_dict)  
