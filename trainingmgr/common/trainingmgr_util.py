@@ -261,26 +261,39 @@ def validate_trainingjob_name(trainingjob_name, ps_db_obj):
     return isavailable    
 
 def get_all_pipeline_names_svc(training_config_obj):
-    # This function returns all the pipeline names 
-
+    """
+    This function returns an array of display names for all pipelines.
+    """
     pipeline_names = []
-    logger=training_config_obj.logger
+    logger = training_config_obj.logger
     try:
         kf_adapter_ip = training_config_obj.kf_adapter_ip
         kf_adapter_port = training_config_obj.kf_adapter_port
-        if kf_adapter_ip!=None and kf_adapter_port!=None:
-            url = 'http://' + str(kf_adapter_ip) + ':' + str(kf_adapter_port) + '/pipelines'
-        logger.debug(url)
+        if kf_adapter_ip is not None and kf_adapter_port is not None:
+            url = f'http://{kf_adapter_ip}:{kf_adapter_port}/pipelines'
+        
+        logger.debug(f"Requesting pipelines from: {url}")
         response = requests.get(url)
-        if response.headers['content-type'] != MIMETYPE_JSON:
-            err_smg = ERROR_TYPE_KF_ADAPTER_JSON
-            logger.error(err_smg)
-            raise TMException(err_smg)
-        for pipeline in response.json().keys():
-            pipeline_names.append(pipeline)
+        
+        if response.status_code == 200:
+            if response.headers['content-type'] != MIMETYPE_JSON:
+                err_msg = ERROR_TYPE_KF_ADAPTER_JSON
+                logger.error(err_msg)
+                raise TMException(err_msg)
+            
+            pipelines_data = response.json()
+            
+            for pipeline in pipelines_data.get('pipelines', []):
+                pipeline_names.append(pipeline['display_name'])
+        else:
+            logger.error(f"Unexpected response from KFAdapter: {response.status_code}")
+    
+    except requests.RequestException as err:
+        logger.error(f"Error communicating with KFAdapter: {str(err)}")
     except Exception as err:
-        logger.error(str(err))
-    logger.debug(pipeline_names)
+        logger.error(f"Unexpected error in get_all_pipeline_names_svc: {str(err)}")
+    
+    logger.debug(f"Retrieved pipeline names: {pipeline_names}")
     return pipeline_names
 
 def check_trainingjob_name_and_version(trainingjob_name, version):
@@ -292,3 +305,45 @@ def check_trainingjob_name_or_featuregroup_name(name):
     if re.fullmatch(PATTERN, name):
         return True
     return False
+
+def get_pipeline_info_by_name(training_config_obj, pipe_name):
+    """
+    This function returns the information for a specific pipeline
+    """
+    logger = training_config_obj.logger
+    try:
+        kf_adapter_ip = training_config_obj.kf_adapter_ip
+        kf_adapter_port = training_config_obj.kf_adapter_port
+        if kf_adapter_ip is not None and kf_adapter_port is not None:
+            url = f'http://{kf_adapter_ip}:{kf_adapter_port}/pipelines'
+        
+        logger.debug(f"Requesting pipelines from: {url}")
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            if response.headers['content-type'] != MIMETYPE_JSON:
+                err_msg = ERROR_TYPE_KF_ADAPTER_JSON
+                logger.error(err_msg)
+                raise TMException(err_msg)
+            
+            pipelines_data = response.json()
+            
+            for pipeline_info in pipelines_data.get('pipelines', []):
+                if pipeline_info['name'] == pipe_name:
+                    return {
+                        'pipeline_id': pipeline_info['pipeline_id'],
+                        'display_name': pipeline_info['display_name'],
+                        'description': pipeline_info['description'],
+                        'created_at': pipeline_info['created_at']
+                    }
+        
+            logger.warning(f"Pipeline '{pipe_name}' not found")
+        else:
+            logger.error(f"Unexpected response from KFAdapter: {response.status_code}")
+        return None
+    
+    except requests.RequestException as err:
+        logger.error(f"Error communicating with KFAdapter: {str(err)}")
+    except Exception as err:
+        logger.error(f"Unexpected error in get_pipeline_info_by_name: {str(err)}")
+    return None
