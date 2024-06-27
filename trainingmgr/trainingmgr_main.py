@@ -947,6 +947,8 @@ def trainingjob_operations(trainingjob_name):
                         if feature_list==res[1]:
                             featuregroup_name=res[0]
                             break 
+                    if featuregroup_name =="":
+                        return {"Exception":"The no feature group with mentioned feature list, create a feature group"}, status.HTTP_406_NOT_ACCEPTABLE
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, True, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
@@ -1181,7 +1183,7 @@ def delete_list_of_trainingjob_version():
 
         if results:
 
-            if results[0][19]:
+            if results[0][17]:
                 not_possible_to_delete.append(my_dict)
                 LOGGER.debug("Failed to process deletion request because deletion is " + \
                              "already in progress" + \
@@ -1696,6 +1698,68 @@ def async_feature_engineering_status():
 
         #Wait and fetch latest list of trainingjobs
         time.sleep(10)
+
+@APP.route('/pipelines/<pipeline_name>/metadata', methods=['GET'])
+def get_pipeline_metadata(pipeline_name):
+    """
+    Function handling rest endpoint to get metadata for all versions of a given pipeline.
+    Args:
+        pipeline_name (str): name of pipeline.
+    Returns:
+        json:
+            metadata: list
+                list of dictionaries containing metadata for each pipeline version.
+                    version: str
+                        version of pipeline
+                    created_at: str
+                        creation time of pipeline version
+                    status: str
+                        current status of pipeline version
+            Exception: str (optional)
+                error message if an exception occurred
+    Raises:
+        TMException: If KF Adapter configuration is missing or returns non-JSON response.
+        requests.RequestException: If there's an error communicating with KF Adapter.
+    """
+    LOGGER.debug(f"Request metadata for pipeline (name of pipeline is {pipeline_name})")
+    api_response = {}
+    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    try:
+        kf_adapter_ip = TRAININGMGR_CONFIG_OBJ.kf_adapter_ip
+        kf_adapter_port = TRAININGMGR_CONFIG_OBJ.kf_adapter_port
+
+        if kf_adapter_ip is None or kf_adapter_port is None:
+            raise TMException("KF Adapter configuration is missing.")
+
+        url = f'http://{kf_adapter_ip}:{kf_adapter_port}/pipelines/{pipeline_name}/metadata'
+
+        LOGGER.debug(f"Requesting pipeline metadata from KF Adapter: {url}")
+        response = requests.get(url)
+
+        if response.headers['content-type'] != MIMETYPE_JSON:
+            raise TMException(ERROR_TYPE_KF_ADAPTER_JSON)
+
+        metadata = response.json().get('metadata', [])
+
+        api_response = {"metadata": metadata}
+        response_code = status.HTTP_200_OK
+
+    except TMException as err:
+        LOGGER.error(str(err))
+        api_response = {"Exception": str(err)}
+
+    except requests.RequestException as err:
+        LOGGER.error(f"Error communicating with KF Adapter: {str(err)}")
+        api_response = {"Exception": "Error communicating with KF Adapter"}
+
+    except Exception as err:
+        LOGGER.error(f"Unexpected error occurred while fetching pipeline metadata: {str(err)}")
+        api_response = {"Exception": f"An unexpected error occurred: {str(err)}"}
+
+    return APP.response_class(response=json.dumps(api_response),
+                              status=response_code,
+                              mimetype=MIMETYPE_JSON)
 
 if __name__ == "__main__":
     TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
