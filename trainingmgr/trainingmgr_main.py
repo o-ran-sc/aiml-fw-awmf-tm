@@ -947,6 +947,8 @@ def trainingjob_operations(trainingjob_name):
                         if feature_list==res[1]:
                             featuregroup_name=res[0]
                             break 
+                    if featuregroup_name =="":
+                        return {"Exception":"The no feature group with mentioned feature list, create a feature group"}, status.HTTP_406_NOT_ACCEPTABLE
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, True, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
