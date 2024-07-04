@@ -485,6 +485,48 @@ class Test_training_main:
         assert response.data == expected_data
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR, "Return status code NOT equal" 
 
+    model_info_json={'model-name': 'qoe_93', 'rapp-id': 'rapp_1', 'meta-info': {'accuracy': '90', 'feature-list': ['*'], 'model-type': 'timeseries'}}
+    db_result_fg=[('group','abc','')]
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    attrs_TRAININGMGR_CONFIG_OBJ = {'pipeline.return_value':''}
+    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = False)
+    @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = ("", 'unittest', '', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db',True, ""))
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.trainingmgr_main.get_model_info', return_value=model_info_json)
+    @patch('trainingmgr.trainingmgr_main.json.loads',return_value={"timeseries": "qoe_pipeline_h_release"})
+    @patch('trainingmgr.trainingmgr_main.get_feature_groups_db', return_value=db_result_fg)
+    @patch('trainingmgr.trainingmgr_main.add_update_trainingjob')
+    def test_negative_trainingjob_operations3(self,mock1,mock2, mock3, mock4, mock5, mock6, mock7):
+        trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
+        trainingjob_req = {
+                    "trainingjob_name":"usecase1",
+                    "pipeline_name":"",
+                    "experiment_name":"Default",
+                    "featureGroup_name":"",
+                    "query_filter":"",
+                    "arguments":{
+                        "epochs":"1",
+                        "trainingjob_name":"usecase1"
+                    },
+                    "enable_versioning":False,
+                    "description":"uc1",
+                    "pipeline_version":"",
+                    "datalake_source":"InfluxSource",
+                    "_measurement":"liveCell",
+                    "bucket":"UEData",
+                    "is_mme":True,
+                    "model_name": "qoe_121"
+                    }
+        expected_data = b'{"Exception":"The no feature group with mentioned feature list, create a feature group"}\n'
+        response = self.client.post("/trainingjobs/{}".format("usecase1"),
+                                    data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)
+        print(response.data)  
+        assert response.data == expected_data
+        assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE, "Return status code NOT equal" 
+        
     db_result = [('my_testing_new_7', 'testing', 'testing_influxdb', 'pipeline_kfp2.2.0_5', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "my_testing_new_7"}}', '', datetime.datetime(2024, 6, 21, 8, 57, 48, 408725), '432516c9-29d2-4f90-9074-407fe8f77e4f', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FINISHED"}', datetime.datetime(2024, 6, 21, 9, 1, 54, 388278), 1, False, 'pipeline_kfp2.2.0_5', '{"datalake_source": {"InfluxSource": {}}}', 'http://10.0.0.10:32002/model/my_testing_new_7/1/Model.zip', '', False, False, '', '')]
 
     
