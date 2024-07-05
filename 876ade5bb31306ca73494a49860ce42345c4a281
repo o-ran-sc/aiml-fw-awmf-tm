@@ -16,6 +16,24 @@
       "message": "could you add a test case as well",
       "revId": "876ade5bb31306ca73494a49860ce42345c4a281",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc12af1d_6edcd3d8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-07-05T11:08:42Z",
+      "side": 1,
+      "message": "test cases added in the 2nd patch",
+      "parentUuid": "52c22fdc_ea6026af",
+      "revId": "876ade5bb31306ca73494a49860ce42345c4a281",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
