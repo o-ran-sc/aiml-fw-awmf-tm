@@ -176,7 +176,7 @@ def get_model_info(training_config_obj, model_name):
     url ="http://"+str(model_management_service_ip)+":"+str(model_management_service_port)+"/getModelInfo/{}".format(model_name)
     response = requests.get(url)
     if(response.status_code==status.HTTP_200_OK):
-        model_info=json.loads(response.json()['message'])
+        model_info=json.loads(response.json()['message']["data"])
         return model_info
     else:
         errMsg="model info can't be fetched, model_name: {} , err: {}".format(model_name, response.text)

@@ -196,22 +196,46 @@ class Test_get_model_info:
     @patch('trainingmgr.common.trainingmgr_operations.requests.get')
     def test_get_model_info(self,mock_requests_get):
         training_config_obj = DummyVariable()
-        model_name="abc"
+        model_name="qoe"
+        rapp_id = "rapp_1"
+        meta_info = {
+            "test": "test"
+        }
+        
+        model_data = {
+            "model-name": model_name,
+            "rapp-id": rapp_id,
+            "meta-info": meta_info
+        }
         mock_response=MagicMock(spec=Response)
         mock_response.status_code=200
-        mock_response.json.return_value={'message':'{"abc":"bca"}'}
+        mock_response.json.return_value={'message': {"name": model_name, "data": json.dumps(model_data)}}
         mock_requests_get.return_value= mock_response
         model_info=trainingmgr_operations.get_model_info(training_config_obj, model_name)
-        expected_model_info={'abc': 'bca'}
+        expected_model_info={
+            "model-name": model_name,
+            "rapp-id": rapp_id,
+            "meta-info": meta_info
+        }
         assert model_info==expected_model_info, "get model info failed"
 
     @patch('trainingmgr.common.trainingmgr_operations.requests.get')
     def test_negative_get_model_info(self,mock_requests_get):
         training_config_obj = DummyVariable()
-        model_name="abc"
+        model_name="qoe"
+        rapp_id = "rapp_1"
+        meta_info = {
+            "test": "test"
+        }
+        
+        model_data = {
+            "model-name": model_name,
+            "rapp-id": rapp_id,
+            "meta-info": meta_info
+        }
         mock_response=MagicMock(spec=Response)
         mock_response.status_code=500
-        mock_response.json.return_value={'message':'{"abc":"bca"}'}
+        mock_response.json.return_value={'message': {"name": model_name, "data": json.dumps(model_data)}}
         mock_requests_get.return_value= mock_response
         try:
             model_info=trainingmgr_operations.get_model_info(training_config_obj, model_name)
