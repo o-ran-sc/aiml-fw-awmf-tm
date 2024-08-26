@@ -54,6 +54,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e1f38f58_c8bb853c",
+        "filename": "tests/test_trainingmgr_operations.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1002149
+      },
+      "writtenOn": "2024-08-26T14:47:19Z",
+      "side": 1,
+      "message": "Thanks! I modified this code in my latest revision",
+      "parentUuid": "1587b2a4_76f48ea2",
+      "revId": "1ec014ad67d4e40541bae9330ab7dce61888194c",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1ba9c975_02b6aae1",
         "filename": "tests/test_trainingmgr_operations.py",
         "patchSetId": 1
@@ -71,6 +89,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "764da864_83adce37",
+        "filename": "tests/test_trainingmgr_operations.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1002149
+      },
+      "writtenOn": "2024-08-26T14:47:19Z",
+      "side": 1,
+      "message": "Thanks! I modified this code in my latest revision",
+      "parentUuid": "1ba9c975_02b6aae1",
+      "revId": "1ec014ad67d4e40541bae9330ab7dce61888194c",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "dbbfe9e9_63109715",
         "filename": "tests/test_trainingmgr_operations.py",
         "patchSetId": 1
@@ -82,6 +118,24 @@
       "writtenOn": "2024-08-25T23:19:48Z",
       "side": 1,
       "message": "ditto",
+      "revId": "1ec014ad67d4e40541bae9330ab7dce61888194c",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7c1ceb15_f91d95ed",
+        "filename": "tests/test_trainingmgr_operations.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1002149
+      },
+      "writtenOn": "2024-08-26T14:47:19Z",
+      "side": 1,
+      "message": "Thanks! I modified this code in my latest revision",
+      "parentUuid": "dbbfe9e9_63109715",
       "revId": "1ec014ad67d4e40541bae9330ab7dce61888194c",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
