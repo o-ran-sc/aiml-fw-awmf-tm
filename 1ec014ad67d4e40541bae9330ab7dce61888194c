@@ -70,6 +70,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "78e933f1_43c6c618",
+        "filename": "tests/test_trainingmgr_operations.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-08-27T03:52:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e1f38f58_c8bb853c",
+      "revId": "1ec014ad67d4e40541bae9330ab7dce61888194c",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1ba9c975_02b6aae1",
@@ -105,6 +123,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec90b579_c3132f3c",
+        "filename": "tests/test_trainingmgr_operations.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-08-27T03:52:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "764da864_83adce37",
+      "revId": "1ec014ad67d4e40541bae9330ab7dce61888194c",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dbbfe9e9_63109715",
@@ -136,6 +172,24 @@
       "side": 1,
       "message": "Thanks! I modified this code in my latest revision",
       "parentUuid": "dbbfe9e9_63109715",
+      "revId": "1ec014ad67d4e40541bae9330ab7dce61888194c",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "50bd9515_b49e10ca",
+        "filename": "tests/test_trainingmgr_operations.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-08-27T03:52:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7c1ceb15_f91d95ed",
       "revId": "1ec014ad67d4e40541bae9330ab7dce61888194c",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }

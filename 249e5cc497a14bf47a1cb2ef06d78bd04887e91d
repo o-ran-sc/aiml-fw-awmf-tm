@@ -16,6 +16,23 @@
       "message": "Could you please review it again? I modified some test code.",
       "revId": "249e5cc497a14bf47a1cb2ef06d78bd04887e91d",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4c756f01_d6a8763c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-08-27T03:52:25Z",
+      "side": 1,
+      "message": "LGTM!",
+      "revId": "249e5cc497a14bf47a1cb2ef06d78bd04887e91d",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
