@@ -33,6 +33,24 @@
       "message": "The interface should be revised like below.\n`/pipelines/\u003cpipeline_name\u003e/metadata`",
       "revId": "935a6bcecf6ef6963f2e7e4f5ba1157a80229bee",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b1e841a5_dfe57115",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1702,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2024-09-05T08:52:54Z",
+      "side": 1,
+      "message": "I changed commit message and interface to `/pipelines/\u003cpipeline_name\u003e/metadata`.",
+      "parentUuid": "d82515a7_dcddb385",
+      "revId": "935a6bcecf6ef6963f2e7e4f5ba1157a80229bee",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }

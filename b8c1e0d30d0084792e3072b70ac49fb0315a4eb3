@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9652b01b_67ec4bc0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2024-09-05T08:52:54Z",
+      "side": 1,
+      "message": "I changed commit message and interface to /pipelines/\u003cpipeline_name\u003e/metadata.",
+      "revId": "b8c1e0d30d0084792e3072b70ac49fb0315a4eb3",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
