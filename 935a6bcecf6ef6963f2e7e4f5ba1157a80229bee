@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7695f88b_92ef75ff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-09-05T00:26:19Z",
+      "side": 1,
+      "message": "Actual code implementation is a little different to the commit message. \nThe commit message says that `/pipelines/\u003cpipeline_name\u003e/\u003cversion\u003e` is implemented, but the source code has `/pipelines/metadata/\u003cpipeline_name\u003e`.\nCould you check what is correct?",
+      "revId": "935a6bcecf6ef6963f2e7e4f5ba1157a80229bee",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d82515a7_dcddb385",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1702,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-09-05T00:26:19Z",
+      "side": 1,
+      "message": "The interface should be revised like below.\n`/pipelines/\u003cpipeline_name\u003e/metadata`",
+      "revId": "935a6bcecf6ef6963f2e7e4f5ba1157a80229bee",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
