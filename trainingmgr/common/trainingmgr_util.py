@@ -25,9 +25,11 @@ from flask_api import status
 import requests
 from trainingmgr.db.common_db_fun import change_in_progress_to_failed_by_latest_version, \
     get_field_by_latest_version, change_field_of_latest_version, \
-    get_latest_version_trainingjob_name,get_all_versions_info_by_name
+    get_latest_version_trainingjob_name, get_all_versions_info_by_name, get_feature_group_by_name_db, \
+    add_featuregroup, edit_featuregroup, delete_feature_group_by_name
 from trainingmgr.constants.states import States
 from trainingmgr.common.exceptions_utls import APIException,TMException,DBException
+from trainingmgr.common.trainingmgr_operations import create_dme_filtered_data_job
 
 ERROR_TYPE_KF_ADAPTER_JSON = "Kf adapter doesn't sends json type response"
 MIMETYPE_JSON = "application/json"
@@ -189,6 +191,114 @@ def check_feature_group_data(json_data):
         raise APIException(status.HTTP_400_BAD_REQUEST, str(err)) from None
     
     return (feature_group_name, features, datalake_source, enable_dme, host, port,dme_port, bucket, token, source_name,db_org, measured_obj_class, measurement)
+
+def get_feature_group_by_name(ps_db_obj, logger, featuregroup_name):
+    """
+    Function fetching a feature group
+
+    Args in function:
+        featuregroup_name: str
+            name of featuregroup_name.
+    Returns:
+        api response: dict
+            info of featuregroup
+        status code:
+            HTTP status code 200
+
+    Exceptions:
+        all exception are provided with exception message and HTTP status code.
+    """
+    api_response={}
+    response_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+    if not check_trainingjob_name_or_featuregroup_name(featuregroup_name):
+        return {"Exception":"The featuregroup_name is not correct"}, status.HTTP_400_BAD_REQUEST
+    logger.debug("Request for getting a feature group with name = "+ featuregroup_name)
+    try:
+        result= get_feature_group_by_name_db(ps_db_obj, featuregroup_name)
+        feature_group=[]
+        if result:
+            for res in result:
+                dict_data={
+                    "featuregroup_name": res[0],
+                    "features": res[1],
+                    "datalake": res[2],
+                    "host": res[3],
+                    "port": res[4],
+                    "bucket":res[5],
+                    "token":res[6],
+                    "db_org":res[7],
+                    "measurement":res[8],
+                    "dme": res[9],
+                    "measured_obj_class":res[10],
+                    "dme_port":res[11],
+                    "source_name":res[12]
+                }
+                feature_group.append(dict_data)
+            api_response={"featuregroup":feature_group}
+            response_code=status.HTTP_200_OK
+        else:
+            response_code=status.HTTP_404_NOT_FOUND
+            raise TMException("Failed to fetch feature group info from db")
+        
+    except Exception as err:
+        api_response = {"Exception": str(err)}
+        logger.error(str(err))
+
+    return api_response, response_code
+
+def edit_feature_group_by_name(tm_conf_obj, ps_db_obj, logger, featuregroup_name, json_data):
+    """
+    Function fetching a feature group
+
+    Args in function:
+        featuregroup_name: str
+            name of featuregroup_name.
+        json_data: dict
+            info of changed featuregroup_name
+    Returns:
+        api response: dict
+            response message
+        status code:
+            HTTP status code 200
+
+    Exceptions:
+        all exception are provided with exception message and HTTP status code.
+    """
+    api_response= {}
+    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    if not check_trainingjob_name_or_featuregroup_name(featuregroup_name):
+        return {"Exception":"The featuregroup_name is not correct"}, status.HTTP_400_BAD_REQUEST
+    
+    logger.debug("Request for editing a feature group with name = "+ featuregroup_name)
+    logger.debug("db info before the edit : %s", get_feature_group_by_name_db(ps_db_obj, featuregroup_name))
+    try:
+        (feature_group_name, features, datalake_source, enable_dme, host, port,dme_port,bucket, token, source_name,db_org, measured_obj_class, measurement)=check_feature_group_data(json_data)
+        # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
+        features_list = features.split(",")
+        edit_featuregroup(feature_group_name, features, datalake_source , host, port, bucket, token, db_org, measurement, enable_dme, ps_db_obj, measured_obj_class, dme_port, source_name)
+        api_response={"result": "Feature Group Edited"}
+        response_code =status.HTTP_200_OK
+        # TODO: Implement the process where DME edits from the dashboard are applied to the endpoint
+        if enable_dme == True:
+            response= create_dme_filtered_data_job(tm_conf_obj, source_name, features_list, feature_group_name, host, dme_port, measured_obj_class)
+            if response.status_code != 201:
+                api_response={"Exception": "Cannot create dme job"}
+                delete_feature_group_by_name(ps_db_obj, feature_group_name)
+                response_code=status.HTTP_400_BAD_REQUEST
+            else:
+                api_response={"result": "Feature Group Edited"}
+                response_code =status.HTTP_200_OK
+        else:
+            api_response={"result": "Feature Group Edited"}
+            response_code =status.HTTP_200_OK
+    except Exception as err:
+        delete_feature_group_by_name(ps_db_obj, feature_group_name)
+        err_msg = "Failed to edit the feature Group "
+        api_response = {"Exception":err_msg}
+        logger.error(str(err))
+    
+    logger.debug("db info after the edit : %s", get_feature_group_by_name_db(ps_db_obj, featuregroup_name))
+    return api_response, response_code
 
 def get_one_key(dictionary):
     '''

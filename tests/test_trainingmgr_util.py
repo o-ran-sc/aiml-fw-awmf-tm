@@ -37,7 +37,7 @@ from trainingmgr.common.tmgr_logger import TMLogger
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.trainingmgr_util import response_for_training, check_key_in_dictionary,check_trainingjob_data, \
     get_one_key, get_metrics, handle_async_feature_engineering_status_exception_case, get_one_word_status, check_trainingjob_data, \
-    validate_trainingjob_name, get_all_pipeline_names_svc, check_feature_group_data
+    validate_trainingjob_name, get_all_pipeline_names_svc, check_feature_group_data, get_feature_group_by_name, edit_feature_group_by_name
 from requests.models import Response   
 from trainingmgr import trainingmgr_main
 from trainingmgr.common.tmgr_logger import TMLogger
@@ -595,3 +595,181 @@ class Test_check_feature_group_data:
             assert False
         except:
             assert True
+
+class Test_get_feature_group_by_name:
+    fg_target = [('testing', '', 'InfluxSource', '127.0.0.21', '8080', '', '', '', '', False, '', '', '')]
+
+    @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db', return_value=fg_target)
+    @patch('trainingmgr.common.trainingmgr_util.check_trainingjob_name_or_featuregroup_name', return_value=True)
+    def test_get_feature_group_by_name(self, mock1, mock2):
+        ps_db_obj=()
+        logger = trainingmgr_main.LOGGER
+        fg_name='testing'
+        expected_data = {"featuregroup":[{"featuregroup_name": "testing", "features": "", "datalake": "InfluxSource", "host": "127.0.0.21", "port": "8080", "bucket": "", "token": "", "db_org": "", "measurement": "", "dme": False, "measured_obj_class": "", "dme_port": "", "source_name": ""}]}
+        json_data, status_code = get_feature_group_by_name(ps_db_obj, logger, fg_name)
+        assert status_code == 200, "status code is not equal"
+        assert json_data == expected_data, json_data
+        
+    @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db')
+    @patch('trainingmgr.common.trainingmgr_util.check_trainingjob_name_or_featuregroup_name')
+    def test_negative_get_feature_group_by_name(self, mock1, mock2):
+        ps_db_obj=()
+        logger = trainingmgr_main.LOGGER
+        fg_name='testing'
+
+        mock1.side_effect = [True, True]
+        mock2.side_effect = [None, DBException("Failed to execute query in get_feature_groupsDB ERROR")]
+
+        # Case 1
+        expected_data = {"Exception": "Failed to fetch feature group info from db"}
+        json_data, status_code = get_feature_group_by_name(ps_db_obj, logger, fg_name)
+        assert status_code == 404, "status code is not equal"
+        assert json_data == expected_data, json_data
+
+        # Case 2
+        expected_data = {"Exception": "Failed to execute query in get_feature_groupsDB ERROR"}
+        json_data, status_code = get_feature_group_by_name(ps_db_obj, logger, fg_name)
+        assert status_code == 500, "status code is not equal"
+        assert json_data == expected_data, json_data
+    
+    def test_negative_get_feature_group_by_name_with_incorrect_name(self):
+        ps_db_obj=()
+        logger= trainingmgr_main.LOGGER
+        fg_name='usecase*'
+        expected_data = {"Exception":"The featuregroup_name is not correct"}
+        json_data, status_code = get_feature_group_by_name(ps_db_obj, logger, fg_name)
+        assert status_code == 400, "status code is not equal"
+        assert json_data == expected_data, json_data
+        
+class Test_edit_feature_group_by_name:
+
+    fg_init = [('testing', '', 'InfluxSource', '127.0.0.21', '8080', '', '', '', '', False, '', '', '')]
+
+    fg_edit = [('testing', 'testing', 'InfluxSource', '127.0.0.21', '8080', 'testing', '', '', '', False, '', '', '')]
+    fg_edit_dme = [('testing', 'testing', 'InfluxSource', '127.0.0.21', '8080', 'testing', '', '', '', True, '', '31823', '')]
+    
+    # In the case where the feature group is edited while DME is disabled
+    feature_group_data1=('testing','testing','InfluxSource',False,'127.0.0.1', '8080', '','testing','','','','','')
+    @patch('trainingmgr.common.trainingmgr_util.edit_featuregroup')
+    @patch('trainingmgr.common.trainingmgr_util.check_feature_group_data', return_value=feature_group_data1)
+    @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db', return_value=fg_init)
+    def test_edit_feature_group_by_name_1(self, mock1, mock2, mock3):
+        tm_conf_obj=()
+        ps_db_obj=()
+        logger = trainingmgr_main.LOGGER
+        fg_name='testing'
+        expected_data = {"result": "Feature Group Edited"}
+        json_request = {
+                "featureGroupName": fg_name,
+                "feature_list": self.fg_edit[0][1],
+                "datalake_source": self.fg_edit[0][2],
+                "Host": self.fg_edit[0][3],
+                "Port": self.fg_edit[0][4],
+                "bucket": self.fg_edit[0][5],
+                "token": self.fg_edit[0][6],
+                "dbOrg": self.fg_edit[0][7],
+                "_measurement": self.fg_edit[0][8],
+                "enable_Dme": self.fg_edit[0][9],
+                "measured_obj_class": self.fg_edit[0][10],
+                "dmePort": self.fg_edit[0][11],
+                "source_name": self.fg_edit[0][12]
+            }
+        json_data, status_code = edit_feature_group_by_name(tm_conf_obj, ps_db_obj, logger, fg_name, json_request)
+        assert status_code == 200, "status code is not equal"
+        assert json_data == expected_data, json_data
+
+    # In the case where the feature group is edited, including DME(disabled to enabled)
+    the_response2= Response()
+    the_response2.status_code = status.HTTP_201_CREATED
+    the_response2.headers={"content-type": "application/json"}
+    the_response2._content = b''
+    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
+    feature_group_data2=('testing','testing','InfluxSource',True,'127.0.0.1', '8080', '31823','testing','','','','','')
+    @patch('trainingmgr.common.trainingmgr_util.create_dme_filtered_data_job', return_value=the_response2)
+    @patch('trainingmgr.common.trainingmgr_util.edit_featuregroup')
+    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
+    @patch('trainingmgr.common.trainingmgr_util.check_feature_group_data', return_value=feature_group_data2)
+    @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db', return_value=fg_init)
+    @patch('trainingmgr.common.trainingmgr_util.delete_feature_group_by_name')
+    def test_edit_feature_group_by_name_2(self, mock1, mock2, mock3, mock4, mock5, mock6):
+        ps_db_obj=()
+        logger = trainingmgr_main.LOGGER
+        fg_name='testing'
+        expected_data = {"result": "Feature Group Edited"}
+        json_request = {
+                "featureGroupName": fg_name,
+                "feature_list": self.fg_edit[0][1],
+                "datalake_source": self.fg_edit[0][2],
+                "Host": self.fg_edit[0][3],
+                "Port": self.fg_edit[0][4],
+                "bucket": self.fg_edit[0][5],
+                "token": self.fg_edit[0][6],
+                "dbOrg": self.fg_edit[0][7],
+                "_measurement": self.fg_edit[0][8],
+                "enable_Dme": self.fg_edit[0][9],
+                "measured_obj_class": self.fg_edit[0][10],
+                "dmePort": self.fg_edit[0][11],
+                "source_name": self.fg_edit[0][12]
+            }
+        json_data, status_code = edit_feature_group_by_name(self.mocked_TRAININGMGR_CONFIG_OBJ, ps_db_obj, logger, fg_name, json_request)
+        assert status_code == 200, "status code is not equal"
+        assert json_data == expected_data, json_data
+    
+    the_response3= Response()
+    the_response3.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    the_response3.headers={"content-type": "application/json"}
+    the_response3._content = b''
+    feature_group_data3=('testing','testing','InfluxSource',True,'127.0.0.1', '8080', '31823','testing','','','','','')
+    @patch('trainingmgr.common.trainingmgr_util.create_dme_filtered_data_job', return_value=the_response3)
+    @patch('trainingmgr.common.trainingmgr_util.edit_featuregroup')
+    @patch('trainingmgr.common.trainingmgr_util.check_feature_group_data', return_value=feature_group_data3)
+    @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db', return_value=fg_init)
+    @patch('trainingmgr.common.trainingmgr_util.delete_feature_group_by_name')
+    def test_negative_edit_feature_group_by_name(self, mock1, mock2, mock3, mock4, mock5):
+        tm_conf_obj=()
+        ps_db_obj=()
+        logger = trainingmgr_main.LOGGER
+        fg_name='testing'
+        json_request = {
+                "featureGroupName": fg_name,
+                "feature_list": self.fg_edit[0][1],
+                "datalake_source": self.fg_edit[0][2],
+                "Host": self.fg_edit[0][3],
+                "Port": self.fg_edit[0][4],
+                "bucket": self.fg_edit[0][5],
+                "token": self.fg_edit[0][6],
+                "dbOrg": self.fg_edit[0][7],
+                "_measurement": self.fg_edit[0][8],
+                "enable_Dme": self.fg_edit[0][9],
+                "measured_obj_class": self.fg_edit[0][10],
+                "dmePort": self.fg_edit[0][11],
+                "source_name": self.fg_edit[0][12]
+            }
+    
+        # Case 1
+        mock1.side_effect = [DBException("Failed to execute query in delete_feature_groupDB ERROR"), None]
+        expected_data={"Exception": "Failed to edit the feature Group "}
+        json_data, status_code = edit_feature_group_by_name(tm_conf_obj, ps_db_obj, logger, fg_name, json_request)
+        # NOTE: This part is a test code that deliberately triggers a DBException even when DME is successfully created, so note that the status_code is 200.
+        assert status_code == 200, "status code is not equal"
+        assert json_data == expected_data, json_data
+
+        # Case 2 
+        mock1.side_effect = None
+        expected_data={"Exception": "Cannot create dme job"}
+        json_data, status_code = edit_feature_group_by_name(tm_conf_obj, ps_db_obj, logger, fg_name, json_request)
+        assert status_code == 400, "status code is not equal"
+        assert json_data == expected_data, json_data
+
+    def test_negative_edit_feature_group_by_name_with_incorrect_name(self):
+        tm_conf_obj=()
+        ps_db_obj=()
+        logger = trainingmgr_main.LOGGER
+        fg_name='usecase*'
+        expected_data = {"Exception":"The featuregroup_name is not correct"}
+        json_request={}
+        json_data, status_code = edit_feature_group_by_name(tm_conf_obj, ps_db_obj, logger, fg_name, json_request)
+        assert status_code == 400, "status code is not equal"
+        assert json_data == expected_data, json_data
+
+    # TODO: Test Code in the case where DME is edited from enabled to disabled)
