@@ -31,7 +31,7 @@ from dotenv import load_dotenv
 load_dotenv('tests/test.env')
 from trainingmgr.constants.states import States
 from threading import Lock
-from trainingmgr import trainingmgr_main 
+from trainingmgr import trainingmgr_main
 from trainingmgr.common.tmgr_logger import TMLogger
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.exceptions_utls import DBException, TMException
@@ -1208,36 +1208,37 @@ class Test_get_feature_group_by_name:
         self.client = trainingmgr_main.APP.test_client(self)
         self.logger = trainingmgr_main.LOGGER
 
-    result=[('testing', '', 'InfluxSource', '127.0.0.21', '8080', '', '', '', '', '', '', '','')]
-    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=result)
+    result = [('testing', '', 'InfluxSource', '127.0.0.21', '8080', '', '', '', '', '', '', '', '')]
+    @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db', return_value=result)
     def test_get_feature_group_by_name(self, mock1):
-        expected_data=b'{"featuregroup": [{"featuregroup_name": "testing", "features": "", "datalake": "InfluxSource", "host": "127.0.0.21", "port": "8080", "bucket": "", "token": "", "db_org": "", "measurement": "", "dme": "", "measured_obj_class": "", "dme_port": "", "source_name": ""}]}'
-        fg_name='testing'
-        response=self.client.get('/featureGroup/{}'.format(fg_name))
-        assert response.status_code == 200 , "status code is not equal"
-        assert response.data == expected_data
+        expected_data = b'{"featuregroup": [{"featuregroup_name": "testing", "features": "", "datalake": "InfluxSource", "host": "127.0.0.21", "port": "8080", "bucket": "", "token": "", "db_org": "", "measurement": "", "dme": "", "measured_obj_class": "", "dme_port": "", "source_name": ""}]}'
+        fg_name = 'testing'
+        response = self.client.get('/featureGroup/{}'.format(fg_name))
+        assert response.status_code == 200, "status code is not equal"
+        assert response.data == expected_data, response.data
     
-    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', return_value=None)
+    @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db', return_value=None)
     def test_negative_get_feature_group_by_name(self, mock1):
         expected_data=b'{"Exception": "Failed to fetch feature group info from db"}'
         fg_name='testing'
         response=self.client.get('/featureGroup/{}'.format(fg_name))
         assert response.status_code == 404 , "status code is not equal"
-        assert response.data == expected_data
+        assert response.data == expected_data, response.data
     
-    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db', side_effect=DBException("Failed to execute query in get_feature_groupsDB ERROR"))
+    @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db', side_effect=DBException("Failed to execute query in get_feature_groupsDB ERROR"))
     def test_negative_get_feature_group_by_name_2(self, mock1):
         expected_data=b'{"Exception": "Failed to execute query in get_feature_groupsDB ERROR"}'
         fg_name='testing'
         response=self.client.get('/featureGroup/{}'.format(fg_name))
         assert response.status_code == 500 , "status code is not equal"
-        assert response.data == expected_data
+        assert response.data == expected_data, response.data
     
     def test_negative_get_feature_group_name_for_incorrect_name(self):
-        featuregroup_name="usecase*"
-        response=self.client.get('/featureGroup/<featuregroup_name>'.format(featuregroup_name), content_type="application/json")
-        assert response.status_code==status.HTTP_400_BAD_REQUEST
-        assert response.data == b'{"Exception":"The trainingjob_name is not correct"}\n'
+        expected_data=b'{"Exception": "The featuregroup_name is not correct"}'
+        fg_name="usecase*"
+        response=self.client.get('/featureGroup/{}'.format(fg_name))
+        assert response.status_code == 400, "status code is not equal"
+        assert response.data == expected_data, response.data
 
 class Test_delete_list_of_feature_group:
     @patch('trainingmgr.common.trainingmgr_config.TMLogger', return_value = TMLogger("tests/common/conf_log.yaml"))

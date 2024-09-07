@@ -40,7 +40,8 @@ from trainingmgr.common.trainingmgr_util import get_one_word_status, check_train
     check_key_in_dictionary, get_one_key, \
     response_for_training, get_metrics, \
     handle_async_feature_engineering_status_exception_case, \
-    validate_trainingjob_name, get_all_pipeline_names_svc, check_feature_group_data, check_trainingjob_name_and_version, check_trainingjob_name_or_featuregroup_name
+    validate_trainingjob_name, get_all_pipeline_names_svc, check_feature_group_data, check_trainingjob_name_and_version, check_trainingjob_name_or_featuregroup_name, \
+    get_feature_group_by_name, edit_feature_group_by_name
 from trainingmgr.common.exceptions_utls import APIException,TMException
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
@@ -50,7 +51,7 @@ from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainin
     change_in_progress_to_failed_by_latest_version, change_steps_state_of_latest_version, \
     get_info_by_version, \
     get_trainingjob_info_by_name, get_latest_version_trainingjob_name, get_all_versions_info_by_name, \
-    update_model_download_url, add_update_trainingjob, add_featuregroup, \
+    update_model_download_url, add_update_trainingjob, add_featuregroup, edit_featuregroup, \
     get_field_of_given_version,get_all_jobs_latest_status_version, get_info_of_latest_version, \
     get_feature_groups_db, get_feature_group_by_name_db, delete_feature_group_by_name, delete_trainingjob_version, change_field_value_by_version
 
@@ -1318,6 +1319,85 @@ def get_metadata(trainingjob_name):
                                         status=response_code,
                                         mimetype=MIMETYPE_JSON)
 
+@APP.route('/featureGroup/<featuregroup_name>', methods=['GET', 'PUT'])
+def feature_group_by_name(featuregroup_name):
+    """
+    Rest endpoint to get or update feature group
+    Precondtion for update : not really necessary.
+
+    Args in function:
+        featuregroup_name: str
+            name of featuregroup_name.
+
+    Args in json:
+        if get/put request is called
+            json with below fields are given:
+                featureGroupName: str
+                    description
+                feature_list: str
+                    feature names
+                datalake: str
+                    name of datalake
+                bucket: str
+                    bucket name
+                host: str
+                    db host
+                port: str
+                    db port
+                token: str
+                    token for the bucket
+                db org: str
+                    db org name
+                measurement: str
+                    measurement of the influxdb
+                enable_Dme: boolean
+                    whether to enable dme
+                source_name: str
+                    name of source
+                DmePort: str
+                    DME port
+                measured_obj_class: str
+                    obj class for dme.
+                datalake_source: str
+                    string indicating datalake source
+
+    Returns:
+        1. For get request
+            json:
+                api response : str
+                    response message
+                status code:
+                    HTTP status code 200
+        2. For put request
+            json:
+                api response : str
+                    response message
+                status code:
+                    HTTP status code 200
+
+    Exceptions:
+        All exception are provided with exception message and HTTP status code.
+        The individual exceptions for put and get are handled within each internal function
+    """
+    api_response = {}
+    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    LOGGER.debug("Feature Group read/update request(featuregroup name) %s", featuregroup_name)
+
+    try:
+        if (request.method == 'GET'):
+            api_response, response_code = get_feature_group_by_name(PS_DB_OBJ, LOGGER, featuregroup_name)
+        elif (request.method == 'PUT'):
+            json_data=request.json
+            api_response, response_code = edit_feature_group_by_name(TRAININGMGR_CONFIG_OBJ, PS_DB_OBJ, LOGGER, featuregroup_name, json_data)
+        
+    except Exception as err:
+        LOGGER.error("Failed to read/update featuregroup, " + str(err) )
+        api_response =  {"Exception": str(err)}
+
+    return APP.response_class(response= json.dumps(api_response),
+                    status= response_code,
+                    mimetype=MIMETYPE_JSON)
+
 @APP.route('/featureGroup', methods=['POST'])
 def create_feature_group():
     """
@@ -1463,90 +1543,6 @@ def get_feature_group():
     return APP.response_class(response=json.dumps(api_response),
                         status=response_code,
                         mimetype=MIMETYPE_JSON)
-
-@APP.route('/featureGroup/<featuregroup_name>', methods=['GET'])
-def get_feature_group_by_name(featuregroup_name):
-    """
-    Rest endpoint to fetch a feature group
-
-    Args in function:
-        featuregroup_name: str
-            name of featuregroup_name.
-
-    Returns:
-        json:
-            trainingjob: dict
-                     dictionary contains
-                         featuregroup_name: str
-                             name of featuregroup
-                         features: str
-                             features
-                         datalake: str
-                             name of datalake
-                         host: str
-                             db host 
-                         port: str
-                             db port
-                         bucket: str
-                             bucket name
-                         token: str
-                             token for the bucket
-                         db_org: str
-                             db org
-                         measurement: str
-                             measurement of the influxdb
-                         dme: str
-                             whether dme enabled or not
-                         measured_obj_class: str
-                             obj class for dme
-                         dme_port: str
-                             dme_port
-                         source_name: dict
-                             source name
-        status code:
-            HTTP status code 200
-
-    Exceptions:
-        all exception are provided with exception message and HTTP status code.
-
-    """
-    api_response={}
-    response_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-    if not check_trainingjob_name_or_featuregroup_name(featuregroup_name):
-        return {"Exception":"The trainingjob_name is not correct"}, status.HTTP_400_BAD_REQUEST
-    LOGGER.debug("Request for getting a feature group with name = "+ featuregroup_name)
-    try:
-        result= get_feature_group_by_name_db(PS_DB_OBJ, featuregroup_name)
-        feature_group=[]
-        if result:
-            for res in result:
-                dict_data={
-                    "featuregroup_name": res[0],
-                    "features": res[1],
-                    "datalake": res[2],
-                    "host": res[3],
-                    "port": res[4],
-                    "bucket":res[5],
-                    "token":res[6],
-                    "db_org":res[7],
-                    "measurement":res[8],
-                    "dme": res[9],
-                    "measured_obj_class":res[10],
-                    "dme_port":res[11],
-                    "source_name":res[12]
-                }
-                feature_group.append(dict_data)
-            api_response={"featuregroup":feature_group}
-            response_code=status.HTTP_200_OK
-        else:
-            response_code=status.HTTP_404_NOT_FOUND
-            raise TMException("Failed to fetch feature group info from db")
-    except Exception as err:
-        api_response =   {"Exception": str(err)}
-        LOGGER.error(str(err))
-    return APP.response_class(response=json.dumps(api_response),
-                        status=response_code,
-                        mimetype=MIMETYPE_JSON) 
 
 @APP.route('/featureGroup', methods=['DELETE'])
 def delete_list_of_feature_group():
