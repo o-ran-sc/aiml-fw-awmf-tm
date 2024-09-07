@@ -1234,10 +1234,11 @@ class Test_get_feature_group_by_name:
         assert response.data == expected_data
     
     def test_negative_get_feature_group_name_for_incorrect_name(self):
-        featuregroup_name="usecase*"
-        response=self.client.get('/featureGroup/<featuregroup_name>'.format(featuregroup_name), content_type="application/json")
+        expected_data=b'{"Exception": "The featuregroup_name is not correct"}'
+        fg_name="usecase*"
+        response=self.client.get('/featureGroup/<featuregroup_name>'.format(fg_name), content_type="application/json")
         assert response.status_code==status.HTTP_400_BAD_REQUEST
-        assert response.data == b'{"Exception":"The trainingjob_name is not correct"}\n'
+        assert response.data == expected_data
 
 class Test_delete_list_of_feature_group:
     @patch('trainingmgr.common.trainingmgr_config.TMLogger', return_value = TMLogger("tests/common/conf_log.yaml"))

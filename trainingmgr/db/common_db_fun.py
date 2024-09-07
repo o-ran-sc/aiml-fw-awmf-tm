@@ -582,6 +582,32 @@ def add_featuregroup(feature_group_name, feature_list, datalake_source , host, p
         if conn is not None:
             conn.close()
 
+def edit_featuregroup(feature_group_name, feature_list, datalake_source , host, port, bucket, token, db_org,_measurement, enable_dme, ps_db_obj, measured_obj_class="", dme_port="", source_name=""):
+    """
+    This function update existing row with given information
+    """
+
+    conn = None
+    conn = ps_db_obj.get_new_conn()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute('''update {} set feature_list = %s, datalake_source = %s,
+                        host = %s, port = %s, bucket = %s, token = %s, db_org = %s, _measurement = %s,
+                        enable_dme = %s, measured_obj_class = %s, dme_port = %s, source_name = %s
+                        where featuregroup_name = %s'''.format(fg_table_name),
+                    (feature_list, datalake_source, host, port, bucket, token, db_org,
+                        _measurement, enable_dme, measured_obj_class, dme_port, source_name, feature_group_name))
+        conn.commit()
+        cursor.close()
+    except Exception as err:
+        if conn is not None:
+            conn.rollback()
+        raise DBException(DB_QUERY_EXEC_ERROR + "update_featuregroup" + str(err))
+    finally:
+        if conn is not None:
+            conn.close()
+
 def get_feature_groups_db(ps_db_obj):
     """
     This function returns feature_groups
