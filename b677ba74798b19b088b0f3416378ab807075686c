@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9bdad57d_9983f1b4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-09-08T23:47:28Z",
+      "side": 1,
+      "message": "There is an [unit test failure](https://github.com/o-ran-sc/aiml-fw-awmf-tm/actions/runs/10759353766/job/29835948093). Please take a look at my comments.",
+      "revId": "b677ba74798b19b088b0f3416378ab807075686c",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "34e2455b_8265ae85",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1627,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-09-08T23:47:28Z",
+      "side": 1,
+      "message": "Please comment this like `# TODO: ...`",
+      "revId": "b677ba74798b19b088b0f3416378ab807075686c",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
