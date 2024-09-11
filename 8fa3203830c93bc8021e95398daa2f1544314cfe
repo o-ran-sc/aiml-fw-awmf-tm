@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "041b8fde_3da3471f",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1546,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-09-11T08:59:54Z",
+      "side": 1,
+      "message": "I think now you can put this function in util file.",
+      "revId": "8fa3203830c93bc8021e95398daa2f1544314cfe",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5d1f3b7d_d19bf193",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1599,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-09-11T08:59:54Z",
+      "side": 1,
+      "message": "I think now you can put this function in util file",
+      "revId": "8fa3203830c93bc8021e95398daa2f1544314cfe",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
