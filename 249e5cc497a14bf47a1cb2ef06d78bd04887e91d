@@ -16,6 +16,24 @@
       "message": "Let\u0027s leave these two lines of source code.",
       "revId": "249e5cc497a14bf47a1cb2ef06d78bd04887e91d",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "54dfb797_8980bbcb",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1516,
+      "author": {
+        "id": 1002524
+      },
+      "writtenOn": "2024-09-11T03:35:35Z",
+      "side": 0,
+      "message": "Ack",
+      "parentUuid": "3de6f435_98fea64b",
+      "revId": "249e5cc497a14bf47a1cb2ef06d78bd04887e91d",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
