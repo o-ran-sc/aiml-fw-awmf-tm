@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f9d8c797_8cb679c8",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1546,
+      "author": {
+        "id": 1002524
+      },
+      "writtenOn": "2024-09-11T14:24:33Z",
+      "side": 1,
+      "message": "Thank you for the review. \nYou’re not referring to the \"trainingmgr/common/trainingmgr_util.py\" util that you mentioned, right? \nThe functions above include the internal function \"get_feature_group_by_name_db\" and have a dependency on the PS_DB_OBJ object from \"trainingmgr_main.py\", so I think it would be better to keep them in the current file rather than moving them to \"trainingmgr_util.py\". What do you think?\n\nFor the same reason, this also applies to the \"edit_feature_group_by_name\" function.",
+      "parentUuid": "041b8fde_3da3471f",
+      "revId": "8fa3203830c93bc8021e95398daa2f1544314cfe",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5d1f3b7d_d19bf193",
         "filename": "trainingmgr/trainingmgr_main.py",
         "patchSetId": 3
