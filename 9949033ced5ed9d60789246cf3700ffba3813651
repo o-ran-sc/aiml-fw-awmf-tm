@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "73e0178c_fab649df",
+        "filename": "trainingmgr/common/trainingmgr_util.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-09-12T05:27:21Z",
+      "side": 1,
+      "message": "What about naming this `get_pipeline_info_by_name`?",
+      "revId": "9949033ced5ed9d60789246cf3700ffba3813651",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "27ef2ef1_89d08e60",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 472,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-09-12T05:27:21Z",
+      "side": 1,
+      "message": "What about giving an interface name to `/pipelines/\u003cpipe_name\u003e`?",
+      "revId": "9949033ced5ed9d60789246cf3700ffba3813651",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "84cc0101_0a40df17",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 473,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-09-12T05:27:21Z",
+      "side": 1,
+      "message": "I think `get_pipeline_info_by_name` is more efficient.",
+      "revId": "9949033ced5ed9d60789246cf3700ffba3813651",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
