@@ -54,6 +54,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "434201e8_fc257289",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1546,
+      "author": {
+        "id": 1002524
+      },
+      "writtenOn": "2024-09-12T09:29:27Z",
+      "side": 1,
+      "message": "That seems like the right approach. I’ll make the changes and submit a code review shortly. Thanks.",
+      "parentUuid": "1409c2a4_ef28cb54",
+      "revId": "8fa3203830c93bc8021e95398daa2f1544314cfe",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5d1f3b7d_d19bf193",
