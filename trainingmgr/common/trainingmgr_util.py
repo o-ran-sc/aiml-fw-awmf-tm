@@ -292,3 +292,62 @@ def check_trainingjob_name_or_featuregroup_name(name):
     if re.fullmatch(PATTERN, name):
         return True
     return False
+
+def get_pipeline_info_svc(training_config_obj, pipe_name):
+    """
+    This function returns the information for a specific pipeline and handles pagination
+    """
+    logger = training_config_obj.logger
+    try:
+        kf_adapter_ip = training_config_obj.kf_adapter_ip
+        kf_adapter_port = training_config_obj.kf_adapter_port
+        if kf_adapter_ip is not None and kf_adapter_port is not None:
+            base_url = f'http://{kf_adapter_ip}:{kf_adapter_port}/pipelines'
+        
+        next_page_token = None
+        while True:
+            url = base_url
+            if next_page_token:
+                url += f'?page_token={next_page_token}'
+            
+            logger.debug(f"Requesting pipelines from: {url}")
+            response = requests.get(url)
+            
+            if response.status_code == 200:
+                if response.headers['content-type'] != MIMETYPE_JSON:
+                    err_msg = ERROR_TYPE_KF_ADAPTER_JSON
+                    logger.error(err_msg)
+                    raise TMException(err_msg)
+                
+                pipelines_data = response.json()
+                
+                for pipeline_info in pipelines_data.get('pipelines', []):
+                    if pipeline_info['name'] == pipe_name:
+                        pipe_dict = {
+                            'arguments': {},
+                            'description': pipeline_info['description'],
+                            'id': pipeline_info['id'],
+                            'name': pipeline_info['name']
+                        }
+                        for parameter in pipeline_info.get('parameters', []):
+                            pipe_dict['arguments'][parameter['name']] = parameter['value']
+                        
+                        pipe_dict['next_page_token'] = pipelines_data.get('next_page_token')
+                        
+                        return pipe_dict
+        
+                next_page_token = pipelines_data.get('next_page_token')
+                if not next_page_token:
+                    break  
+            else:
+                logger.error(f"Unexpected response from KFAdapter: {response.status_code}")
+                return None
+        
+        logger.warning(f"Pipeline '{pipe_name}' not found")
+        return None
+    
+    except requests.RequestException as err:
+        logger.error(f"Error communicating with KFAdapter: {str(err)}")
+    except Exception as err:
+        logger.error(f"Unexpected error in get_pipeline_info_svc: {str(err)}")
+    return None
