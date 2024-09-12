@@ -469,7 +469,36 @@ def data_extraction_notification():
                                     status=status.HTTP_200_OK,
                                     mimetype=MIMETYPE_JSON)
 
-
+@APP.route('/pipelines/<pipe_name>', methods=['GET'])
+def get_pipeline_info_by_name(pipe_name):
+    """
+    Function handling REST endpoint to get information about a specific pipeline.
+    
+    Args:
+        pipe_name (str): The name of the pipeline to retrieve information for.
+    
+    Returns:
+        json:
+            pipeline_info: dict
+                           Dictionary containing detailed information about the specified pipeline.
+        status code:
+            HTTP status code 200 if successful, 404 if pipeline not found, or 500 for server errors.
+    """
+    LOGGER.debug(f"Request to get information for pipeline: {pipe_name}")
+    
+    try:
+        pipeline_info = get_pipeline_info_by_name(TRAININGMGR_CONFIG_OBJ, pipe_name)
+        if pipeline_info:
+            return jsonify(pipeline_info), HTTPStatus.OK
+        else:
+            return jsonify({"error": f"Pipeline '{pipe_name}' not found"}), HTTPStatus.NOT_FOUND
+    except TMException as err:
+        LOGGER.error(f"TrainingManager exception: {str(err)}")
+        return jsonify({"error": str(err)}), HTTPStatus.INTERNAL_SERVER_ERROR
+    except Exception as err:
+        LOGGER.error(f"Unexpected error in get_pipeline_info: {str(err)}")
+        return jsonify({"error": "An unexpected error occurred"}), HTTPStatus.INTERNAL_SERVER_ERROR
+    
 @APP.route('/trainingjob/pipelineNotification', methods=['POST'])
 def pipeline_notification():
     """
@@ -715,7 +744,9 @@ def upload_pipeline(pipe_name):
                                   mimetype=MIMETYPE_JSON)
 
 
-@APP.route("/pipelines/<pipeline_name>/versions", methods=['GET'])
+
+
+@APP.route("/pipelines/<pipe_name>/versions", methods=['GET'])
 def get_versions_for_pipeline(pipeline_name):
     """
     Function handling rest endpoint to get versions of given pipeline name.
