@@ -469,7 +469,49 @@ def data_extraction_notification():
                                     status=status.HTTP_200_OK,
                                     mimetype=MIMETYPE_JSON)
 
+@APP.route('/pipelines/<pipe_name>', methods=['GET'])
+def get_pipeline_info_by_name(pipe_name):
+    """
+    Function handling rest endpoint to get information about a specific pipeline.
+    Args in function:
+        pipe_name : str
+            name of pipeline.
+    Args in json:
+        no json required
+    Returns:
+        json:
+            pipeline_info : dict
+                            Dictionary containing detailed information about the specified pipeline.
+        status code:
+            HTTP status code 200 if successful, 404 if pipeline not found, or 500 for server errors.
+    Exceptions:
+        all exceptions are provided with exception message and HTTP status code.
+    """
+    api_response = {}
+    LOGGER.debug(f"Request to get information for pipeline: {pipe_name}")
+    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
 
+    try:
+        pipeline_info = fetch_pipeline_info_by_name(TRAININGMGR_CONFIG_OBJ, pipe_name)
+        if pipeline_info:
+            api_response = pipeline_info
+            response_code = status.HTTP_200_OK
+        else:
+            api_response = {"error": f"Pipeline '{pipe_name}' not found"}
+            response_code = status.HTTP_404_NOT_FOUND
+
+    except TMException as err:
+        api_response = {"error": str(err)}
+        response_code = status.HTTP_404_NOT_FOUND
+        LOGGER.error(f"TrainingManager exception: {str(err)}")
+    except Exception as err:
+        api_response = {"error": "An unexpected error occurred"}
+        LOGGER.error(f"Unexpected error in get_pipeline_info: {str(err)}")
+
+    return APP.response_class(response=json.dumps(api_response),
+                              status=response_code,
+                              mimetype=MIMETYPE_JSON)
+    
 @APP.route('/trainingjob/pipelineNotification', methods=['POST'])
 def pipeline_notification():
     """
@@ -713,6 +755,8 @@ def upload_pipeline(pipe_name):
     return APP.response_class(response=json.dumps({'result': result_string}),
                                   status=result_code,
                                   mimetype=MIMETYPE_JSON)
+
+
 
 
 @APP.route("/pipelines/<pipeline_name>/versions", methods=['GET'])
