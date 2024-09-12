@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1409c2a4_ef28cb54",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1546,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-09-12T08:20:34Z",
+      "side": 1,
+      "message": "How about passing the PS_DB_OBJ to the \"get_feature_group_by_name\"(now in the trainingmgr_util) from \"feature_group_by_name\" and then calling the \"get_feature_group_by_name_db\" using this ps_db_obj. Same can be done for \"edit_feature_group_by_name\". \n\n\nI am saying this because trainingmgr_main is meant to be the controller layer and all utilities should be moved to trainingmgr_util.",
+      "parentUuid": "f9d8c797_8cb679c8",
+      "revId": "8fa3203830c93bc8021e95398daa2f1544314cfe",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5d1f3b7d_d19bf193",
         "filename": "trainingmgr/trainingmgr_main.py",
         "patchSetId": 3
