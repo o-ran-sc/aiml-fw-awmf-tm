@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "83964c24_9e814643",
+        "filename": "trainingmgr/common/trainingmgr_util.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-09-13T01:37:09Z",
+      "side": 1,
+      "message": "If it hasn\u0027t been decided, it\u0027s better to take it out.",
+      "revId": "f5f0667638dc7e9c4f653363304eaaf27ea15eb4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8f14262e_366d123e",
+        "filename": "trainingmgr/common/trainingmgr_util.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-09-13T01:37:09Z",
+      "side": 1,
+      "message": "I think `pipeline_id` would be better like the [return argument name of kubeflow](https://www.kubeflow.org/docs/components/pipelines/reference/api/kubeflow-pipeline-api-spec/).",
+      "revId": "f5f0667638dc7e9c4f653363304eaaf27ea15eb4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ea8fe0e4_cfc35632",
+        "filename": "trainingmgr/common/trainingmgr_util.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-09-13T01:37:09Z",
+      "side": 1,
+      "message": "Why don\u0027t we name it `display_name` for the above reason?",
+      "revId": "f5f0667638dc7e9c4f653363304eaaf27ea15eb4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "76b13c05_7e35ac8d",
+        "filename": "trainingmgr/common/trainingmgr_util.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 333,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-09-13T01:37:09Z",
+      "side": 1,
+      "message": "What about excluding `error` and `namespace` in accordance with the [changeset](https://gerrit.o-ran-sc.org/r/c/aiml-fw/athp/tps/kubeflow-adapter/+/13348/1/kfadapter/kfadapter_main.py#315)?",
+      "revId": "f5f0667638dc7e9c4f653363304eaaf27ea15eb4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
