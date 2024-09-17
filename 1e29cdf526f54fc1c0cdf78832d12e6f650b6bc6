@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0c7e9ea3_006e0d2e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-09-17T06:42:33Z",
+      "side": 1,
+      "message": "Hey Hyuksun, this looks good can you please add test cases for the training_util changes too.",
+      "revId": "1e29cdf526f54fc1c0cdf78832d12e6f650b6bc6",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "461b9b75_df0337fb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-09-17T06:42:33Z",
+      "side": 1,
+      "message": "Hey @",
+      "revId": "1e29cdf526f54fc1c0cdf78832d12e6f650b6bc6",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
