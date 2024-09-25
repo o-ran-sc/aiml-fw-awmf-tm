@@ -40,7 +40,7 @@ from trainingmgr.common.trainingmgr_util import get_one_word_status, check_train
     check_key_in_dictionary, get_one_key, \
     response_for_training, get_metrics, \
     handle_async_feature_engineering_status_exception_case, \
-    validate_trainingjob_name, get_all_pipeline_names_svc, check_feature_group_data, check_trainingjob_name_and_version, check_trainingjob_name_or_featuregroup_name, \
+    validate_trainingjob_name, get_pipelines_details, check_feature_group_data, check_trainingjob_name_and_version, check_trainingjob_name_or_featuregroup_name, \
     get_feature_group_by_name, edit_feature_group_by_name
 from trainingmgr.common.exceptions_utls import APIException,TMException
 from trainingmgr.constants.steps import Steps
@@ -743,11 +743,10 @@ def get_versions_for_pipeline(pipeline_name):
     LOGGER.debug("Request to get all version for given pipeline(" + pipeline_name + ").")
     response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     try:
-        pipeline_names=get_all_pipeline_names_svc(TRAININGMGR_CONFIG_OBJ)
-        print(pipeline_names, pipeline_name)
-        for pipeline in pipeline_names:
-            if pipeline == pipeline_name:
-                valid_pipeline=pipeline
+        pipelines = get_pipelines_details(TRAININGMGR_CONFIG_OBJ)
+        for pipeline in pipelines['pipelines']:
+            if pipeline['display_name'] == pipeline_name:
+                valid_pipeline = pipeline['display_name']
                 break
         if valid_pipeline == "":
             raise TMException("Pipeline name not present")
@@ -771,7 +770,7 @@ def get_versions_for_pipeline(pipeline_name):
             mimetype=MIMETYPE_JSON)
  
 @APP.route('/pipelines', methods=['GET'])
-def get_all_pipeline_names():
+def get_pipelines():
     """
     Function handling rest endpoint to get all pipeline names.
 
@@ -795,8 +794,8 @@ def get_all_pipeline_names():
     api_response = {}
     response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     try:
-        pipeline_names=get_all_pipeline_names_svc(TRAININGMGR_CONFIG_OBJ)
-        api_response = {"pipeline_names": pipeline_names}
+        pipelines = get_pipelines_details(TRAININGMGR_CONFIG_OBJ)
+        api_response = pipelines
         response_code = status.HTTP_200_OK
     except Exception as err:
         LOGGER.error(str(err))

@@ -370,10 +370,7 @@ def validate_trainingjob_name(trainingjob_name, ps_db_obj):
         isavailable = True
     return isavailable    
 
-def get_all_pipeline_names_svc(training_config_obj):
-    # This function returns all the pipeline names 
-
-    pipeline_names = []
+def get_pipelines_details(training_config_obj):
     logger=training_config_obj.logger
     try:
         kf_adapter_ip = training_config_obj.kf_adapter_ip
@@ -386,12 +383,9 @@ def get_all_pipeline_names_svc(training_config_obj):
             err_smg = ERROR_TYPE_KF_ADAPTER_JSON
             logger.error(err_smg)
             raise TMException(err_smg)
-        for pipeline in response.json().keys():
-            pipeline_names.append(pipeline)
     except Exception as err:
         logger.error(str(err))
-    logger.debug(pipeline_names)
-    return pipeline_names
+    return response.json()
 
 def check_trainingjob_name_and_version(trainingjob_name, version):
     if (re.fullmatch(PATTERN, trainingjob_name) and version.isnumeric()):
