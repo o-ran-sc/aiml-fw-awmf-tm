@@ -676,11 +676,11 @@ class Test_get_versions_for_pipeline:
     
     @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.requests.get', return_value = the_response)
-    @patch('trainingmgr.trainingmgr_main.get_all_pipeline_names_svc', return_value=[
-		"qoe_pipeline"
-	])
+    @patch('trainingmgr.trainingmgr_main.get_pipelines_details', return_value=
+            {"next_page_token":"next-page-token","pipelines":[{"created_at":"created-at","description":"pipeline-description","display_name":"pipeline-name","pipeline_id":"pipeline-id"}],"total_size":"total-size"}
+	)
     def test_get_versions_for_pipeline_positive(self,mock1,mock2, mock3):
-        response = self.client.get("/pipelines/{}/versions".format("qoe_pipeline"))     
+        response = self.client.get("/pipelines/{}/versions".format("pipeline-name"))
         trainingmgr_main.LOGGER.debug(response.data)
         assert response.content_type == "application/json", "not equal content type"
         assert response.status_code == 200, "Return status code NOT equal"   
@@ -719,7 +719,7 @@ class Test_get_versions_for_pipeline:
         print(response.data)
         assert response.content_type != "application/text", "not equal content type"
     
-class Test_get_all_pipeline_names:
+class Test_get_pipelines_details:
     def setup_method(self):
         self.client = trainingmgr_main.APP.test_client(self)
         self.logger = trainingmgr_main.LOGGER
@@ -731,20 +731,20 @@ class Test_get_all_pipeline_names:
     the_response.headers={"content-type": "application/json"}
     the_response._content = b'{ "exp1":"id1","exp2":"id2"}'
     @patch('trainingmgr.trainingmgr_main.requests.get', return_value = the_response)
-    def test_get_all_pipeline_names(self,mock1):
+    def test_get_pipelines_details(self,mock1):
         response = self.client.get("/pipelines")      
         assert response.content_type == "application/json", "not equal content type"
         assert response.status_code == 500, "Return status code NOT equal"   
         
     @patch('trainingmgr.trainingmgr_main.requests.get', side_effect = requests.exceptions.ConnectionError('Mocked error'))
-    def test_negative_get_all_pipeline_names_1(self,mock1):
+    def test_negative_get_pipelines_details_1(self,mock1):
         response = self.client.get("/pipelines")       
         print(response.data)
         assert response.content_type == "application/json", "not equal content type"
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR, "Should have thrown the exception "
         
     @patch('trainingmgr.trainingmgr_main.requests.get', side_effect = TypeError('Mocked error'))
-    def test_negative_get_all_pipeline_names_2(self,mock1):
+    def test_negative_get_pipelines_details_2(self,mock1):
         response = self.client.get("/pipelines")       
         print(response.data)
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR, "Should have thrown the exception "
@@ -756,7 +756,7 @@ class Test_get_all_pipeline_names:
     the_response1.headers={"content-type": "application/text"}
     the_response1._content = b'{ "exp1":"id1","exp2":"id2"}'
     @patch('trainingmgr.trainingmgr_main.requests.get', return_value = the_response1)
-    def test_negative_get_all_pipeline_names_3(self,mock1):
+    def test_negative_get_pipelines_details_3(self,mock1):
         response = self.client.get("/pipelines")       
         print(response.data)
         assert response.content_type != "application/text", "not equal content type"

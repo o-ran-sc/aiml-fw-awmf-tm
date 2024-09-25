@@ -37,7 +37,7 @@ from trainingmgr.common.tmgr_logger import TMLogger
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.trainingmgr_util import response_for_training, check_key_in_dictionary,check_trainingjob_data, \
     get_one_key, get_metrics, handle_async_feature_engineering_status_exception_case, get_one_word_status, check_trainingjob_data, \
-    validate_trainingjob_name, get_all_pipeline_names_svc, check_feature_group_data, get_feature_group_by_name, edit_feature_group_by_name
+    validate_trainingjob_name, get_pipelines_details, check_feature_group_data, get_feature_group_by_name, edit_feature_group_by_name
 from requests.models import Response   
 from trainingmgr import trainingmgr_main
 from trainingmgr.common.tmgr_logger import TMLogger
@@ -528,7 +528,7 @@ class Test_validate_trainingjob_name:
         except TMException as err:
             assert str(err) == "The name of training job is invalid."
 
-class Test_get_all_pipeline_names_svc:
+class Test_get_pipelines_details:
     # testing the get_all_pipeline service
     def setup_method(self):
         self.client = trainingmgr_main.APP.test_client(self)
@@ -539,7 +539,7 @@ class Test_get_all_pipeline_names_svc:
     the_response.error_type = "expired"
     the_response.status_code = 200
     the_response.headers={"content-type": "application/json"}
-    the_response._content = b'{ "qoe_Pipeline":"id1"}'
+    the_response._content = b'{"next_page_token":"next-page-token","pipelines":[{"created_at":"created-at","description":"pipeline-description","display_name":"pipeline-name","pipeline_id":"pipeline-id"}],"total_size":"total-size"}'
 
     mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
     attrs_TRAININGMGR_CONFIG_OBJ = {'kf_adapter_ip.return_value': '123', 'kf_adapter_port.return_value' : '100'}
@@ -547,9 +547,9 @@ class Test_get_all_pipeline_names_svc:
     
     @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.requests.get', return_value = the_response)
-    def test_get_all_pipeline_names(self,mock1, mock2):
-        expected_data=['qoe_Pipeline']
-        assert get_all_pipeline_names_svc(self.mocked_TRAININGMGR_CONFIG_OBJ) ==expected_data, "Not equal"
+    def test_get_pipelines_details(self,mock1, mock2):
+        expected_data="next-page-token"
+        assert get_pipelines_details(self.mocked_TRAININGMGR_CONFIG_OBJ)["next_page_token"] == expected_data, "Not equal"
 
 class Test_check_feature_group_data:
     @patch('trainingmgr.common.trainingmgr_util.check_key_in_dictionary',return_value=True)
