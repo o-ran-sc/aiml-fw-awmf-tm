@@ -18,6 +18,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca1a6de6_6e5fd989",
+        "filename": "trainingmgr/common/trainingmgr_util.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-10-01T03:44:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "73e0178c_fab649df",
+      "revId": "9949033ced5ed9d60789246cf3700ffba3813651",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "27ef2ef1_89d08e60",
@@ -35,6 +53,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3fccf45c_bb004418",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 472,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-10-01T03:44:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "27ef2ef1_89d08e60",
+      "revId": "9949033ced5ed9d60789246cf3700ffba3813651",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "84cc0101_0a40df17",
@@ -48,6 +84,24 @@
       "writtenOn": "2024-09-12T05:27:21Z",
       "side": 1,
       "message": "I think `get_pipeline_info_by_name` is more efficient.",
+      "revId": "9949033ced5ed9d60789246cf3700ffba3813651",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c3d6f5d7_d352e2a7",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 473,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-10-01T03:44:42Z",
+      "side": 1,
+      "message": "Sorry, `get_pipeline_info_by_name` is a duplicate of the one in trainingmgr_util. What about changeing it to `get_pipeline_by_name`?",
+      "parentUuid": "84cc0101_0a40df17",
       "revId": "9949033ced5ed9d60789246cf3700ffba3813651",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }

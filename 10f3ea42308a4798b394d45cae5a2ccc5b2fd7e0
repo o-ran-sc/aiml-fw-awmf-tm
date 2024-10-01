@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "203a6d3e_e7e85f2c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-10-01T03:44:42Z",
+      "side": 1,
+      "message": "Can you check that this CL works correctly with other components? I faced several problems such as jsonify.",
+      "revId": "10f3ea42308a4798b394d45cae5a2ccc5b2fd7e0",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
