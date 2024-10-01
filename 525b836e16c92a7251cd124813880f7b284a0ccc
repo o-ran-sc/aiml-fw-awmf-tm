@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d20499ea_a1464efe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-10-01T04:09:35Z",
+      "side": 1,
+      "message": "IMHO, `SQLAlchemy` should be included in `requirements.txt` to run sqlalchemy.",
+      "revId": "525b836e16c92a7251cd124813880f7b284a0ccc",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
