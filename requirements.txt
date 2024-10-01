@@ -24,6 +24,7 @@ pg8000
 requests
 pandas
 PyYAML
+SQLAlchemy
 kubernetes
 validators==0.20.0
 Werkzeug==2.2.2
