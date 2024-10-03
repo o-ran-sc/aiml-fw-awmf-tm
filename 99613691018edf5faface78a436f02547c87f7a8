@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "547a9b18_bb3a721d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2024-10-03T11:17:52Z",
+      "side": 1,
+      "message": "I have fixed the issues related to jsonify and HTTP status codes.",
+      "revId": "99613691018edf5faface78a436f02547c87f7a8",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
