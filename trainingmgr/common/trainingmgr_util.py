@@ -396,3 +396,61 @@ def check_trainingjob_name_or_featuregroup_name(name):
     if re.fullmatch(PATTERN, name):
         return True
     return False
+
+def fetch_pipeline_info_by_name(training_config_obj, pipe_name):
+    """
+    This function returns the information for a specific pipeline
+    """
+    logger = training_config_obj.logger
+    try:
+        kf_adapter_ip = training_config_obj.kf_adapter_ip
+        kf_adapter_port = training_config_obj.kf_adapter_port
+        if kf_adapter_ip is not None and kf_adapter_port is not None:
+            url = f'http://{kf_adapter_ip}:{kf_adapter_port}/pipelines'
+
+        logger.debug(f"Requesting pipelines from: {url}")
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            if response.headers['content-type'] != MIMETYPE_JSON:
+                err_msg = ERROR_TYPE_KF_ADAPTER_JSON
+                logger.error(err_msg)
+                raise TMException(err_msg)
+
+            pipelines_data = response.json()
+
+            for pipeline_info in pipelines_data.get('pipelines', []):
+                if pipeline_info['display_name'] == pipe_name:
+                    return PipelineInfo(
+                        pipeline_id=pipeline_info['pipeline_id'],
+                        display_name=pipeline_info['display_name'],
+                        description=pipeline_info['description'],
+                        created_at=pipeline_info['created_at']
+                    )
+
+            logger.warning(f"Pipeline '{pipe_name}' not found")
+            return None
+        else:
+            err_msg = f"Unexpected response from KFAdapter: {response.status_code}"
+            logger.error(err_msg)
+            return TMException(err_msg)
+
+    except requests.RequestException as err:
+        err_msg = f"Error communicating with KFAdapter : {str(err)}"
+        logger.error(err_msg)
+        raise TMException(err_msg)
+    except Exception as err:
+        err_msg = f"Unexpected error in get_pipeline_info_by_name: {str(err)}"
+        logger.error(err_msg)
+        raise TMException(err_msg)
+
+class PipelineInfo:
+    def __init__(self, pipeline_id, display_name, description, created_at):
+        self.pipeline_id = pipeline_id
+        self.display_name = display_name
+        self.description = description
+        self.created_at = created_at
+
+    def __repr__(self):
+        return (f"PipelineInfo(pipeline_id={self.pipeline_id}, display_name={self.display_name}, "
+                f"description={self.description}, created_at={self.created_at})")
