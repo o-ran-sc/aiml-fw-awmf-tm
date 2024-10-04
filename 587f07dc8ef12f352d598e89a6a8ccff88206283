@@ -16,6 +16,29 @@
       "message": "looks good to me.",
       "revId": "587f07dc8ef12f352d598e89a6a8ccff88206283",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7372b2a4_fed19c02",
+        "filename": "trainingmgr/common/trainingmgr_util.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-10-04T10:13:22Z",
+      "side": 1,
+      "message": "Could you please create model for response and use json to de-serialize and create object for response.",
+      "range": {
+        "startLine": 320,
+        "startChar": 19,
+        "endLine": 325,
+        "endChar": 21
+      },
+      "revId": "587f07dc8ef12f352d598e89a6a8ccff88206283",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
