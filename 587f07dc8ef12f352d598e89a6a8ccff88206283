@@ -39,6 +39,30 @@
       },
       "revId": "587f07dc8ef12f352d598e89a6a8ccff88206283",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dbd52d13_6b88cddc",
+        "filename": "trainingmgr/common/trainingmgr_util.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2024-10-04T10:37:29Z",
+      "side": 1,
+      "message": "I made the PipelineInfo class to structure pipeline data and used it to deserialize the JSON response into objects, making the data easier to manage.",
+      "parentUuid": "7372b2a4_fed19c02",
+      "range": {
+        "startLine": 320,
+        "startChar": 19,
+        "endLine": 325,
+        "endChar": 21
+      },
+      "revId": "587f07dc8ef12f352d598e89a6a8ccff88206283",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
