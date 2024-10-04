@@ -52,6 +52,24 @@
       "parentUuid": "a2cb756a_a58c375b",
       "revId": "10f3ea42308a4798b394d45cae5a2ccc5b2fd7e0",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f9c768e6_e990a09b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002377
+      },
+      "writtenOn": "2024-10-04T09:23:52Z",
+      "side": 1,
+      "message": "I changed cord and confirmed that the code changes are working correctly",
+      "parentUuid": "dd82b5aa_92ae67f0",
+      "revId": "10f3ea42308a4798b394d45cae5a2ccc5b2fd7e0",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
