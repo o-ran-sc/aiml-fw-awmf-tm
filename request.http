@@ -1,0 +1,123 @@
+@base = x.x.x.x:32002
+@base_data_extraction = x.x.x.x:32000
+@feature_grp = teating_influxdb_104
+# @feature_grp = sample_fg_01
+@trainingjob_name = testing_influxdb_101
+# @trainingjob_name = test_influx_1
+@trainingjob_version = 1
+### TM: API for training
+POST http://{{base}}/trainingjobs/{{trainingjob_name}}/training
+content-type: application/json
+
+### TM: Initiate training jobs
+POST http://{{base}}/trainingjobs/{{trainingjob_name}}/training
+content-type: application/json
+
+### TM: Data extraction notification and invoke kf
+POST http://{{base}}/trainingjob/dataExtractionNotification
+content-type: application/json
+
+{
+    "trainingjob_name": "{{trainingjob_name}}"
+}
+
+### TM: Get all the training job
+GET http://{{base}}/trainingjobs/latest
+Content-Type: application/json
+### TM: get status
+GET http://{{base}}/task_status/{{trainingjob_name}}
+Content-Type: application/json
+
+### TM: Get status
+GET http://{{base}}/trainingjobs/{{trainingjob_name}}/1
+
+### TM: create feature group
+POST http://{{base}}/featureGroup
+Content-Type: application/json
+
+{
+    "featureGroupName":"sample_fg_02",
+    "feature_list":"pdcpBytesDl,pdcpBytesUl",
+    "datalake_source":"InfluxSource",
+    "enable_Dme":false,
+    "Host":"my-release-influxdb.traininghost",
+    "Port":"8086",
+    "dmePort":"",
+    "bucket":"UEData",
+    "token":"########",
+    "source_name":"",
+    "measured_obj_class":"",
+    "_measurement":"liveCell",
+    "dbOrg":"primary"
+}
+### TM: Get feature group
+GET http://{{base}}/featureGroup
+Content-Type: application/json
+
+### TM: Get training jobs
+GET http://{{base}}/trainingjobs/latest
+Content-Type: application/json
+
+### TM: Get training jobs
+GET http://{{base}}/trainingjobs/{{trainingjob_name}}/{{trainingjob_version}}
+Content-Type: application/json
+
+
+### TM: Create training job
+POST http://{{base}}/trainingjobs/test_influx_2
+Content-Type: application/json
+
+{
+    "trainingjob_name":"{{trainingjob_name}}",
+    "is_mme":false,
+    "model_name":"",
+    
+    "pipeline_name":"qoe_Pipeline",
+    "experiment_name":"Default",
+    "featureGroup_name":"sample_fg_01",
+    "query_filter":"",
+    "arguments":{
+        "epochs":"1",
+        "trainingjob_name":"{{trainingjob_name}}"
+        },
+    "enable_versioning":false,
+    "description":"test",
+    "pipeline_version":"qoe_Pipeline",
+    "datalake_source":"InfluxSource"
+}
+
+### tm: get pipelines
+GET http://{{base}}/pipelines
+Content-Type: application/json
+
+### data-extraction: start data extraction
+POST http://{{base_data_extraction}}/feature-groups
+Content-Type: application/json
+
+{
+    "source": {
+        "InfluxSource": {
+            "query": "from(bucket:\"UEData\") |> range(start: 0, stop: now()) |> filter(fn: (r) => r._measurement == \"liveCell\") |> pivot(rowKey:[\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")"
+        }
+    },
+    "transform": [
+        {
+            "operation": "SQLTransform",
+            "FeatureList": "pdcpBytesDl,pdcpBytesUl",
+            "SQLFilter": ""
+        }
+    ],
+    "sink": {
+        "CassandraSink": {
+            "CollectionName": "testing_influxdb_101"
+        }
+    },
+    "influxdb_info": {
+        "host": "my-release-influxdb.default",
+        "port": "8086",
+        "bucket": "UEData",
+        "token": "#######",
+        "db_org": "primary",
+        "source_name": ""
+    }
+}
