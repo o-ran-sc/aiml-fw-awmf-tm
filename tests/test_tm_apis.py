@@ -267,14 +267,14 @@ class Test_get_trainingjob_by_name_version:
         self.client = trainingmgr_main.APP.test_client(self)
         self.logger = trainingmgr_main.LOGGER
 
-    @patch('trainingmgr.trainingmgr_main.get_info_by_version',return_value=[('usecase7', 'auto test', '*', 'prediction with model name', 'Default', '{"arguments": {"epochs": "1", "usecase": "usecase7"}}', 'Enb=20 and Cellnum=6', datetime.datetime(2022, 9, 20,11, 40, 30), '7d09c0bf-7575-4475-86ff-5573fb3c4716', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FINISHED"}', datetime.datetime(2022, 9, 20, 11, 42, 20), 1, True, 'Near RT RIC', '{"datalake_source": {"CassandraSource": {}}}', '{"datalake_source": {"CassandraSource": {}}}','http://10.0.0.47:32002/model/usecase7/1/Model.zip','','','','','',False,'','')])
+    @patch('trainingmgr.trainingmgr_main.get_info_by_version',return_value=[('usecase7', 'auto test', '*', 'prediction with model name', 'Default', '{"arguments": {"epochs": "1", "usecase": "usecase7"}}', 'Enb=20 and Cellnum=6', datetime.datetime(2022, 9, 20,11, 40, 30), '7d09c0bf-7575-4475-86ff-5573fb3c4716', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FINISHED"}', datetime.datetime(2022, 9, 20, 11, 42, 20), 1, True, 'Near RT RIC', '{"datalake_source": {"CassandraSource": {}}}', '{"datalake_source": {"CassandraSource": {}}}','http://10.0.0.47:32002/model/usecase7/1/Model.zip','','','','','')])
     @patch('trainingmgr.trainingmgr_main.get_metrics',return_value={"metrics": [{"Accuracy": "0.0"}]})
     @patch('trainingmgr.trainingmgr_main.get_one_key',return_value='cassandra')
     def test_get_trainingjob_by_name_version(self,mock1,mock2,mock3):
         usecase_name = "usecase7"
         version = "1"
         response = self.client.get("/trainingjobs/{}/{}".format(usecase_name, version))
-        expected_data = b'{"trainingjob": {"trainingjob_name": "usecase7", "description": "auto test", "feature_list": "*", "pipeline_name": "prediction with model name", "experiment_name": "Default", "arguments": {"epochs": "1", "usecase": "usecase7"}, "query_filter": "Enb=20 and Cellnum=6", "creation_time": "2022-09-20 11:40:30", "run_id": "7d09c0bf-7575-4475-86ff-5573fb3c4716", "steps_state": {"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FINISHED"}, "updation_time": "2022-09-20 11:42:20", "version": 1, "enable_versioning": true, "pipeline_version": "Near RT RIC", "datalake_source": "cassandra", "model_url": "{\\"datalake_source\\": {\\"CassandraSource\\": {}}}", "notification_url": "http://10.0.0.47:32002/model/usecase7/1/Model.zip", "is_mme": "", "model_name": "", "model_info": "", "accuracy": {"metrics": [{"Accuracy": "0.0"}]}}}'
+        expected_data = b'{"trainingjob": {"trainingjob_name": "usecase7", "description": "auto test", "feature_list": "*", "pipeline_name": "prediction with model name", "experiment_name": "Default", "arguments": {"epochs": "1", "usecase": "usecase7"}, "query_filter": "Enb=20 and Cellnum=6", "creation_time": "2022-09-20 11:40:30", "run_id": "7d09c0bf-7575-4475-86ff-5573fb3c4716", "steps_state": {"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FINISHED"}, "updation_time": "2022-09-20 11:42:20", "version": 1, "enable_versioning": true, "pipeline_version": "Near RT RIC", "datalake_source": "cassandra", "model_url": "{\\"datalake_source\\": {\\"CassandraSource\\": {}}}", "notification_url": "http://10.0.0.47:32002/model/usecase7/1/Model.zip", "accuracy": {"metrics": [{"Accuracy": "0.0"}]}}}'
         assert response.status_code == status.HTTP_200_OK, "not equal code"
         assert response.data == expected_data, "not equal data"
 
@@ -411,7 +411,7 @@ class Test_training_main:
     attrs_TRAININGMGR_CONFIG_OBJ = {'pipeline.return_value':''}
     mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = False)
-    @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db',True, ""))
+    @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db'))
     @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
     @patch('trainingmgr.trainingmgr_main.get_model_info', return_value=model_info_json)
     @patch('trainingmgr.trainingmgr_main.json.loads',return_value={'timeseries':''})
@@ -433,8 +433,6 @@ class Test_training_main:
                     "description":"uc1",
                     "pipeline_version":"3",
                     "datalake_source":"InfluxSource",
-                    "is_mme":True,
-                    "model_name": ""
                     }
         expected_data = b'{"result": "Information stored in database."}'
         response = self.client.post("/trainingjobs/{}".format("usecase1"),
@@ -443,94 +441,9 @@ class Test_training_main:
         trainingmgr_main.LOGGER.debug(response.data)    
         assert response.data == expected_data
         assert response.status_code == status.HTTP_201_CREATED, "Return status code NOT equal" 
-
-    model_info_json={'model-name': 'qoe_93', 'rapp-id': 'rapp_1', 'meta-info': {'accuracy': '90', 'feature-list': ['*'], 'model-type': 'timeseries'}}
-    db_result_fg=[('group','*','')]
-    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
-    attrs_TRAININGMGR_CONFIG_OBJ = {'pipeline.return_value':''}
-    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
-    @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = False)
-    @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db',True, ""))
-    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
-    @patch('trainingmgr.trainingmgr_main.get_model_info', return_value=model_info_json)
-    @patch('trainingmgr.trainingmgr_main.json.loads',return_value='')
-    @patch('trainingmgr.trainingmgr_main.get_feature_groups_db', return_value=db_result_fg)
-    @patch('trainingmgr.trainingmgr_main.add_update_trainingjob')
-    def test_negative_trainingjob_operations2(self,mock1,mock2, mock3, mock4, mock5, mock6, mock7):
-        trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
-        trainingjob_req = {
-                    "trainingjob_name":"usecase1",
-                    "pipeline_name":"qoe Pipeline lat v2",
-                    "experiment_name":"Default",
-                    "featureGroup_name":"group",
-                    "query_filter":"",
-                    "arguments":{
-                        "epochs":"1",
-                        "trainingjob_name":"usecase1"
-                    },
-                    "enable_versioning":False,
-                    "description":"uc1",
-                    "pipeline_version":"3",
-                    "datalake_source":"InfluxSource",
-                    "_measurement":"liveCell",
-                    "bucket":"UEData",
-                    "is_mme":True,
-                    "model_name": ""
-                    }
-        expected_data = b'{"Exception": "Doesn\'t support the model type"}'
-        response = self.client.post("/trainingjobs/{}".format("usecase1"),
-                                    data=json.dumps(trainingjob_req),
-                                    content_type="application/json")
-        trainingmgr_main.LOGGER.debug(response.data)    
-        assert response.data == expected_data
-        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR, "Return status code NOT equal" 
-
-    model_info_json={'model-name': 'qoe_93', 'rapp-id': 'rapp_1', 'meta-info': {'accuracy': '90', 'feature-list': ['*'], 'model-type': 'timeseries'}}
-    db_result_fg=[('group','abc','')]
-    mocked_TRAININGMGR_CONFIG_OBJ=mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
-    attrs_TRAININGMGR_CONFIG_OBJ = {'pipeline.return_value':''}
-    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
-    @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = False)
-    @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = ("", 'unittest', '', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db',True, ""))
-    @patch('trainingmgr.trainingmgr_main.TRAININGMGR_CONFIG_OBJ', return_value = mocked_TRAININGMGR_CONFIG_OBJ)
-    @patch('trainingmgr.trainingmgr_main.get_model_info', return_value=model_info_json)
-    @patch('trainingmgr.trainingmgr_main.json.loads',return_value={"timeseries": "qoe_pipeline_h_release"})
-    @patch('trainingmgr.trainingmgr_main.get_feature_groups_db', return_value=db_result_fg)
-    @patch('trainingmgr.trainingmgr_main.add_update_trainingjob')
-    def test_negative_trainingjob_operations3(self,mock1,mock2, mock3, mock4, mock5, mock6, mock7):
-        trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
-        trainingjob_req = {
-                    "trainingjob_name":"usecase1",
-                    "pipeline_name":"",
-                    "experiment_name":"Default",
-                    "featureGroup_name":"",
-                    "query_filter":"",
-                    "arguments":{
-                        "epochs":"1",
-                        "trainingjob_name":"usecase1"
-                    },
-                    "enable_versioning":False,
-                    "description":"uc1",
-                    "pipeline_version":"",
-                    "datalake_source":"InfluxSource",
-                    "_measurement":"liveCell",
-                    "bucket":"UEData",
-                    "is_mme":True,
-                    "model_name": "qoe_121"
-                    }
-        expected_data = b'{"Exception":"The no feature group with mentioned feature list, create a feature group"}\n'
-        response = self.client.post("/trainingjobs/{}".format("usecase1"),
-                                    data=json.dumps(trainingjob_req),
-                                    content_type="application/json")
-        trainingmgr_main.LOGGER.debug(response.data)
-        print(response.data)  
-        assert response.data == expected_data
-        assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE, "Return status code NOT equal" 
         
-    db_result = [('my_testing_new_7', 'testing', 'testing_influxdb', 'pipeline_kfp2.2.0_5', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "my_testing_new_7"}}', '', datetime.datetime(2024, 6, 21, 8, 57, 48, 408725), '432516c9-29d2-4f90-9074-407fe8f77e4f', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FINISHED"}', datetime.datetime(2024, 6, 21, 9, 1, 54, 388278), 1, False, 'pipeline_kfp2.2.0_5', '{"datalake_source": {"InfluxSource": {}}}', 'http://10.0.0.10:32002/model/my_testing_new_7/1/Model.zip', '', False, False, '', '')]
-
-    
-    training_data = ('','','','','','','','','',False,'')
+    db_result = [('my_testing_new_7', 'testing', 'testing_influxdb', 'pipeline_kfp2.2.0_5', 'Default', '{"arguments": {"epochs": "1", "trainingjob_name": "my_testing_new_7"}}', '', datetime.datetime(2024, 6, 21, 8, 57, 48, 408725), '432516c9-29d2-4f90-9074-407fe8f77e4f', '{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FINISHED"}', datetime.datetime(2024, 6, 21, 9, 1, 54, 388278), 1, False, 'pipeline_kfp2.2.0_5', '{"datalake_source": {"InfluxSource": {}}}', 'http://10.0.0.10:32002/model/my_testing_new_7/1/Model.zip', '', False)]
+    training_data = ('','','','','','','','','')
     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
     @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name', return_value = db_result)
     @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = training_data)
@@ -539,8 +452,6 @@ class Test_training_main:
         trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations_put *******")
         trainingjob_req = {
                 "trainingjob_name": "my_testing_new_7",
-                "is_mme": False,
-                "model_name": False,
                 "pipeline_name": "pipeline",
                 "experiment_name": "Default",
                 "featureGroup_name": "testing",

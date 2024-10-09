@@ -463,7 +463,7 @@ class Test_Common_Db_Fun:
             assert checker.finished, 'add_update_trainingjob FAILED, When adding = True'
         except Exception as err:
             fxn_name = "add_update_trainingjob"
-            assert str(err) == "add_update_trainingjob() takes from 12 to 16 positional arguments but 17 were given", 'Negative test {} FAILED when  adding = True , Doesnt returned required error'.format(fxn_name)
+            assert str(err) == "add_update_trainingjob() takes from 12 to 13 positional arguments but 17 were given", 'Negative test {} FAILED when  adding = True , Doesnt returned required error'.format(fxn_name)
     
     def test_get_all_jobs_latest_status_version(self):
         db_obj = db_helper([["usecase_name"]])

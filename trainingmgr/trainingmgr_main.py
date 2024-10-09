@@ -41,7 +41,7 @@ from trainingmgr.common.trainingmgr_util import get_one_word_status, check_train
     response_for_training, get_metrics, \
     handle_async_feature_engineering_status_exception_case, \
     validate_trainingjob_name, get_pipelines_details, check_feature_group_data, check_trainingjob_name_and_version, check_trainingjob_name_or_featuregroup_name, \
-    get_feature_group_by_name, edit_feature_group_by_name
+    get_feature_group_by_name, edit_feature_group_by_name, fetch_pipeline_info_by_name
 from trainingmgr.common.exceptions_utls import APIException,TMException
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
@@ -132,12 +132,6 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                              url for downloading model
                         notification_url: str
                              url of notification server
-                        is_mme: boolean
-                            whether the mme is enabled
-                        model_name: str
-                            model name 
-                        model_info: str
-                            model info provided by the mme
         status code:
             HTTP status code 200
 
@@ -177,9 +171,6 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                 "datalake_source": get_one_key(json.loads(trainingjob_info[14])['datalake_source']),
                 "model_url": trainingjob_info[15],
                 "notification_url": trainingjob_info[16],
-                "is_mme": trainingjob_info[17], 
-                "model_name": trainingjob_info[18],
-                "model_info": trainingjob_info[19],
                 "accuracy": data
             }
             response_data = {"trainingjob": dict_data}
@@ -572,22 +563,6 @@ def pipeline_notification():
                 change_steps_state_of_latest_version(trainingjob_name, PS_DB_OBJ,
                                                         Steps.TRAINED_MODEL.name,
                                                         States.FINISHED.name)
-                # upload to the mme
-                trainingjob_info=get_trainingjob_info_by_name(trainingjob_name, PS_DB_OBJ)
-
-                is_mme= trainingjob_info[0][20]
-                if is_mme:   
-                    model_name=trainingjob_info[0][21] #model_name
-                    file=MM_SDK.get_model_zip(trainingjob_name, str(version))
-                    url ="http://"+str(TRAININGMGR_CONFIG_OBJ.model_management_service_ip)+":"+str(TRAININGMGR_CONFIG_OBJ.model_management_service_port)+"/uploadModel/{}".format(model_name)
-                    LOGGER.debug("url for upload is: ", url)
-                    resp2=requests.post(url=url, files={"file":('Model.zip', file, 'application/zip')})
-                    if resp2.status_code != status.HTTP_200_OK :
-                        errMsg= "Upload to mme failed"
-                        LOGGER.error(errMsg + trainingjob_name)
-                        raise TMException(errMsg + trainingjob_name)
-                    
-                    LOGGER.debug("Model uploaded to the MME")
             else:
                 errMsg = "Trained model is not available  "
                 LOGGER.error(errMsg + trainingjob_name)
@@ -932,10 +907,6 @@ def trainingjob_operations(trainingjob_name):
                     _measurement for influx db datalake
                 bucket: str
                     bucket name for influx db datalake
-                is_mme: boolean
-                    whether mme is enabled 
-                model_name: str
-                    name of the model
 
     Returns:
         1. For post request
@@ -971,32 +942,12 @@ def trainingjob_operations(trainingjob_name):
             else:
                 (featuregroup_name, description, pipeline_name, experiment_name,
                 arguments, query_filter, enable_versioning, pipeline_version,
-                datalake_source, is_mme, model_name) = \
+                datalake_source) = \
                 check_trainingjob_data(trainingjob_name, json_data)
-                model_info=""
-                if is_mme: 
-                    pipeline_dict =json.loads(TRAININGMGR_CONFIG_OBJ.pipeline)
-                    model_info=get_model_info(TRAININGMGR_CONFIG_OBJ, model_name)
-                    s=model_info["meta-info"]["feature-list"]
-                    model_type=model_info["meta-info"]["model-type"]
-                    try:
-                        pipeline_name=pipeline_dict[str(model_type)]
-                    except Exception as err:
-                        err="Doesn't support the model type"
-                        raise TMException(err)
-                    pipeline_version=pipeline_name
-                    feature_list=','.join(s)
-                    result= get_feature_groups_db(PS_DB_OBJ)
-                    for res in result:
-                        if feature_list==res[1]:
-                            featuregroup_name=res[0]
-                            break 
-                    if featuregroup_name =="":
-                        return {"Exception":"The no feature group with mentioned feature list, create a feature group"}, status.HTTP_406_NOT_ACCEPTABLE
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, True, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
-                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_info=model_info)
+                                    PS_DB_OBJ)
                 api_response =  {"result": "Information stored in database."}                 
                 response_code = status.HTTP_201_CREATED
         elif(request.method == 'PUT'):
@@ -1018,16 +969,11 @@ def trainingjob_operations(trainingjob_name):
 
                     (featuregroup_name, description, pipeline_name, experiment_name,
                     arguments, query_filter, enable_versioning, pipeline_version,
-                    datalake_source, is_mme, model_name)= check_trainingjob_data(trainingjob_name, json_data)
-                if is_mme:
-                    featuregroup_name=results[0][2]
-                    pipeline_name, pipeline_version=results[0][3], results[0][13]
-                # model name is not changing hence model info is unchanged.
-                model_info = results[0][20]
+                    datalake_source)= check_trainingjob_data(trainingjob_name, json_data)
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, False, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
-                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_info=model_info)
+                                    PS_DB_OBJ)
                 api_response = {"result": "Information updated in database."}
                 response_code = status.HTTP_200_OK
     except Exception as err:
@@ -1117,9 +1063,6 @@ def retraining():
             arguments = json.loads(results[0][5])['arguments']
             query_filter = results[0][6]
             datalake_source = get_one_key(json.loads(results[0][14])["datalake_source"])
-            is_mme=results[0][18]
-            model_name=results[0][19]
-            model_info=results[0][20]
 
             notification_url = ""
             if "notification_url" in obj:
@@ -1132,7 +1075,7 @@ def retraining():
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, False, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
-                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_info=model_info)
+                                    PS_DB_OBJ)
             except Exception as err:
                 not_possible_to_retrain.append(trainingjob_name)
                 LOGGER.debug(str(err) + "(training job is " + trainingjob_name + ")")
