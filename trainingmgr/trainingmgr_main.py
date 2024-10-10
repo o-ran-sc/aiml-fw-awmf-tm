@@ -40,7 +40,7 @@ from trainingmgr.common.trainingmgr_util import get_one_word_status, check_train
     check_key_in_dictionary, get_one_key, \
     response_for_training, get_metrics, \
     handle_async_feature_engineering_status_exception_case, \
-    validate_trainingjob_name, get_pipelines_details, check_feature_group_data, check_trainingjob_name_and_version, check_trainingjob_name_or_featuregroup_name, \
+    validate_trainingjob_name, get_all_pipeline_names_svc, check_feature_group_data, check_trainingjob_name_and_version, check_trainingjob_name_or_featuregroup_name, \
     get_feature_group_by_name, edit_feature_group_by_name
 from trainingmgr.common.exceptions_utls import APIException,TMException
 from trainingmgr.constants.steps import Steps
@@ -136,6 +136,8 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                             whether the mme is enabled
                         model_name: str
                             model name 
+                        model_id: str
+                            model id 
                         model_info: str
                             model info provided by the mme
         status code:
@@ -177,9 +179,10 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                 "datalake_source": get_one_key(json.loads(trainingjob_info[14])['datalake_source']),
                 "model_url": trainingjob_info[15],
                 "notification_url": trainingjob_info[16],
-                "is_mme": trainingjob_info[17], 
-                "model_name": trainingjob_info[18],
-                "model_info": trainingjob_info[19],
+                "is_mme": trainingjob_info[18], 
+                "model_name": trainingjob_info[19],
+                "model_id": trainingjob_info[20],                
+                "model_info": trainingjob_info[21],
                 "accuracy": data
             }
             response_data = {"trainingjob": dict_data}
@@ -470,49 +473,7 @@ def data_extraction_notification():
                                     status=status.HTTP_200_OK,
                                     mimetype=MIMETYPE_JSON)
 
-@APP.route('/pipelines/<pipe_name>', methods=['GET'])
-def get_pipeline_info_by_name(pipe_name):
-    """
-    Function handling rest endpoint to get information about a specific pipeline.
-    Args in function:
-        pipe_name : str
-            name of pipeline.
-    Args in json:
-        no json required
-    Returns:
-        json:
-            pipeline_info : dict
-                            Dictionary containing detailed information about the specified pipeline.
-        status code:
-            HTTP status code 200 if successful, 404 if pipeline not found, or 500 for server errors.
-    Exceptions:
-        all exceptions are provided with exception message and HTTP status code.
-    """
-    api_response = {}
-    LOGGER.debug(f"Request to get information for pipeline: {pipe_name}")
-    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
 
-    try:
-        pipeline_info = fetch_pipeline_info_by_name(TRAININGMGR_CONFIG_OBJ, pipe_name)
-        if pipeline_info:
-            api_response = pipeline_info
-            response_code = status.HTTP_200_OK
-        else:
-            api_response = {"error": f"Pipeline '{pipe_name}' not found"}
-            response_code = status.HTTP_404_NOT_FOUND
-
-    except TMException as err:
-        api_response = {"error": str(err)}
-        response_code = status.HTTP_404_NOT_FOUND
-        LOGGER.error(f"TrainingManager exception: {str(err)}")
-    except Exception as err:
-        api_response = {"error": "An unexpected error occurred"}
-        LOGGER.error(f"Unexpected error in get_pipeline_info: {str(err)}")
-
-    return APP.response_class(response=json.dumps(api_response),
-                              status=response_code,
-                              mimetype=MIMETYPE_JSON)
-    
 @APP.route('/trainingjob/pipelineNotification', methods=['POST'])
 def pipeline_notification():
     """
@@ -758,8 +719,6 @@ def upload_pipeline(pipe_name):
                                   mimetype=MIMETYPE_JSON)
 
 
-
-
 @APP.route("/pipelines/<pipeline_name>/versions", methods=['GET'])
 def get_versions_for_pipeline(pipeline_name):
     """
@@ -787,10 +746,11 @@ def get_versions_for_pipeline(pipeline_name):
     LOGGER.debug("Request to get all version for given pipeline(" + pipeline_name + ").")
     response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     try:
-        pipelines = get_pipelines_details(TRAININGMGR_CONFIG_OBJ)
-        for pipeline in pipelines['pipelines']:
-            if pipeline['display_name'] == pipeline_name:
-                valid_pipeline = pipeline['display_name']
+        pipeline_names=get_all_pipeline_names_svc(TRAININGMGR_CONFIG_OBJ)
+        print(pipeline_names, pipeline_name)
+        for pipeline in pipeline_names:
+            if pipeline == pipeline_name:
+                valid_pipeline=pipeline
                 break
         if valid_pipeline == "":
             raise TMException("Pipeline name not present")
@@ -814,7 +774,7 @@ def get_versions_for_pipeline(pipeline_name):
             mimetype=MIMETYPE_JSON)
  
 @APP.route('/pipelines', methods=['GET'])
-def get_pipelines():
+def get_all_pipeline_names():
     """
     Function handling rest endpoint to get all pipeline names.
 
@@ -838,8 +798,8 @@ def get_pipelines():
     api_response = {}
     response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     try:
-        pipelines = get_pipelines_details(TRAININGMGR_CONFIG_OBJ)
-        api_response = pipelines
+        pipeline_names=get_all_pipeline_names_svc(TRAININGMGR_CONFIG_OBJ)
+        api_response = {"pipeline_names": pipeline_names}
         response_code = status.HTTP_200_OK
     except Exception as err:
         LOGGER.error(str(err))
@@ -936,7 +896,8 @@ def trainingjob_operations(trainingjob_name):
                     whether mme is enabled 
                 model_name: str
                     name of the model
-
+                model_id: str
+                    id of the model
     Returns:
         1. For post request
             json:
@@ -971,7 +932,7 @@ def trainingjob_operations(trainingjob_name):
             else:
                 (featuregroup_name, description, pipeline_name, experiment_name,
                 arguments, query_filter, enable_versioning, pipeline_version,
-                datalake_source, is_mme, model_name) = \
+                datalake_source, is_mme, model_name, model_id) = \
                 check_trainingjob_data(trainingjob_name, json_data)
                 model_info=""
                 if is_mme: 
@@ -996,7 +957,7 @@ def trainingjob_operations(trainingjob_name):
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, True, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
-                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_info=model_info)
+                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_id=model_id, model_info=model_info)
                 api_response =  {"result": "Information stored in database."}                 
                 response_code = status.HTTP_201_CREATED
         elif(request.method == 'PUT'):
@@ -1018,7 +979,7 @@ def trainingjob_operations(trainingjob_name):
 
                     (featuregroup_name, description, pipeline_name, experiment_name,
                     arguments, query_filter, enable_versioning, pipeline_version,
-                    datalake_source, is_mme, model_name)= check_trainingjob_data(trainingjob_name, json_data)
+                    datalake_source, is_mme, model_name, model_id)= check_trainingjob_data(trainingjob_name, json_data)
                 if is_mme:
                     featuregroup_name=results[0][2]
                     pipeline_name, pipeline_version=results[0][3], results[0][13]
@@ -1027,7 +988,7 @@ def trainingjob_operations(trainingjob_name):
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, False, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
-                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_info=model_info)
+                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_id=model_id, model_info=model_info)
                 api_response = {"result": "Information updated in database."}
                 response_code = status.HTTP_200_OK
     except Exception as err:
@@ -1119,7 +1080,8 @@ def retraining():
             datalake_source = get_one_key(json.loads(results[0][14])["datalake_source"])
             is_mme=results[0][18]
             model_name=results[0][19]
-            model_info=results[0][20]
+            model_id=results[0][20]
+            model_info=results[0][21]
 
             notification_url = ""
             if "notification_url" in obj:
@@ -1132,7 +1094,7 @@ def retraining():
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, False, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
-                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_info=model_info)
+                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_id=model_id, model_info=model_info)
             except Exception as err:
                 not_possible_to_retrain.append(trainingjob_name)
                 LOGGER.debug(str(err) + "(training job is " + trainingjob_name + ")")

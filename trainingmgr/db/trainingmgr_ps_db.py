@@ -100,6 +100,7 @@ class PSDB():
                         "deletion_in_progress BOOLEAN NOT NULL," + \
                         "is_mme BOOLEAN NOT NULL," + \
                         "model_name varchar(128) NOT NULL," + \
+                        "model_id varchar(128) NOT NULL," + \
                         "model_info varchar(1000) NOT NULL," \
                         "PRIMARY KEY (trainingjob_name,version)" + \
                         ")")
