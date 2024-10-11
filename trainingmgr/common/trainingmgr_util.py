@@ -426,7 +426,7 @@ def fetch_pipeline_info_by_name(training_config_obj, pipe_name):
                         display_name=pipeline_info['display_name'],
                         description=pipeline_info['description'],
                         created_at=pipeline_info['created_at']
-                    )
+                    ).to_dict()
 
             logger.warning(f"Pipeline '{pipe_name}' not found")
             return None
@@ -454,3 +454,11 @@ class PipelineInfo:
     def __repr__(self):
         return (f"PipelineInfo(pipeline_id={self.pipeline_id}, display_name={self.display_name}, "
                 f"description={self.description}, created_at={self.created_at})")
+    
+    def to_dict(self):
+        return {
+            "pipeline_id":self.pipeline_id,
+            "description": self.display_name,
+            "description": self.description,
+            "created_at": self.created_at
+        }
