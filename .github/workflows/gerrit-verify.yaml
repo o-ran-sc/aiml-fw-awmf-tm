@@ -81,7 +81,7 @@ jobs:
       GERRIT_PROJECT: ${{ inputs.GERRIT_PROJECT }}
       GERRIT_REFSPEC: ${{ inputs.GERRIT_REFSPEC }}
       TOX_ENVS: '["code"]'
-      PYTHON_VERSION: '3.8'
+      PYTHON_VERSION: '3.10'
 
   vote:
     if: ${{ always() }}
