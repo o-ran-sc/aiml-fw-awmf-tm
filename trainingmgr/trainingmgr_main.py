@@ -56,6 +56,9 @@ from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainin
     get_feature_groups_db, get_feature_group_by_name_db, delete_feature_group_by_name, delete_trainingjob_version, change_field_value_by_version
 
 APP = Flask(__name__)
+
+from middleware.loggingMiddleware import LoggingMiddleware
+APP.wsgi_app = LoggingMiddleware(APP.wsgi_app)
 TRAININGMGR_CONFIG_OBJ = None
 PS_DB_OBJ = None
 LOGGER = None
