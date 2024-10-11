@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4a149a5c_643db46e",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 474,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-10-11T08:17:05Z",
+      "side": 0,
+      "message": "Why do you want to remove this function?",
+      "revId": "14c1a56c11df6a3328d0733a87f5cadeb522a973",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}

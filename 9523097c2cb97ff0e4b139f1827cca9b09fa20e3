@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f714d7e_866390db",
+        "filename": "trainingmgr/common/trainingmgr_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-10-11T08:17:05Z",
+      "side": 1,
+      "message": "Can you explain why revert this code? \n`get_all_pipeline_names_svc` cannot get all pipeline names. Please refer to the [code for fetching pipeline names from kubeflow-adapter](https://github.com/o-ran-sc/aiml-fw-athp-tps-kubeflow-adapter/blob/0ad0bc0587b1412b43cfea5731f87ce14cac936e/kfadapter/kfadapter_kfconnect.py#L129).",
+      "revId": "9523097c2cb97ff0e4b139f1827cca9b09fa20e3",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
