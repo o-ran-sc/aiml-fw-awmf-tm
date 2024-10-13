@@ -16,6 +16,23 @@ AIMLTrainingservice:
         - CommType: REQUEST_RESPONSE
           Operations:
           - POST
+          ResourceName: "CreateFeatureGroup"
+          Uri: "/featureGroup"
+        - CommType: REQUEST_RESPONSE
+          Operations:
+          - POST
+          ResourceName: "CreateTrainingJob"
+          Uri: "/trainingjobs/{training_job_id}"
+        - CommType: REQUEST_RESPONSE
+          Operations:
+          - POST
+          ResourceName: "StartTraining"
+          Uri: "/trainingjobs/{training_job_id}/training"
+        - CommType: REQUEST_RESPONSE
+          Operations:
+          - GET
+          ResourceName: "GetTrainingJob"
+          Uri: "/trainingjobs/{training_job_id}/{version}"
   ApiName: AIMLT-http10
 
 
