@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c8e5becc_e1322d89",
+        "filename": "trainingmgr/common/trainingmgr_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 461,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-10-14T05:48:38Z",
+      "side": 1,
+      "message": "Please check the `key`.",
+      "revId": "969611cedd84ab1a33a0ed5c913db6739a82d999",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
