@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "78234adc_b6d67128",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-10-15T23:01:21Z",
+      "side": 1,
+      "message": "I think the index number of `is_mme` is 17 and `model_name` is 18 as before.\n`model_id` and `model_info` can be assigned and changed to your idea.",
+      "revId": "5a166867b642280866c4daf2b655d8db977d274e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
