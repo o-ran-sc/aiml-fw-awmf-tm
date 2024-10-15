@@ -136,6 +136,8 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                             whether the mme is enabled
                         model_name: str
                             model name 
+                        model_id: str
+                            model id 
                         model_info: str
                             model info provided by the mme
         status code:
@@ -177,9 +179,10 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                 "datalake_source": get_one_key(json.loads(trainingjob_info[14])['datalake_source']),
                 "model_url": trainingjob_info[15],
                 "notification_url": trainingjob_info[16],
-                "is_mme": trainingjob_info[17], 
-                "model_name": trainingjob_info[18],
-                "model_info": trainingjob_info[19],
+                "is_mme": trainingjob_info[18], 
+                "model_name": trainingjob_info[19],
+                "model_id": trainingjob_info[20],                
+                "model_info": trainingjob_info[21],
                 "accuracy": data
             }
             response_data = {"trainingjob": dict_data}
@@ -936,6 +939,8 @@ def trainingjob_operations(trainingjob_name):
                     whether mme is enabled 
                 model_name: str
                     name of the model
+                model_id: str
+                    id of the model
 
     Returns:
         1. For post request
@@ -971,7 +976,7 @@ def trainingjob_operations(trainingjob_name):
             else:
                 (featuregroup_name, description, pipeline_name, experiment_name,
                 arguments, query_filter, enable_versioning, pipeline_version,
-                datalake_source, is_mme, model_name) = \
+                datalake_source, is_mme, model_name, model_id) = \
                 check_trainingjob_data(trainingjob_name, json_data)
                 model_info=""
                 if is_mme: 
@@ -996,7 +1001,7 @@ def trainingjob_operations(trainingjob_name):
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, True, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
-                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_info=model_info)
+                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_id=model_id, model_info=model_info)
                 api_response =  {"result": "Information stored in database."}                 
                 response_code = status.HTTP_201_CREATED
         elif(request.method == 'PUT'):
@@ -1018,7 +1023,7 @@ def trainingjob_operations(trainingjob_name):
 
                     (featuregroup_name, description, pipeline_name, experiment_name,
                     arguments, query_filter, enable_versioning, pipeline_version,
-                    datalake_source, is_mme, model_name)= check_trainingjob_data(trainingjob_name, json_data)
+                    datalake_source, is_mme, model_name, model_id)= check_trainingjob_data(trainingjob_name, json_data)
                 if is_mme:
                     featuregroup_name=results[0][2]
                     pipeline_name, pipeline_version=results[0][3], results[0][13]
@@ -1027,7 +1032,7 @@ def trainingjob_operations(trainingjob_name):
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, False, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
-                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_info=model_info)
+                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_id=model_id, model_info=model_info)
                 api_response = {"result": "Information updated in database."}
                 response_code = status.HTTP_200_OK
     except Exception as err:
@@ -1119,7 +1124,8 @@ def retraining():
             datalake_source = get_one_key(json.loads(results[0][14])["datalake_source"])
             is_mme=results[0][18]
             model_name=results[0][19]
-            model_info=results[0][20]
+            model_id=results[0][20]
+            model_info=results[0][21]
 
             notification_url = ""
             if "notification_url" in obj:
@@ -1132,7 +1138,7 @@ def retraining():
                 add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
                                     arguments, query_filter, False, enable_versioning,
                                     pipeline_version, datalake_source, trainingjob_name, 
-                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_info=model_info)
+                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_id=model_id ,model_info=model_info)
             except Exception as err:
                 not_possible_to_retrain.append(trainingjob_name)
                 LOGGER.debug(str(err) + "(training job is " + trainingjob_name + ")")
