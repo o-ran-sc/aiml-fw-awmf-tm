@@ -135,7 +135,7 @@ def check_trainingjob_data(trainingjob_name, json_data):
                                  "arguments", "enable_versioning",
                                  "datalake_source", "description",
                                  "query_filter",
-                                 "is_mme", "model_name"], json_data):
+                                 "is_mme", "model_name", "model_id"], json_data):
 
             description = json_data["description"]
             feature_list = json_data["featureGroup_name"]
@@ -151,6 +151,7 @@ def check_trainingjob_data(trainingjob_name, json_data):
             datalake_source = json_data["datalake_source"]
             is_mme=json_data["is_mme"]
             model_name=json_data["model_name"]
+            model_id=json_data["model_id"]
         else :
             raise TMException("check_trainingjob_data- supplied data doesn't have" + \
                                 "all the required fields ")
@@ -159,7 +160,7 @@ def check_trainingjob_data(trainingjob_name, json_data):
                            str(err)) from None
     return (feature_list, description, pipeline_name, experiment_name,
             arguments, query_filter, enable_versioning, pipeline_version,
-            datalake_source, is_mme, model_name)
+            datalake_source, is_mme, model_name, model_id)
 
 def check_feature_group_data(json_data):
     """
