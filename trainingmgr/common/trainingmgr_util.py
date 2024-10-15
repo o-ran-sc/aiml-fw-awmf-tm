@@ -135,7 +135,7 @@ def check_trainingjob_data(trainingjob_name, json_data):
                                  "arguments", "enable_versioning",
                                  "datalake_source", "description",
                                  "query_filter",
-                                 "is_mme", "model_name"], json_data):
+                                 "is_mme", "model_name", "model_id"], json_data):
 
             description = json_data["description"]
             feature_list = json_data["featureGroup_name"]
@@ -151,6 +151,7 @@ def check_trainingjob_data(trainingjob_name, json_data):
             datalake_source = json_data["datalake_source"]
             is_mme=json_data["is_mme"]
             model_name=json_data["model_name"]
+            model_id=json_data["model_id"]
         else :
             raise TMException("check_trainingjob_data- supplied data doesn't have" + \
                                 "all the required fields ")
@@ -159,7 +160,7 @@ def check_trainingjob_data(trainingjob_name, json_data):
                            str(err)) from None
     return (feature_list, description, pipeline_name, experiment_name,
             arguments, query_filter, enable_versioning, pipeline_version,
-            datalake_source, is_mme, model_name)
+            datalake_source, is_mme, model_name, model_id)
 
 def check_feature_group_data(json_data):
     """
@@ -370,7 +371,10 @@ def validate_trainingjob_name(trainingjob_name, ps_db_obj):
         isavailable = True
     return isavailable    
 
-def get_pipelines_details(training_config_obj):
+def get_all_pipeline_names_svc(training_config_obj):
+    # This function returns all the pipeline names 
+
+    pipeline_names = []
     logger=training_config_obj.logger
     try:
         kf_adapter_ip = training_config_obj.kf_adapter_ip
@@ -383,9 +387,12 @@ def get_pipelines_details(training_config_obj):
             err_smg = ERROR_TYPE_KF_ADAPTER_JSON
             logger.error(err_smg)
             raise TMException(err_smg)
+        for pipeline in response.json().keys():
+            pipeline_names.append(pipeline)
     except Exception as err:
         logger.error(str(err))
-    return response.json()
+    logger.debug(pipeline_names)
+    return pipeline_names
 
 def check_trainingjob_name_and_version(trainingjob_name, version):
     if (re.fullmatch(PATTERN, trainingjob_name) and version.isnumeric()):
@@ -396,61 +403,3 @@ def check_trainingjob_name_or_featuregroup_name(name):
     if re.fullmatch(PATTERN, name):
         return True
     return False
-
-def fetch_pipeline_info_by_name(training_config_obj, pipe_name):
-    """
-    This function returns the information for a specific pipeline
-    """
-    logger = training_config_obj.logger
-    try:
-        kf_adapter_ip = training_config_obj.kf_adapter_ip
-        kf_adapter_port = training_config_obj.kf_adapter_port
-        if kf_adapter_ip is not None and kf_adapter_port is not None:
-            url = f'http://{kf_adapter_ip}:{kf_adapter_port}/pipelines'
-
-        logger.debug(f"Requesting pipelines from: {url}")
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            if response.headers['content-type'] != MIMETYPE_JSON:
-                err_msg = ERROR_TYPE_KF_ADAPTER_JSON
-                logger.error(err_msg)
-                raise TMException(err_msg)
-
-            pipelines_data = response.json()
-
-            for pipeline_info in pipelines_data.get('pipelines', []):
-                if pipeline_info['display_name'] == pipe_name:
-                    return PipelineInfo(
-                        pipeline_id=pipeline_info['pipeline_id'],
-                        display_name=pipeline_info['display_name'],
-                        description=pipeline_info['description'],
-                        created_at=pipeline_info['created_at']
-                    )
-
-            logger.warning(f"Pipeline '{pipe_name}' not found")
-            return None
-        else:
-            err_msg = f"Unexpected response from KFAdapter: {response.status_code}"
-            logger.error(err_msg)
-            return TMException(err_msg)
-
-    except requests.RequestException as err:
-        err_msg = f"Error communicating with KFAdapter : {str(err)}"
-        logger.error(err_msg)
-        raise TMException(err_msg)
-    except Exception as err:
-        err_msg = f"Unexpected error in get_pipeline_info_by_name: {str(err)}"
-        logger.error(err_msg)
-        raise TMException(err_msg)
-
-class PipelineInfo:
-    def __init__(self, pipeline_id, display_name, description, created_at):
-        self.pipeline_id = pipeline_id
-        self.display_name = display_name
-        self.description = description
-        self.created_at = created_at
-
-    def __repr__(self):
-        return (f"PipelineInfo(pipeline_id={self.pipeline_id}, display_name={self.display_name}, "
-                f"description={self.description}, created_at={self.created_at})")
