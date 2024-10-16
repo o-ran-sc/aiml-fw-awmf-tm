@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad427581_86d63097",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-10-16T08:51:34Z",
+      "side": 1,
+      "message": "@Rajdeep is working on using `sql-alchemy` which will introduce models for TJ and we would be able to remove indexing.\n\nSo, I think let\u0027s hold this commit and wait for the updates from Rajdeep.",
+      "revId": "f29500e374dcb3f3a83f801354f11e536027dea8",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
