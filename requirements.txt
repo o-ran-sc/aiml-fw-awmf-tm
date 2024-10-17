@@ -27,3 +27,4 @@ PyYAML
 kubernetes
 validators==0.20.0
 Werkzeug==2.2.2
+pydantic==2.9.2
