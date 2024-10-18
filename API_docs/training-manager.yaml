@@ -195,3 +195,40 @@ paths:
             properties:
               Exception:
                 type: "string"
+
+  /trainingjobs/{trainingjob_name}/training:
+    post:
+      tags:
+        - Training Job
+      summary: "Start training job"
+      description: "Starts the training job by invoking the data extraction module and other training steps."
+      parameters:
+        - name: "trainingjob_name"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Name of the training job"
+      responses:
+        200:
+          description: "Training job started successfully"
+          schema:
+            type: "object"
+            properties:
+              trainingjob_name:
+                type: "string"
+              result:
+                type: "string"
+        400:
+          description: "Invalid training job name"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
