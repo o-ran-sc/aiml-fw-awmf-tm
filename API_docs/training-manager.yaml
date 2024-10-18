@@ -114,3 +114,48 @@ paths:
             properties:
               Exception:
                 type: "string"
+
+  /trainingjobs/{trainingjob_name}/{version}/steps_state:
+    get:
+      tags:
+        - Training Job
+      summary: "Get steps state information for a training job"
+      description: "Returns the state of each step in the training job process."
+      parameters:
+        - name: "trainingjob_name"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Name of the training job"
+        - name: "version"
+          in: "path"
+          required: true
+          type: "integer"
+          description: "Version of the training job"
+      responses:
+        200:
+          description: "Successful response with steps state information"
+          schema:
+            type: "object"
+        400:
+          description: "Invalid training job name or version"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+        404:
+          description: "Training job not found"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+
