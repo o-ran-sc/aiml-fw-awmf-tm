@@ -382,3 +382,34 @@ paths:
             properties:
               Exception:
                 type: "string"
+
+  /pipelines/{pipeline_name}/versions:
+    get:
+      tags:
+        - Pipeline
+      summary: "Get versions of a pipeline"
+      description: "Fetches all the versions of a given pipeline."
+      parameters:
+        - name: "pipeline_name"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Name of the pipeline"
+      responses:
+        200:
+          description: "Successful response with pipeline versions"
+          schema:
+            type: "object"
+            properties:
+              versions_list:
+                type: "array"
+                items:
+                  type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+
