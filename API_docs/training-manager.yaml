@@ -437,3 +437,25 @@ paths:
               Exception:
                 type: "string"
 
+  /experiments:
+    get:
+      summary: "Get all experiment names"
+      description: "Fetches all the names of experiments available."
+      responses:
+        200:
+          description: "Successful response with all experiment names"
+          schema:
+            type: "object"
+            properties:
+              experiment_names:
+                type: "array"
+                items:
+                  type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+                
