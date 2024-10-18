@@ -232,3 +232,42 @@ paths:
             properties:
               Exception:
                 type: "string"
+
+  /trainingjob/dataExtractionNotification:
+    post:
+      tags:
+        - Training Job
+      summary: "Handle data extraction notification"
+      description: "Handles the notification that data extraction is finished and invokes further training steps."
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              trainingjob_name:
+                type: "string"
+          description: "JSON object containing the name of the training job"
+      responses:
+        200:
+          description: "Pipeline is scheduled successfully"
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: "string"
+        400:
+          description: "Invalid training job name or request"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string" 
