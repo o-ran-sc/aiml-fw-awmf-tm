@@ -458,4 +458,146 @@ paths:
             properties:
               Exception:
                 type: "string"
-                
+
+  /trainingjobs/{trainingjob_name}:
+    post:
+      tags:
+        - Training Job
+      summary: "Create a new training job"
+      description: "Creates a new training job with the provided details."
+      parameters:
+        - name: "trainingjob_name"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Name of the training job"
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              description:
+                type: "string"
+              featuregroup_name:
+                type: "string"
+              pipeline_name:
+                type: "string"
+              experiment_name:
+                type: "string"
+              arguments:
+                type: "object"
+              query_filter:
+                type: "string"
+              enable_versioning:
+                type: "boolean"
+              pipeline_version:
+                type: "string"
+              datalake_source:
+                type: "string"
+              _measurement:
+                type: "string"
+              bucket:
+                type: "string"
+              is_mme:
+                type: "boolean"
+              model_name:
+                type: "string"
+      responses:
+        201:
+          description: "Training job created successfully"
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: "string"
+        400:
+          description: "Invalid training job name or data"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+        409:
+          description: "Training job name already exists"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+
+    put:
+      tags:
+        - Training Job
+      summary: "Update an existing training job"
+      description: "Updates an existing training job with the provided details. Precondition: the training job's overall status should be failed or finished, and no deletion process should be in progress."
+      parameters:
+        - name: "trainingjob_name"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Name of the training job"
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              description:
+                type: "string"
+              featuregroup_name:
+                type: "string"
+              pipeline_name:
+                type: "string"
+              experiment_name:
+                type: "string"
+              arguments:
+                type: "object"
+              query_filter:
+                type: "string"
+              enable_versioning:
+                type: "boolean"
+              pipeline_version:
+                type: "string"
+              datalake_source:
+                type: "string"
+              is_mme:
+                type: "boolean"
+              model_name:
+                type: "string"
+      responses:
+        200:
+          description: "Training job updated successfully"
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: "string"
+        400:
+          description: "Invalid training job name or data"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+        404:
+          description: "Training job not found"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
