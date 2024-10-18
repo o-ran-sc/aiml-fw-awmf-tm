@@ -313,3 +313,34 @@ paths:
             properties:
               Exception:
                 type: "string"
+                
+  /trainingjobs/latest:
+    get:
+      tags:
+        - Training Job
+      summary: "Get overall status and latest version of all training jobs"
+      description: "Fetches the overall status and the latest version of all existing training jobs."
+      responses:
+        200:
+          description: "Successful response with training job status and version details"
+          schema:
+            type: "object"
+            properties:
+              trainingjobs:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    trainingjob_name:
+                      type: "string"
+                    version:
+                      type: "integer"
+                    overall_status:
+                      type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
