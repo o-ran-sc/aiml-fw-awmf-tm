@@ -40,3 +40,6 @@ RUN pip3 install -r requirements.txt
 #Expose the ports
 EXPOSE 5050
 
+RUN chmod +x entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]
