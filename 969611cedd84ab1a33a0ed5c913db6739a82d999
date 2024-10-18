@@ -34,6 +34,24 @@
       "parentUuid": "c8e5becc_e1322d89",
       "revId": "969611cedd84ab1a33a0ed5c913db6739a82d999",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "18e827b7_757b8a40",
+        "filename": "trainingmgr/common/trainingmgr_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 461,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-10-18T10:15:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "18366ce1_4831768c",
+      "revId": "969611cedd84ab1a33a0ed5c913db6739a82d999",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
