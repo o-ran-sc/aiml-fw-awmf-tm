@@ -313,7 +313,7 @@ paths:
             properties:
               Exception:
                 type: "string"
-                
+
   /trainingjobs/latest:
     get:
       tags:
@@ -337,6 +337,44 @@ paths:
                       type: "integer"
                     overall_status:
                       type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+
+  /pipelines/{pipe_name}/upload:
+    post:
+      tags:
+        - Pipeline
+      summary: "Upload pipeline"
+      description: "Uploads a pipeline file to the server."
+      parameters:
+        - name: "pipe_name"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Name of the pipeline"
+        - name: "file"
+          in: "formData"
+          required: true
+          type: "file"
+          description: "Pipeline file to upload"
+        - name: "description"
+          in: "formData"
+          required: false
+          type: "string"
+          description: "Description of the pipeline"
+      responses:
+        200:
+          description: "Pipeline uploaded successfully"
+          schema:
+            type: "object"
+            properties:
+              result:
+                type: "string"
         500:
           description: "Internal server error"
           schema:
