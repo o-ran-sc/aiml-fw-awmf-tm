@@ -19,7 +19,7 @@
 FROM python:3.10
 
 # location in the container
-ENV TA_DIR /home/app/
+ENV TA_DIR /home/app
 WORKDIR ${TA_DIR}
 
 # Install dependencies
@@ -37,6 +37,9 @@ RUN pip3 install /SDK/modelmetricssdk_main/.
 RUN pip3 install .
 RUN pip3 install -r requirements.txt
 
+WORKDIR ${TA_DIR}/trainingmgr
+
+CMD ["python3", "trainingmgr_main.py"]
 #Expose the ports
 EXPOSE 5050
 
