@@ -13,3 +13,11 @@ consumes:
   - "application/json"
 produces:
   - "application/json"
+
+tags:
+  - name: Feature Group
+    description: Feature group related operations
+  - name: Pipeline
+    description: Pipeline related operations
+  - name: Training Job
+    description: Training Job related operations
