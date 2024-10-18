@@ -27,3 +27,6 @@ PyYAML
 kubernetes
 validators==0.20.0
 Werkzeug==2.2.2
+Flask-SQLAlchemy
+Flask-Migrate
+psycopg2-binary
