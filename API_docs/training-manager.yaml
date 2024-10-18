@@ -601,3 +601,56 @@ paths:
             properties:
               Exception:
                 type: "string"
+
+  /trainingjobs/retraining:
+    post:
+      tags:
+        - Training Job
+      summary: "Retrain training jobs"
+      description: "Retrains the training jobs specified in the request. The overall status of the training job should be 'failed' or 'finished', and deletion should not be in progress."
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              trainingjobs_list:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    trainingjob_name:
+                      type: "string"
+                      description: "Name of the training job"
+                    notification_url:
+                      type: "string"
+                      description: "Optional URL for notifications"
+                    feature_filter:
+                      type: "string"
+                      description: "Optional feature filter"
+      responses:
+        200:
+          description: "Retraining results"
+          schema:
+            type: "object"
+            properties:
+              success_count:
+                type: "integer"
+              failure_count:
+                type: "integer"
+        400:
+          description: "Invalid request or missing data"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+
