@@ -495,7 +495,7 @@ def get_pipeline_info_by_name(pipe_name):
     try:
         pipeline_info = fetch_pipeline_info_by_name(TRAININGMGR_CONFIG_OBJ, pipe_name)
         if pipeline_info:
-            api_response = pipeline_info
+            api_response = {"pipeline_info":pipeline_info}
             response_code = status.HTTP_200_OK
         else:
             api_response = {"error": f"Pipeline '{pipe_name}' not found"}
