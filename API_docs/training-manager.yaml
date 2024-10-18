@@ -413,3 +413,27 @@ paths:
               Exception:
                 type: "string"
 
+  /pipelines:
+    get:
+      tags:
+        - Pipeline
+      summary: "Get all pipeline names"
+      description: "Fetches all the names of pipelines available."
+      responses:
+        200:
+          description: "Successful response with all pipeline names"
+          schema:
+            type: "object"
+            properties:
+              pipeline_names:
+                type: "array"
+                items:
+                  type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+
