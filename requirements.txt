@@ -30,3 +30,5 @@ Werkzeug==2.2.2
 Flask-SQLAlchemy
 Flask-Migrate
 psycopg2-binary
+marshmallow-sqlalchemy
+flask-marshmallow
