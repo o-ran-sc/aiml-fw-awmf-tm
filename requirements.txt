@@ -29,4 +29,6 @@ validators==0.20.0
 Werkzeug==2.2.2
 Flask-SQLAlchemy
 Flask-Migrate
-psycopg2-binary
+psycopg2-binary==2.9.10
+marshmallow-sqlalchemy
+flask-marshmallow

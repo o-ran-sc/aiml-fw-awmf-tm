@@ -56,6 +56,7 @@ from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainin
     get_field_of_given_version,get_all_jobs_latest_status_version, get_info_of_latest_version, \
     get_feature_groups_db, get_feature_group_by_name_db, delete_feature_group_by_name, delete_trainingjob_version, change_field_value_by_version
 from trainingmgr.models import db, TrainingJob, FeatureGroup
+from trainingmgr.schemas import ma, TrainingJobSchema , FeatureGroupSchema
 
 APP = Flask(__name__)
 TRAININGMGR_CONFIG_OBJ = None

@@ -15,11 +15,12 @@
 #   limitations under the License.
 #
 # ==================================================================================
-from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
+from trainingmgr.schemas import ma
+from trainingmgr.models import TrainingJob
 
-from trainingmgr.models.trainingjob import TrainingJob
-from trainingmgr.models.featuregroup import FeatureGroup
-
-__all_ = ['TrainingJob', 'FeatureGroup']
+class TrainingJobSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = TrainingJob
+        include_relationships = True
+        load_instance = True
