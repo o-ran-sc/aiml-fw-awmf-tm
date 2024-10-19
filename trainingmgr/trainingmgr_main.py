@@ -56,6 +56,7 @@ from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainin
     get_field_of_given_version,get_all_jobs_latest_status_version, get_info_of_latest_version, \
     get_feature_groups_db, get_feature_group_by_name_db, delete_feature_group_by_name, delete_trainingjob_version, change_field_value_by_version
 from trainingmgr.models import db, TrainingJob, FeatureGroup
+from trainingmgr.schemas import ma, TrainingJobSchema , FeatureGroupSchema
 
 APP = Flask(__name__)
 TRAININGMGR_CONFIG_OBJ = None
@@ -1749,6 +1750,7 @@ if __name__ == "__main__":
         PS_DB_OBJ = PSDB(TRAININGMGR_CONFIG_OBJ)
         APP.config['SQLALCHEMY_DATABASE_URI']=f'postgresql+psycopg2://{TRAININGMGR_CONFIG_OBJ.ps_user}:{TRAININGMGR_CONFIG_OBJ.ps_password}@{TRAININGMGR_CONFIG_OBJ.ps_ip}:{TRAININGMGR_CONFIG_OBJ.ps_port}/training_manager_database'
         db.init_app(APP)
+        ma.init_app(APP)
         # Todo add flask db upgrade in the docker file  
         migrate = Migrate(APP, db) 
         with APP.app_context():
