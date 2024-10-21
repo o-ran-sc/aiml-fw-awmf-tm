@@ -23,6 +23,8 @@ import json
 import re
 from flask_api import status
 import requests
+from pydantic import BaseModel
+from typing import Optional
 from trainingmgr.db.common_db_fun import change_in_progress_to_failed_by_latest_version, \
     get_field_by_latest_version, change_field_of_latest_version, \
     get_latest_version_trainingjob_name, get_all_versions_info_by_name, get_feature_group_by_name_db, \
@@ -37,13 +39,13 @@ PATTERN = re.compile(r"\w+")
 
 def response_for_training(code, message, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk):
     """
-    Post training job completion,this function provides notifications to the subscribers, 
-    who subscribed for the result of training job and provided a notification url during 
+    Post training job completion,this function provides notifications to the subscribers,
+    who subscribed for the result of training job and provided a notification url during
     training job creation.
     returns tuple containing result dictionary and status code.
     """
     logger.debug("Training job result: " + str(code) + " " + message + " " + str(is_success))
-    
+
     try :
         #TODO DB query optimization, all data to fetch in one call
         notif_url_result = get_field_by_latest_version(trainingjob_name, ps_db_obj, "notification_url")
@@ -64,7 +66,7 @@ def response_for_training(code, message, logger, is_success, trainingjob_name, p
                     }
                 else:
                     req_json = {"result": "failed", "trainingjob_name": trainingjob_name}
-            
+
                 response = requests.post(notification_url,
                         data=json.dumps(req_json),
                         headers={
@@ -168,7 +170,7 @@ def check_feature_group_data(json_data):
     """
     try:
         if check_key_in_dictionary(["featureGroupName", "feature_list", \
-                                    "datalake_source", "enable_Dme", "Host", 
+                                    "datalake_source", "enable_Dme", "Host",
                                     "Port", "dmePort","bucket", "token", "source_name", "measured_obj_class", "_measurement"], json_data):
             feature_group_name=json_data["featureGroupName"]
             features=json_data["feature_list"]
@@ -186,10 +188,10 @@ def check_feature_group_data(json_data):
         else :
             raise TMException("check_featuregroup_data- supplied data doesn't have" + \
                                 " all the required fields ")
-    
+
     except Exception as err:
         raise APIException(status.HTTP_400_BAD_REQUEST, str(err)) from None
-    
+
     return (feature_group_name, features, datalake_source, enable_dme, host, port,dme_port, bucket, token, source_name,db_org, measured_obj_class, measurement)
 
 def get_feature_group_by_name(ps_db_obj, logger, featuregroup_name):
@@ -239,7 +241,7 @@ def get_feature_group_by_name(ps_db_obj, logger, featuregroup_name):
         else:
             response_code=status.HTTP_404_NOT_FOUND
             raise TMException("Failed to fetch feature group info from db")
-        
+
     except Exception as err:
         api_response = {"Exception": str(err)}
         logger.error(str(err))
@@ -268,7 +270,7 @@ def edit_feature_group_by_name(tm_conf_obj, ps_db_obj, logger, featuregroup_name
     response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     if not check_trainingjob_name_or_featuregroup_name(featuregroup_name):
         return {"Exception":"The featuregroup_name is not correct"}, status.HTTP_400_BAD_REQUEST
-    
+
     logger.debug("Request for editing a feature group with name = "+ featuregroup_name)
     logger.debug("db info before the edit : %s", get_feature_group_by_name_db(ps_db_obj, featuregroup_name))
     try:
@@ -296,7 +298,7 @@ def edit_feature_group_by_name(tm_conf_obj, ps_db_obj, logger, featuregroup_name
         err_msg = "Failed to edit the feature Group "
         api_response = {"Exception":err_msg}
         logger.error(str(err))
-    
+
     logger.debug("db info after the edit : %s", get_feature_group_by_name_db(ps_db_obj, featuregroup_name))
     return api_response, response_code
 
@@ -368,7 +370,7 @@ def validate_trainingjob_name(trainingjob_name, ps_db_obj):
         raise DBException("Could not get info from db for " + trainingjob_name + "," + errmsg)
     if results:
         isavailable = True
-    return isavailable    
+    return isavailable
 
 def get_pipelines_details(training_config_obj):
     logger=training_config_obj.logger
@@ -419,14 +421,15 @@ def fetch_pipeline_info_by_name(training_config_obj, pipe_name):
 
             pipelines_data = response.json()
 
-            for pipeline_info in pipelines_data.get('pipelines', []):
-                if pipeline_info['display_name'] == pipe_name:
-                    return PipelineInfo(
-                        pipeline_id=pipeline_info['pipeline_id'],
-                        display_name=pipeline_info['display_name'],
-                        description=pipeline_info['description'],
-                        created_at=pipeline_info['created_at']
-                    ).to_dict()
+            for pipeline in pipelines_data.get('pipelines', []):
+                if pipeline['display_name'] == pipe_name:
+                    pipeline_info = {
+                        'pipeline_id': pipeline['pipeline_id'],
+                        'display_name': pipeline['display_name'],
+                        'description': pipeline['description'],
+                        'created_at': pipeline['created_at']
+                    }
+                    return PipelineInfo(**pipeline_info)
 
             logger.warning(f"Pipeline '{pipe_name}' not found")
             return None
@@ -444,21 +447,8 @@ def fetch_pipeline_info_by_name(training_config_obj, pipe_name):
         logger.error(err_msg)
         raise TMException(err_msg)
 
-class PipelineInfo:
-    def __init__(self, pipeline_id, display_name, description, created_at):
-        self.pipeline_id = pipeline_id
-        self.display_name = display_name
-        self.description = description
-        self.created_at = created_at
-
-    def __repr__(self):
-        return (f"PipelineInfo(pipeline_id={self.pipeline_id}, display_name={self.display_name}, "
-                f"description={self.description}, created_at={self.created_at})")
-    
-    def to_dict(self):
-        return {
-            "pipeline_id":self.pipeline_id,
-            "display_name": self.display_name,
-            "description": self.description,
-            "created_at": self.created_at
-        }
+class PipelineInfo(BaseModel):
+    pipeline_id: str
+    display_name: str
+    description: Optional[str] = None
+    created_at: str
