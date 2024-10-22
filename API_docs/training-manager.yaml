@@ -654,3 +654,52 @@ paths:
               Exception:
                 type: "string"
 
+  /trainingjobs:
+    delete:
+      tags:
+        - Training Job
+      summary: "Delete a list of training job versions"
+      description: "Deletes the latest version of the training jobs specified in the request. The overall status of the training job should be 'failed' or 'finished', and deletion should not be in progress."
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              list:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    trainingjob_name:
+                      type: "string"
+                      description: "Name of the training job"
+                    version:
+                      type: "integer"
+                      description: "Version of the training job"
+      responses:
+        200:
+          description: "Deletion results"
+          schema:
+            type: "object"
+            properties:
+              success_count:
+                type: "integer"
+              failure_count:
+                type: "integer"
+        400:
+          description: "Invalid request or missing data"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+
