@@ -44,6 +44,11 @@ committers:
       company: 'Samsung Electronics'
       id: 'rajdeep11'
       timezone: 'Asia/Seoul'
+    - name: 'Swaraj Kumar'
+      email: 'swaraj.kumar@samsung.com'
+      company: 'Samsung Electronics'
+      id: 'swaraj.kumar.samsung'
+      timezone: 'Asia/Seoul'
 
 tsc:
     # yamllint disable rule:line-length
