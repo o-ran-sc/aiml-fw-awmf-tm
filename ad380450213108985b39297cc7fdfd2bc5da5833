@@ -22,6 +22,30 @@
       },
       "revId": "ad380450213108985b39297cc7fdfd2bc5da5833",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5dc8e325_331e576e",
+        "filename": "trainingmgr/db/featuregroup_db.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-10-23T12:25:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "65ea6c23_98500bb4",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 58
+      },
+      "revId": "ad380450213108985b39297cc7fdfd2bc5da5833",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }

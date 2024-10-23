@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bd35eed9_652c5b1e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-10-23T12:25:48Z",
+      "side": 1,
+      "message": "I feel we could remove this file once we are able to add models from `sqlalchemy`",
+      "revId": "d76b1f0f820f41d6dd26133627d09d74ade167d2",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
