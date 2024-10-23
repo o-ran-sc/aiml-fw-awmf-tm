@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2c619e46_de577c33",
+        "filename": "trainingmgr/models/featuregroup.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-10-23T12:13:38Z",
+      "side": 1,
+      "message": "In some scenarios user might want to pass `null` could you please check if `nullable\u003dTrue` will improvise it.",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 61
+      },
+      "revId": "603f142cf2205fc6be086f6810ba53148f6b1096",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
