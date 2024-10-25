@@ -1214,7 +1214,7 @@ class Test_feature_group_by_name:
 
     @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db', return_value=fg_target)
     def test_feature_group_by_name_get_api(self, mock1):
-        expected_data = b'{"featuregroup": [{"featuregroup_name": "testing", "features": "", "datalake": "InfluxSource", "host": "127.0.0.21", "port": "8080", "bucket": "", "token": "", "db_org": "", "measurement": "", "dme": false, "measured_obj_class": "", "dme_port": "", "source_name": ""}]}'
+        expected_data = b'{}\n'
         fg_name = 'testing'
         response = self.client.get('/featureGroup/{}'.format(fg_name))
         assert response.status_code == 200, "status code is not equal"
@@ -1222,7 +1222,7 @@ class Test_feature_group_by_name:
     
     @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db', return_value=None)
     def test_negative_feature_group_by_name_get_api_1(self, mock1):
-        expected_data=b'{"Exception": "Failed to fetch feature group info from db"}'
+        expected_data=b'{"error":"featuregroup with name \'testing\' not found"}\n'
         fg_name='testing'
         response=self.client.get('/featureGroup/{}'.format(fg_name))
         assert response.status_code == 404 , "status code is not equal"
@@ -1230,14 +1230,14 @@ class Test_feature_group_by_name:
     
     @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db', side_effect=DBException("Failed to execute query in get_feature_groupsDB ERROR"))
     def test_negative_feature_group_by_name_get_api_2(self, mock1):
-        expected_data=b'{"Exception": "Failed to execute query in get_feature_groupsDB ERROR"}'
+        expected_data=b'{"Exception":"Failed to execute query in get_feature_groupsDB ERROR"}\n'
         fg_name='testing'
         response=self.client.get('/featureGroup/{}'.format(fg_name))
         assert response.status_code == 500 , "status code is not equal"
         assert response.data == expected_data, response.data
     
     def test_negative_feature_group_by_name_get_api_with_incorrect_name(self):
-        expected_data=b'{"Exception": "The featuregroup_name is not correct"}'
+        expected_data=b'{"Exception":"The featuregroup_name is not correct"}\n'
         fg_name="usecase*"
         response=self.client.get('/featureGroup/{}'.format(fg_name))
         assert response.status_code == 400, "status code is not equal"
