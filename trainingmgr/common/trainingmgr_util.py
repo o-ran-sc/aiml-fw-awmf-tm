@@ -19,21 +19,28 @@
 """"
 This file contains Training management utility functions
 """
+from flask import jsonify
 import json
 import re
 from flask_api import status
 import requests
+from marshmallow import ValidationError
 from trainingmgr.db.common_db_fun import change_in_progress_to_failed_by_latest_version, \
     get_field_by_latest_version, change_field_of_latest_version, \
-    get_latest_version_trainingjob_name, get_all_versions_info_by_name, get_feature_group_by_name_db, \
-    add_featuregroup, edit_featuregroup, delete_feature_group_by_name
+    get_latest_version_trainingjob_name, get_all_versions_info_by_name
+from trainingmgr.db.featuregroup_db import add_featuregroup, edit_featuregroup, get_feature_groups_db, \
+get_feature_group_by_name_db, delete_feature_group_by_name
 from trainingmgr.constants.states import States
 from trainingmgr.common.exceptions_utls import APIException,TMException,DBException
 from trainingmgr.common.trainingmgr_operations import create_dme_filtered_data_job
+from trainingmgr.schemas import ma, TrainingJobSchema , FeatureGroupSchema
 
 ERROR_TYPE_KF_ADAPTER_JSON = "Kf adapter doesn't sends json type response"
 MIMETYPE_JSON = "application/json"
 PATTERN = re.compile(r"\w+")
+
+featuregroup_schema = FeatureGroupSchema()
+featuregroups_schema = FeatureGroupSchema(many = True)
 
 def response_for_training(code, message, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk):
     """
@@ -192,7 +199,7 @@ def check_feature_group_data(json_data):
     
     return (feature_group_name, features, datalake_source, enable_dme, host, port,dme_port, bucket, token, source_name,db_org, measured_obj_class, measurement)
 
-def get_feature_group_by_name(ps_db_obj, logger, featuregroup_name):
+def get_feature_group_by_name(featuregroup_name, logger):
     """
     Function fetching a feature group
 
@@ -214,31 +221,11 @@ def get_feature_group_by_name(ps_db_obj, logger, featuregroup_name):
         return {"Exception":"The featuregroup_name is not correct"}, status.HTTP_400_BAD_REQUEST
     logger.debug("Request for getting a feature group with name = "+ featuregroup_name)
     try:
-        result= get_feature_group_by_name_db(ps_db_obj, featuregroup_name)
-        feature_group=[]
-        if result:
-            for res in result:
-                dict_data={
-                    "featuregroup_name": res[0],
-                    "features": res[1],
-                    "datalake": res[2],
-                    "host": res[3],
-                    "port": res[4],
-                    "bucket":res[5],
-                    "token":res[6],
-                    "db_org":res[7],
-                    "measurement":res[8],
-                    "dme": res[9],
-                    "measured_obj_class":res[10],
-                    "dme_port":res[11],
-                    "source_name":res[12]
-                }
-                feature_group.append(dict_data)
-            api_response={"featuregroup":feature_group}
-            response_code=status.HTTP_200_OK
-        else:
-            response_code=status.HTTP_404_NOT_FOUND
-            raise TMException("Failed to fetch feature group info from db")
+        featuregroup= get_feature_group_by_name_db(featuregroup_name)
+        if not featuregroup:
+            return jsonify({"error":f"featuregroup with name '{featuregroup_name}' not found"}), 404
+        api_response = featuregroup_schema.jsonify(featuregroup)
+        response_code = status.HTTP_200_OK
         
     except Exception as err:
         api_response = {"Exception": str(err)}

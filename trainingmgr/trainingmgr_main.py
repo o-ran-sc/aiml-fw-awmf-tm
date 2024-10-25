@@ -1431,7 +1431,7 @@ def feature_group_by_name(featuregroup_name):
 
     try:
         if (request.method == 'GET'):
-            api_response, response_code = get_feature_group_by_name(PS_DB_OBJ, LOGGER, featuregroup_name)
+            api_response, response_code = get_feature_group_by_name(featuregroup_name, LOGGER)
         elif (request.method == 'PUT'):
             json_data=request.json
             api_response, response_code = edit_feature_group_by_name(TRAININGMGR_CONFIG_OBJ, PS_DB_OBJ, LOGGER, featuregroup_name, json_data)
