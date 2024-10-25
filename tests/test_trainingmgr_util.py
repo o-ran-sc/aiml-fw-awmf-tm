@@ -43,6 +43,8 @@ from trainingmgr import trainingmgr_main
 from trainingmgr.common.tmgr_logger import TMLogger
 from trainingmgr.common.exceptions_utls import APIException,TMException,DBException
 trainingmgr_main.LOGGER = pytest.logger
+from trainingmgr.models import FeatureGroup
+from trainingmgr.trainingmgr_main import APP
 
 class Test_response_for_training:
     def setup_method(self):
@@ -597,23 +599,26 @@ class Test_check_feature_group_data:
             assert True
 
 class Test_get_feature_group_by_name:
-    fg_target = [('testing', '', 'InfluxSource', '127.0.0.21', '8080', '', '', '', '', False, '', '', '')]
-
-    @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db', return_value=fg_target)
+    fg_dict ={'id': 21, 'featuregroup_name': 'testing', 'feature_list': '', 'datalake_source': 'InfluxSource', 'host': '127.0.0.21', 'port': '8086', 'bucket': '', 'token': '', 'db_org': '', 'measurement': '', 'enable_dme': False, 'measured_obj_class': '', 'dme_port': '', 'source_name': ''} 
+    featuregroup = FeatureGroup()
+    @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db', return_value=featuregroup)
     @patch('trainingmgr.common.trainingmgr_util.check_trainingjob_name_or_featuregroup_name', return_value=True)
     def test_get_feature_group_by_name(self, mock1, mock2):
-        ps_db_obj=()
+
         logger = trainingmgr_main.LOGGER
         fg_name='testing'
-        expected_data = {"featuregroup":[{"featuregroup_name": "testing", "features": "", "datalake": "InfluxSource", "host": "127.0.0.21", "port": "8080", "bucket": "", "token": "", "db_org": "", "measurement": "", "dme": False, "measured_obj_class": "", "dme_port": "", "source_name": ""}]}
-        json_data, status_code = get_feature_group_by_name(ps_db_obj, logger, fg_name)
+        expected_data = {'bucket': None, 'datalake_source': None, 'db_org': None, 'dme_port': None, 'enable_dme': None, 'feature_list': None, 'featuregroup_name': None, 'host': None, 'id': None, 'measured_obj_class': None, 'measurement': None, 'port': None, 'source_name': None, 'token': None}
+        
+        with APP.app_context():
+            api_response, status_code = get_feature_group_by_name(fg_name, logger)
+        json_data = api_response.json
         assert status_code == 200, "status code is not equal"
         assert json_data == expected_data, json_data
         
     @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db')
     @patch('trainingmgr.common.trainingmgr_util.check_trainingjob_name_or_featuregroup_name')
     def test_negative_get_feature_group_by_name(self, mock1, mock2):
-        ps_db_obj=()
+
         logger = trainingmgr_main.LOGGER
         fg_name='testing'
 
@@ -621,23 +626,25 @@ class Test_get_feature_group_by_name:
         mock2.side_effect = [None, DBException("Failed to execute query in get_feature_groupsDB ERROR")]
 
         # Case 1
-        expected_data = {"Exception": "Failed to fetch feature group info from db"}
-        json_data, status_code = get_feature_group_by_name(ps_db_obj, logger, fg_name)
+        expected_data = {'error': "featuregroup with name 'testing' not found"}
+
+        with APP.app_context():
+            api_response, status_code = get_feature_group_by_name(fg_name, logger)
+        json_data = api_response.json
         assert status_code == 404, "status code is not equal"
         assert json_data == expected_data, json_data
 
         # Case 2
         expected_data = {"Exception": "Failed to execute query in get_feature_groupsDB ERROR"}
-        json_data, status_code = get_feature_group_by_name(ps_db_obj, logger, fg_name)
+        json_data, status_code = get_feature_group_by_name(fg_name, logger)
         assert status_code == 500, "status code is not equal"
         assert json_data == expected_data, json_data
     
     def test_negative_get_feature_group_by_name_with_incorrect_name(self):
-        ps_db_obj=()
         logger= trainingmgr_main.LOGGER
         fg_name='usecase*'
         expected_data = {"Exception":"The featuregroup_name is not correct"}
-        json_data, status_code = get_feature_group_by_name(ps_db_obj, logger, fg_name)
+        json_data, status_code = get_feature_group_by_name(fg_name, logger)
         assert status_code == 400, "status code is not equal"
         assert json_data == expected_data, json_data
         
