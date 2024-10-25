@@ -602,18 +602,18 @@ class Test_get_feature_group_by_name:
     @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db', return_value=fg_target)
     @patch('trainingmgr.common.trainingmgr_util.check_trainingjob_name_or_featuregroup_name', return_value=True)
     def test_get_feature_group_by_name(self, mock1, mock2):
-        ps_db_obj=()
+
         logger = trainingmgr_main.LOGGER
         fg_name='testing'
         expected_data = {"featuregroup":[{"featuregroup_name": "testing", "features": "", "datalake": "InfluxSource", "host": "127.0.0.21", "port": "8080", "bucket": "", "token": "", "db_org": "", "measurement": "", "dme": False, "measured_obj_class": "", "dme_port": "", "source_name": ""}]}
-        json_data, status_code = get_feature_group_by_name(ps_db_obj, logger, fg_name)
+        json_data, status_code = get_feature_group_by_name(fg_name, logger)
         assert status_code == 200, "status code is not equal"
         assert json_data == expected_data, json_data
         
     @patch('trainingmgr.common.trainingmgr_util.get_feature_group_by_name_db')
     @patch('trainingmgr.common.trainingmgr_util.check_trainingjob_name_or_featuregroup_name')
     def test_negative_get_feature_group_by_name(self, mock1, mock2):
-        ps_db_obj=()
+
         logger = trainingmgr_main.LOGGER
         fg_name='testing'
 
@@ -622,22 +622,21 @@ class Test_get_feature_group_by_name:
 
         # Case 1
         expected_data = {"Exception": "Failed to fetch feature group info from db"}
-        json_data, status_code = get_feature_group_by_name(ps_db_obj, logger, fg_name)
+        json_data, status_code = get_feature_group_by_name(fg_name, logger)
         assert status_code == 404, "status code is not equal"
         assert json_data == expected_data, json_data
 
         # Case 2
         expected_data = {"Exception": "Failed to execute query in get_feature_groupsDB ERROR"}
-        json_data, status_code = get_feature_group_by_name(ps_db_obj, logger, fg_name)
+        json_data, status_code = get_feature_group_by_name(fg_name, logger)
         assert status_code == 500, "status code is not equal"
         assert json_data == expected_data, json_data
     
     def test_negative_get_feature_group_by_name_with_incorrect_name(self):
-        ps_db_obj=()
         logger= trainingmgr_main.LOGGER
         fg_name='usecase*'
         expected_data = {"Exception":"The featuregroup_name is not correct"}
-        json_data, status_code = get_feature_group_by_name(ps_db_obj, logger, fg_name)
+        json_data, status_code = get_feature_group_by_name(fg_name, logger)
         assert status_code == 400, "status code is not equal"
         assert json_data == expected_data, json_data
         
