@@ -24,6 +24,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d5d6e60d_4c6b8093",
+        "filename": "trainingmgr/schemas/featuregroup_schema.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-10-28T06:52:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a4ca8403_6f969324",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 34
+      },
+      "revId": "01184cc0854a7486f2c47d1ead580355d7899168",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9e5e3c90_50832c6f",
@@ -37,6 +61,30 @@
       "writtenOn": "2024-10-23T12:23:58Z",
       "side": 1,
       "message": "Do we need to initialize app twice.",
+      "range": {
+        "startLine": 1752,
+        "startChar": 8,
+        "endLine": 1753,
+        "endChar": 24
+      },
+      "revId": "01184cc0854a7486f2c47d1ead580355d7899168",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d03d2ebb_3b7ec62d",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1753,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-10-28T06:52:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9e5e3c90_50832c6f",
       "range": {
         "startLine": 1752,
         "startChar": 8,
