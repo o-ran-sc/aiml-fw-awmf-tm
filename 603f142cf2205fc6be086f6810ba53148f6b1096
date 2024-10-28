@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b206cac5_6e08794c",
+        "filename": "tox.ini",
+        "patchSetId": 4
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-10-28T17:28:19Z",
+      "side": 1,
+      "message": "added in the next patch",
+      "parentUuid": "d8db4a2d_8dec9dd8",
+      "revId": "603f142cf2205fc6be086f6810ba53148f6b1096",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b4c4e1c1_7953d0ec",
         "filename": "trainingmgr/models/__init__.py",
         "patchSetId": 4
@@ -43,6 +61,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "2cd59593_ea64eef0",
+        "filename": "trainingmgr/models/__init__.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-10-28T17:28:19Z",
+      "side": 1,
+      "message": "added in the next patch",
+      "parentUuid": "b4c4e1c1_7953d0ec",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 39
+      },
+      "revId": "603f142cf2205fc6be086f6810ba53148f6b1096",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c8c7954d_76db8e92",
         "filename": "trainingmgr/models/featuregroup.py",
         "patchSetId": 4
@@ -54,6 +96,30 @@
       "writtenOn": "2024-10-28T11:06:35Z",
       "side": 1,
       "message": "license header is not available.",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 16
+      },
+      "revId": "603f142cf2205fc6be086f6810ba53148f6b1096",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6eea1f03_af5f8d0a",
+        "filename": "trainingmgr/models/featuregroup.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-10-28T17:28:19Z",
+      "side": 1,
+      "message": "added in the next patch",
+      "parentUuid": "c8c7954d_76db8e92",
       "range": {
         "startLine": 1,
         "startChar": 0,
