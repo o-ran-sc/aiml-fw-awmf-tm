@@ -29,6 +29,7 @@ from threading import Lock
 import time
 from flask import Flask, request, send_file
 from flask_api import status
+from flask_migrate import Migrate
 import requests
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
@@ -54,6 +55,7 @@ from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainin
     update_model_download_url, add_update_trainingjob, add_featuregroup, edit_featuregroup, \
     get_field_of_given_version,get_all_jobs_latest_status_version, get_info_of_latest_version, \
     get_feature_groups_db, get_feature_group_by_name_db, delete_feature_group_by_name, delete_trainingjob_version, change_field_value_by_version
+from trainingmgr.models import db, TrainingJob, FeatureGroup
 
 APP = Flask(__name__)
 
@@ -1748,6 +1750,12 @@ if __name__ == "__main__":
             raise TMException("Not all configuration loaded.")
         LOGGER = TRAININGMGR_CONFIG_OBJ.logger
         PS_DB_OBJ = PSDB(TRAININGMGR_CONFIG_OBJ)
+        APP.config['SQLALCHEMY_DATABASE_URI']=f'postgresql+psycopg2://{TRAININGMGR_CONFIG_OBJ.ps_user}:{TRAININGMGR_CONFIG_OBJ.ps_password}@{TRAININGMGR_CONFIG_OBJ.ps_ip}:{TRAININGMGR_CONFIG_OBJ.ps_port}/training_manager_database'
+        db.init_app(APP)
+        # Todo add flask db upgrade in the docker file  
+        migrate = Migrate(APP, db) 
+        with APP.app_context():
+            db.create_all()
         LOCK = Lock()
         DATAEXTRACTION_JOBS_CACHE = get_data_extraction_in_progress_trainingjobs(PS_DB_OBJ)
         threading.Thread(target=async_feature_engineering_status, daemon=True).start()
