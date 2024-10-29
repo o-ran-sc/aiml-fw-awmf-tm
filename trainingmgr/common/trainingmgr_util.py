@@ -230,10 +230,9 @@ def get_feature_group_by_name(featuregroup_name, logger):
     except Exception as err:
         api_response = {"Exception": str(err)}
         logger.error(str(err))
-
     return api_response, response_code
 
-def edit_feature_group_by_name(tm_conf_obj, ps_db_obj, logger, featuregroup_name, json_data):
+def edit_feature_group_by_name(featuregroup_name, featuregroup, logger, tm_conf_obj):
     """
     Function fetching a feature group
 
@@ -257,34 +256,29 @@ def edit_feature_group_by_name(tm_conf_obj, ps_db_obj, logger, featuregroup_name
         return {"Exception":"The featuregroup_name is not correct"}, status.HTTP_400_BAD_REQUEST
     
     logger.debug("Request for editing a feature group with name = "+ featuregroup_name)
-    logger.debug("db info before the edit : %s", get_feature_group_by_name_db(ps_db_obj, featuregroup_name))
+    # logger.debug("db info before the edit : %s", get_feature_group_by_name_db(ps_db_obj, featuregroup_name))
     try:
-        (feature_group_name, features, datalake_source, enable_dme, host, port,dme_port,bucket, token, source_name,db_org, measured_obj_class, measurement)=check_feature_group_data(json_data)
         # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
-        features_list = features.split(",")
-        edit_featuregroup(feature_group_name, features, datalake_source , host, port, bucket, token, db_org, measurement, enable_dme, ps_db_obj, measured_obj_class, dme_port, source_name)
+        featuregroup_dict = featuregroup_schema.dump(featuregroup)
+        edit_featuregroup(featuregroup_name, featuregroup_dict)
         api_response={"result": "Feature Group Edited"}
         response_code =status.HTTP_200_OK
         # TODO: Implement the process where DME edits from the dashboard are applied to the endpoint
-        if enable_dme == True:
-            response= create_dme_filtered_data_job(tm_conf_obj, source_name, features_list, feature_group_name, host, dme_port, measured_obj_class)
+        if featuregroup.enable_dme == True :
+            response= create_dme_filtered_data_job(tm_conf_obj, featuregroup)
             if response.status_code != 201:
                 api_response={"Exception": "Cannot create dme job"}
-                delete_feature_group_by_name(ps_db_obj, feature_group_name)
+                delete_feature_group_by_name(featuregroup)
                 response_code=status.HTTP_400_BAD_REQUEST
-            else:
-                api_response={"result": "Feature Group Edited"}
-                response_code =status.HTTP_200_OK
-        else:
-            api_response={"result": "Feature Group Edited"}
-            response_code =status.HTTP_200_OK
-    except Exception as err:
-        delete_feature_group_by_name(ps_db_obj, feature_group_name)
-        err_msg = "Failed to edit the feature Group "
-        api_response = {"Exception":err_msg}
-        logger.error(str(err))
+    except ValidationError as err:
+        return {"Exception": str(err)}, 400
+    except DBException as err:
+        return {"Exception": str(err)}, 400
+    except Exception as e:
+        err_msg = "Failed to create the feature Group "
+        api_response = {"Exception":str(e)}
+        logger.error(str(e))
     
-    logger.debug("db info after the edit : %s", get_feature_group_by_name_db(ps_db_obj, featuregroup_name))
     return api_response, response_code
 
 def get_one_key(dictionary):
