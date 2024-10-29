@@ -30,12 +30,13 @@ import time
 from flask import Flask, request, send_file
 from flask_api import status
 from flask_migrate import Migrate
+from marshmallow import ValidationError
 import requests
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from modelmetricsdk.model_metrics_sdk import ModelMetricsSdk
 from trainingmgr.common.trainingmgr_operations import data_extraction_start, training_start, data_extraction_status, create_dme_filtered_data_job, delete_dme_filtered_data_job, \
-get_model_info
+    get_model_info
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.trainingmgr_util import get_one_word_status, check_trainingjob_data, \
     check_key_in_dictionary, get_one_key, \
@@ -47,16 +48,19 @@ from trainingmgr.common.exceptions_utls import APIException,TMException
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
 from trainingmgr.db.trainingmgr_ps_db import PSDB
+from trainingmgr.common.exceptions_utls import DBException
 from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainingjobs, \
     change_field_of_latest_version, \
     change_in_progress_to_failed_by_latest_version, change_steps_state_of_latest_version, \
     get_info_by_version, \
     get_trainingjob_info_by_name, get_latest_version_trainingjob_name, get_all_versions_info_by_name, \
-    update_model_download_url, add_update_trainingjob, add_featuregroup, edit_featuregroup, \
+    update_model_download_url, \
     get_field_of_given_version,get_all_jobs_latest_status_version, get_info_of_latest_version, \
-    get_feature_groups_db, get_feature_group_by_name_db, delete_feature_group_by_name, delete_trainingjob_version, change_field_value_by_version
+    delete_trainingjob_version, change_field_value_by_version
 from trainingmgr.models import db, TrainingJob, FeatureGroup
 from trainingmgr.schemas import ma, TrainingJobSchema , FeatureGroupSchema
+from trainingmgr.db.featuregroup_db import add_featuregroup, edit_featuregroup, get_feature_groups_db, \
+    get_feature_group_by_name_db, delete_feature_group_by_name
 
 APP = Flask(__name__)
 
@@ -1435,10 +1439,11 @@ def feature_group_by_name(featuregroup_name):
     try:
         if (request.method == 'GET'):
             api_response, response_code = get_feature_group_by_name(featuregroup_name, LOGGER)
+            return api_response, response_code
         elif (request.method == 'PUT'):
-            json_data=request.json
-            api_response, response_code = edit_feature_group_by_name(TRAININGMGR_CONFIG_OBJ, PS_DB_OBJ, LOGGER, featuregroup_name, json_data)
-        
+            featuregroup = FeatureGroupSchema().load(request.get_json())
+            feature_group_name = featuregroup.featuregroup_name
+            api_response , response_code = edit_feature_group_by_name(feature_group_name, featuregroup, LOGGER, TRAININGMGR_CONFIG_OBJ)
     except Exception as err:
         LOGGER.error("Failed to read/update featuregroup, " + str(err) )
         api_response =  {"Exception": str(err)}
@@ -1508,38 +1513,33 @@ def create_feature_group():
     LOGGER.debug('feature Group Create request, ' + json.dumps(request.json))
 
     try:
-        json_data=request.json
-        (feature_group_name, features, datalake_source, enable_dme, host, port,dme_port,bucket, token, source_name,db_org, measured_obj_class, measurement)=check_feature_group_data(json_data)
+        featuregroup = FeatureGroupSchema().load(request.get_json())
+        feature_group_name = featuregroup.featuregroup_name
         # check the data conformance
-        LOGGER.debug("the db info is : ", get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name))
+        # LOGGER.debug("the db info is : ", get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name))
         if (not check_trainingjob_name_or_featuregroup_name(feature_group_name) or
-            len(feature_group_name) < 3 or len(feature_group_name) > 63 or
-            get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name)):
-            api_response = {"Exception": "Failed to create the feature group since feature group not valid or already present"}
+            len(feature_group_name) < 3 or len(feature_group_name) > 63):
+            api_response = {"Exception": "Failed to create the feature group since feature group not valid"}
             response_code = status.HTTP_400_BAD_REQUEST
         else:
             # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
-            features_list = features.split(",")
-            add_featuregroup(feature_group_name, features, datalake_source , host, port, bucket, token, db_org, measurement, enable_dme, PS_DB_OBJ, measured_obj_class, dme_port, source_name)
+            add_featuregroup(featuregroup)
             api_response={"result": "Feature Group Created"}
             response_code =status.HTTP_200_OK
-            if enable_dme == True :
-                response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, source_name, features_list, feature_group_name, host, dme_port, measured_obj_class)
+            if featuregroup.enable_dme == True :
+                response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, featuregroup)
                 if response.status_code != 201:
                     api_response={"Exception": "Cannot create dme job"}
-                    delete_feature_group_by_name(PS_DB_OBJ, feature_group_name)
+                    delete_feature_group_by_name(featuregroup)
                     response_code=status.HTTP_400_BAD_REQUEST
-                else:
-                    api_response={"result": "Feature Group Created"}
-                    response_code =status.HTTP_200_OK
-            else:
-                api_response={"result": "Feature Group Created"}
-                response_code =status.HTTP_200_OK
-    except Exception as err:
-        delete_feature_group_by_name(PS_DB_OBJ, feature_group_name)
+    except ValidationError as err:
+        return {"Exception": str(err)}, 400
+    except DBException as err:
+        return {"Exception": str(err)}, 400
+    except Exception as e:
         err_msg = "Failed to create the feature Group "
-        api_response = {"Exception":err_msg}
-        LOGGER.error(str(err))
+        api_response = {"Exception":str(e)}
+        LOGGER.error(str(e))
     
     return APP.response_class(response=json.dumps(api_response),
                                         status=response_code,
@@ -1573,14 +1573,14 @@ def get_feature_group():
     api_response={}
     response_code=status.HTTP_500_INTERNAL_SERVER_ERROR
     try:
-        result= get_feature_groups_db(PS_DB_OBJ)
+        result= get_feature_groups_db()
         feature_groups=[]
         for res in result:
             dict_data={
-                "featuregroup_name": res[0],
-                "features": res[1],
-                "datalake": res[2],
-                "dme": res[9]
+                "featuregroup_name": res.featuregroup_name,
+                "features": res.feature_list,
+                "datalake": res.datalake_source,
+                "dme": res.enable_dme
                 }
             feature_groups.append(dict_data)
         api_response={"featuregroups":feature_groups}
@@ -1645,19 +1645,19 @@ def delete_list_of_feature_group():
         featuregroup_name = my_dict['featureGroup_name']
         results = None
         try:
-            results = get_feature_group_by_name_db(PS_DB_OBJ, featuregroup_name)
+            results = get_feature_group_by_name_db(featuregroup_name)
         except Exception as err:
             not_possible_to_delete.append(my_dict)
             LOGGER.debug(str(err) + "(featureGroup_name is " + featuregroup_name)
             continue
 
         if results:
-            dme=results[0][9]
+            dme= results.enable_dme
             try:
-                delete_feature_group_by_name(PS_DB_OBJ, featuregroup_name)
+                delete_feature_group_by_name(featuregroup_name)
                 if dme :
-                    dme_host=results[0][3]
-                    dme_port=results[0][11]
+                    dme_host= results.host
+                    dme_port = results.dme_port
                     resp=delete_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, featuregroup_name, dme_host, dme_port)
                     if(resp.status_code !=status.HTTP_204_NO_CONTENT):
                         not_possible_to_delete.append(my_dict)  
