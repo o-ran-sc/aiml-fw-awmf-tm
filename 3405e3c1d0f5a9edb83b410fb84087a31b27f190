@@ -1,0 +1,11 @@
+Code-Review+1: Taewan Kim <t25.kim@samsung.com>
+Verified+1: ORAN Required GHA <releng+oran.required.gha@linuxfoundation.org>
+Verified+1: o-ran-sc release <collab-it+o-ran-sc-release@linuxfoundation.org>
+Verified+1: ORAN Jobbuilder <releng+oran-jobbuilder@linuxfoundation.org>
+Verified+1: Swaraj Kumar <swaraj.kumar@samsung.com>
+Code-Review+2: Swaraj Kumar <swaraj.kumar@samsung.com>
+Submitted-by: Swaraj Kumar <swaraj.kumar@samsung.com>
+Submitted-at: Tue, 29 Oct 2024 16:01:26 +0000
+Reviewed-on: https://gerrit.o-ran-sc.org/r/c/aiml-fw/awmf/tm/+/13706
+Project: aiml-fw/awmf/tm
+Branch: refs/heads/master
