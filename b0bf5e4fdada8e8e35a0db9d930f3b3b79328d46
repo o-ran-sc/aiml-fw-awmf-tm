@@ -47,6 +47,54 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "59e86ab2_930a7851",
+        "filename": "tests/test_tm_apis.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-10-30T09:11:46Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "42faa748_3124ac5f",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 42,
+        "endChar": 29
+      },
+      "revId": "b0bf5e4fdada8e8e35a0db9d930f3b3b79328d46",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "119d6d89_823efd9f",
+        "filename": "tests/test_tm_apis.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-10-30T09:11:46Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c924778f_34d1fc0d",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 42,
+        "endChar": 29
+      },
+      "revId": "b0bf5e4fdada8e8e35a0db9d930f3b3b79328d46",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "771b130d_5054fbfc",
