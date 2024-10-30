@@ -53,7 +53,7 @@ from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainin
     change_in_progress_to_failed_by_latest_version, \
     get_info_by_version, get_all_versions_info_by_name, \
     update_model_download_url, \
-    get_field_of_given_version,get_all_jobs_latest_status_version, get_info_of_latest_version, \
+    get_field_of_given_version, get_info_of_latest_version, \
     delete_trainingjob_version, change_field_value_by_version
 from trainingmgr.models import db, TrainingJob, FeatureGroup
 from trainingmgr.schemas import ma, TrainingJobSchema , FeatureGroupSchema
@@ -655,13 +655,13 @@ def trainingjobs_operations():
     api_response = {}
     response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     try:
-        results = get_all_jobs_latest_status_version(PS_DB_OBJ)
+        results = get_all_jobs_latest_status_version()
         trainingjobs = []
         for res in results:
             dict_data = {
-                "trainingjob_name": res[0],
-                "version": res[1],
-                "overall_status": get_one_word_status(json.loads(res[2]))
+                "trainingjob_name": res.trainingjob_name,
+                "version": res.version,
+                "overall_status": get_one_word_status(json.loads(res.steps_state))
             }
             trainingjobs.append(dict_data)
         api_response = {"trainingjobs": trainingjobs}
@@ -977,19 +977,16 @@ def trainingjob_operations(trainingjob_name):
         json_data = request.json
         if (request.method == 'POST'):          
             LOGGER.debug("Create request json : " + json.dumps(json_data))
-            is_data_available = validate_trainingjob_name(trainingjob_name, PS_DB_OBJ)
-            if  is_data_available:
+            is_data_available = validate_trainingjob_name(trainingjob_name)
+            if is_data_available:
                 response_code = status.HTTP_409_CONFLICT
                 raise TMException("trainingjob name(" + trainingjob_name + ") is already present in database")
             else:
-                (featuregroup_name, description, pipeline_name, experiment_name,
-                arguments, query_filter, enable_versioning, pipeline_version,
-                datalake_source, is_mme, model_name) = \
-                check_trainingjob_data(trainingjob_name, json_data)
+                trainingjob = trainingjob_schema.load(request.get_json())
                 model_info=""
-                if is_mme: 
+                if trainingjob.is_mme: 
                     pipeline_dict =json.loads(TRAININGMGR_CONFIG_OBJ.pipeline)
-                    model_info=get_model_info(TRAININGMGR_CONFIG_OBJ, model_name)
+                    model_info=get_model_info(TRAININGMGR_CONFIG_OBJ, trainingjob.model_name)
                     s=model_info["meta-info"]["feature-list"]
                     model_type=model_info["meta-info"]["model-type"]
                     try:
@@ -1006,41 +1003,27 @@ def trainingjob_operations(trainingjob_name):
                             break 
                     if featuregroup_name =="":
                         return {"Exception":"The no feature group with mentioned feature list, create a feature group"}, status.HTTP_406_NOT_ACCEPTABLE
-                add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
-                                    arguments, query_filter, True, enable_versioning,
-                                    pipeline_version, datalake_source, trainingjob_name, 
-                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_info=model_info)
+                add_update_trainingjob(trainingjob, True)
                 api_response =  {"result": "Information stored in database."}                 
                 response_code = status.HTTP_201_CREATED
         elif(request.method == 'PUT'):
             LOGGER.debug("Update request json : " + json.dumps(json_data))
-            is_data_available = validate_trainingjob_name(trainingjob_name, PS_DB_OBJ)
+            is_data_available = validate_trainingjob_name(trainingjob_name)
             if not is_data_available:
                 response_code = status.HTTP_404_NOT_FOUND
                 raise TMException("Trainingjob name(" + trainingjob_name + ") is not  present in database")
             else:
-                results = None
-                results = get_trainingjob_info_by_name(trainingjob_name, PS_DB_OBJ)
-                if results:
-                    if results[0][17]:
+                trainingjob = trainingjob_schema.load(request.get_json())
+                trainingjob_info = get_trainingjob_info_by_name(trainingjob_name)
+                if trainingjob_info:
+                    if trainingjob_info.deletion_in_progress:
                         raise TMException("Failed to process request for trainingjob(" + trainingjob_name + ") " + \
                                         " deletion in progress")
-                    if (get_one_word_status(json.loads(results[0][9]))
+                    if (get_one_word_status(json.loads(trainingjob_info.steps_state))
                             not in [States.FAILED.name, States.FINISHED.name]):
                         raise TMException("Trainingjob(" + trainingjob_name + ") is not in finished or failed status")
 
-                    (featuregroup_name, description, pipeline_name, experiment_name,
-                    arguments, query_filter, enable_versioning, pipeline_version,
-                    datalake_source, is_mme, model_name)= check_trainingjob_data(trainingjob_name, json_data)
-                if is_mme:
-                    featuregroup_name=results[0][2]
-                    pipeline_name, pipeline_version=results[0][3], results[0][13]
-                # model name is not changing hence model info is unchanged.
-                model_info = results[0][20]
-                add_update_trainingjob(description, pipeline_name, experiment_name, featuregroup_name,
-                                    arguments, query_filter, False, enable_versioning,
-                                    pipeline_version, datalake_source, trainingjob_name, 
-                                    PS_DB_OBJ,is_mme=is_mme, model_name=model_name, model_info=model_info)
+                add_update_trainingjob(trainingjob, False)
                 api_response = {"result": "Information updated in database."}
                 response_code = status.HTTP_200_OK
     except Exception as err:
