@@ -162,31 +162,30 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
     response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     response_data = {}
     try:
-        results = get_info_by_version(trainingjob_name, version, PS_DB_OBJ)
+        trainingjob = get_info_by_version(trainingjob_name, version)
         data = get_metrics(trainingjob_name, version, MM_SDK)
-        if results:
-            trainingjob_info = results[0]
+        if trainingjob:
             dict_data = {
-                "trainingjob_name": trainingjob_info[0],
-                "description": trainingjob_info[1],
-                "feature_list": trainingjob_info[2],
-                "pipeline_name": trainingjob_info[3],
-                "experiment_name": trainingjob_info[4],
-                "arguments": json.loads(trainingjob_info[5])['arguments'],
-                "query_filter": trainingjob_info[6],
-                "creation_time": str(trainingjob_info[7]),
-                "run_id": trainingjob_info[8],
-                "steps_state": json.loads(trainingjob_info[9]),
-                "updation_time": str(trainingjob_info[10]),
-                "version": trainingjob_info[11],
-                "enable_versioning": bool(trainingjob_info[12]),
-                "pipeline_version": trainingjob_info[13],
-                "datalake_source": get_one_key(json.loads(trainingjob_info[14])['datalake_source']),
-                "model_url": trainingjob_info[15],
-                "notification_url": trainingjob_info[16],
-                "is_mme": trainingjob_info[17], 
-                "model_name": trainingjob_info[18],
-                "model_info": trainingjob_info[19],
+                "trainingjob_name": trainingjob.trainingjob_name,
+                "description": trainingjob.description,
+                "feature_list": trainingjob.feature_group_name,
+                "pipeline_name": trainingjob.pipeline_name,
+                "experiment_name": trainingjob.experiment_name,
+                "arguments": trainingjob.arguments,
+                "query_filter": trainingjob.query_filter,
+                "creation_time": str(trainingjob.creation_time),
+                "run_id": trainingjob.run_id,
+                "steps_state": json.loads(trainingjob.steps_state),
+                "updation_time": str(trainingjob.updation_time),
+                "version": trainingjob.version,
+                "enable_versioning": trainingjob.enable_versioning,
+                "pipeline_version": trainingjob.pipeline_version,
+                "datalake_source": get_one_key(json.loads(trainingjob.datalake_source)['datalake_source']),
+                "model_url": trainingjob.model_url,
+                "notification_url": trainingjob.notification_url,
+                "is_mme": trainingjob.is_mme, 
+                "model_name": trainingjob.model_name,
+                "model_info": trainingjob.model_info,
                 "accuracy": data
             }
             response_data = {"trainingjob": dict_data}
