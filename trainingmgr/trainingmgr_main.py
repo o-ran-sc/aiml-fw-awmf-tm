@@ -274,7 +274,7 @@ def get_steps_state(trainingjob_name, version):
         LOGGER.error(str(err))
         response_data = {"Exception": str(err)}
 
-    return APP.response_class(response=response_data,
+    return APP.response_class(response=json.dumps(response_data),
                                       status=response_code,
                                       mimetype=MIMETYPE_JSON)
 
