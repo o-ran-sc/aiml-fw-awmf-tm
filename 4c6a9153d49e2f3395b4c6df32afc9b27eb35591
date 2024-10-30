@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4d781c4f_c185aa27",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-10-30T09:07:33Z",
+      "side": 1,
+      "message": "We are temporary disabling the the test cases as we are revamping the major code.",
+      "revId": "4c6a9153d49e2f3395b4c6df32afc9b27eb35591",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
