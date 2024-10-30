@@ -51,8 +51,7 @@ from trainingmgr.db.trainingmgr_ps_db import PSDB
 from trainingmgr.common.exceptions_utls import DBException
 from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainingjobs, \
     change_in_progress_to_failed_by_latest_version, \
-    get_info_by_version, \
-    get_latest_version_trainingjob_name, get_all_versions_info_by_name, \
+    get_info_by_version, get_all_versions_info_by_name, \
     update_model_download_url, \
     get_field_of_given_version,get_all_jobs_latest_status_version, get_info_of_latest_version, \
     delete_trainingjob_version, change_field_value_by_version
@@ -62,7 +61,7 @@ from trainingmgr.db.featuregroup_db import add_featuregroup, edit_featuregroup, 
     get_feature_group_by_name_db, delete_feature_group_by_name
 from trainingmgr.db.trainingjob_db import add_update_trainingjob, get_trainingjob_info_by_name, \
     get_all_jobs_latest_status_version, change_steps_state_of_latest_version, get_info_by_version, \
-    get_steps_state_db, change_field_of_latest_version
+    get_steps_state_db, change_field_of_latest_version, get_latest_version_trainingjob_name
 
 APP = Flask(__name__)
 TRAININGMGR_CONFIG_OBJ = None
@@ -557,18 +556,18 @@ def pipeline_notification():
         run_status = request.json["run_status"]
 
         if run_status == 'SUCCEEDED':
-            change_steps_state_of_latest_version(trainingjob_name, PS_DB_OBJ,
+            change_steps_state_of_latest_version(trainingjob_name,
                                                     Steps.TRAINING.name,
                                                     States.FINISHED.name)
-            change_steps_state_of_latest_version(trainingjob_name, PS_DB_OBJ,
+            change_steps_state_of_latest_version(trainingjob_name,
                                                     Steps.TRAINING_AND_TRAINED_MODEL.name,
                                                     States.IN_PROGRESS.name)
                    
-            version = get_latest_version_trainingjob_name(trainingjob_name, PS_DB_OBJ)
-            change_steps_state_of_latest_version(trainingjob_name, PS_DB_OBJ,
+            version = get_latest_version_trainingjob_name(trainingjob_name)
+            change_steps_state_of_latest_version(trainingjob_name,
                                                     Steps.TRAINING_AND_TRAINED_MODEL.name,
                                                     States.FINISHED.name)
-            change_steps_state_of_latest_version(trainingjob_name, PS_DB_OBJ,
+            change_steps_state_of_latest_version(trainingjob_name,
                                                     Steps.TRAINED_MODEL.name,
                                                     States.IN_PROGRESS.name)
                                                     
@@ -580,15 +579,15 @@ def pipeline_notification():
                 update_model_download_url(trainingjob_name, version, model_url, PS_DB_OBJ)
 
                 
-                change_steps_state_of_latest_version(trainingjob_name, PS_DB_OBJ,
+                change_steps_state_of_latest_version(trainingjob_name,
                                                         Steps.TRAINED_MODEL.name,
                                                         States.FINISHED.name)
                 # upload to the mme
-                trainingjob_info=get_trainingjob_info_by_name(trainingjob_name, PS_DB_OBJ)
+                trainingjob_info=get_trainingjob_info_by_name(trainingjob_name)
 
-                is_mme= trainingjob_info[0][20]
+                is_mme= trainingjob_info.is_mme
                 if is_mme:   
-                    model_name=trainingjob_info[0][21] #model_name
+                    model_name=trainingjob_info.model_name #model_name
                     file=MM_SDK.get_model_zip(trainingjob_name, str(version))
                     url ="http://"+str(TRAININGMGR_CONFIG_OBJ.model_management_service_ip)+":"+str(TRAININGMGR_CONFIG_OBJ.model_management_service_port)+"/uploadModel/{}".format(model_name)
                     LOGGER.debug("url for upload is: ", url)
@@ -611,16 +610,16 @@ def pipeline_notification():
     except Exception as err:
         #Training failure response
         LOGGER.error("Pipeline notification failed" + str(err))
-        if not change_in_progress_to_failed_by_latest_version(trainingjob_name, PS_DB_OBJ) :
+        if not change_in_progress_to_failed_by_latest_version(trainingjob_name) :
             LOGGER.error(ERROR_TYPE_DB_STATUS)
         
         return response_for_training(status.HTTP_500_INTERNAL_SERVER_ERROR,
                             str(err) + " (trainingjob " + trainingjob_name + ")",
-                            LOGGER, False, trainingjob_name, PS_DB_OBJ, MM_SDK)
+                            LOGGER, False, trainingjob_name, MM_SDK)
     #Training success response
     return response_for_training(status.HTTP_200_OK,
                                             "Pipeline notification success.",
-                                            LOGGER, True, trainingjob_name, PS_DB_OBJ, MM_SDK)
+                                            LOGGER, True, trainingjob_name, MM_SDK)
 
 
 @APP.route('/trainingjobs/latest', methods=['GET'])
