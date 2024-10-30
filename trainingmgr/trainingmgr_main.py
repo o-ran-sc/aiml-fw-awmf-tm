@@ -61,6 +61,9 @@ from trainingmgr.models import db, TrainingJob, FeatureGroup
 from trainingmgr.schemas import ma, TrainingJobSchema , FeatureGroupSchema
 from trainingmgr.db.featuregroup_db import add_featuregroup, edit_featuregroup, get_feature_groups_db, \
     get_feature_group_by_name_db, delete_feature_group_by_name
+from trainingmgr.db.trainingjob_db import add_update_trainingjob, get_trainingjob_info_by_name, \
+    get_all_jobs_latest_status_version, change_steps_state_of_latest_version, get_info_by_version, \
+    get_steps_state_db
 
 APP = Flask(__name__)
 TRAININGMGR_CONFIG_OBJ = None
@@ -74,6 +77,9 @@ ERROR_TYPE_KF_ADAPTER_JSON = "Kf adapter doesn't sends json type response"
 ERROR_TYPE_DB_STATUS = "Couldn't update the status as failed in db access"
 MIMETYPE_JSON = "application/json"
 NOT_LIST="not given as list"
+
+trainingjob_schema = TrainingJobSchema()
+trainingjobs_schema = TrainingJobSchema(many=True)
 
 @APP.errorhandler(APIException)
 def error(err):
@@ -162,31 +168,30 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
     response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     response_data = {}
     try:
-        results = get_info_by_version(trainingjob_name, version, PS_DB_OBJ)
+        trainingjob = get_info_by_version(trainingjob_name, version)
         data = get_metrics(trainingjob_name, version, MM_SDK)
-        if results:
-            trainingjob_info = results[0]
+        if trainingjob:
             dict_data = {
-                "trainingjob_name": trainingjob_info[0],
-                "description": trainingjob_info[1],
-                "feature_list": trainingjob_info[2],
-                "pipeline_name": trainingjob_info[3],
-                "experiment_name": trainingjob_info[4],
-                "arguments": json.loads(trainingjob_info[5])['arguments'],
-                "query_filter": trainingjob_info[6],
-                "creation_time": str(trainingjob_info[7]),
-                "run_id": trainingjob_info[8],
-                "steps_state": json.loads(trainingjob_info[9]),
-                "updation_time": str(trainingjob_info[10]),
-                "version": trainingjob_info[11],
-                "enable_versioning": bool(trainingjob_info[12]),
-                "pipeline_version": trainingjob_info[13],
-                "datalake_source": get_one_key(json.loads(trainingjob_info[14])['datalake_source']),
-                "model_url": trainingjob_info[15],
-                "notification_url": trainingjob_info[16],
-                "is_mme": trainingjob_info[17], 
-                "model_name": trainingjob_info[18],
-                "model_info": trainingjob_info[19],
+                "trainingjob_name": trainingjob.trainingjob_name,
+                "description": trainingjob.description,
+                "feature_list": trainingjob.feature_group_name,
+                "pipeline_name": trainingjob.pipeline_name,
+                "experiment_name": trainingjob.experiment_name,
+                "arguments": trainingjob.arguments,
+                "query_filter": trainingjob.query_filter,
+                "creation_time": str(trainingjob.creation_time),
+                "run_id": trainingjob.run_id,
+                "steps_state": json.loads(trainingjob.steps_state),
+                "updation_time": str(trainingjob.updation_time),
+                "version": trainingjob.version,
+                "enable_versioning": trainingjob.enable_versioning,
+                "pipeline_version": trainingjob.pipeline_version,
+                "datalake_source": get_one_key(json.loads(trainingjob.datalake_source)['datalake_source']),
+                "model_url": trainingjob.model_url,
+                "notification_url": trainingjob.notification_url,
+                "is_mme": trainingjob.is_mme, 
+                "model_name": trainingjob.model_name,
+                "model_info": trainingjob.model_info,
                 "accuracy": data
             }
             response_data = {"trainingjob": dict_data}
@@ -255,10 +260,10 @@ def get_steps_state(trainingjob_name, version):
     LOGGER.debug("Request to get steps_state for (trainingjob:" + \
                 trainingjob_name + " and version: " + version + ")")
     try:
-        results = get_field_of_given_version(trainingjob_name, version, PS_DB_OBJ, "steps_state")
-        LOGGER.debug("get_field_of_given_version:" + str(results))
-        if results:
-            response_data = results[0][0]
+        steps_state = get_steps_state_db(trainingjob_name, version)
+        LOGGER.debug("get_field_of_given_version:" + str(steps_state))
+        if steps_state:
+            response_data = steps_state
             response_code = status.HTTP_200_OK
         else:
             
