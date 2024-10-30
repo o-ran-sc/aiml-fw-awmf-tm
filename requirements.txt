@@ -22,7 +22,6 @@ Flask-API
 Flask-Cors
 pg8000
 requests
-pandas
 PyYAML
 kubernetes
 validators==0.20.0

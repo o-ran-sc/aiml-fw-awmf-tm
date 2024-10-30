@@ -26,7 +26,6 @@
   Flask-API
   Flask-Cors
   requests
-  pandas
   PyYAML
   python-dotenv
   kubernetes
