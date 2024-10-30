@@ -27,13 +27,14 @@ import requests
 from marshmallow import ValidationError
 from trainingmgr.db.common_db_fun import change_in_progress_to_failed_by_latest_version, \
     get_field_by_latest_version, change_field_of_latest_version, \
-    get_latest_version_trainingjob_name, get_all_versions_info_by_name
+    get_latest_version_trainingjob_name
 from trainingmgr.db.featuregroup_db import add_featuregroup, edit_featuregroup, get_feature_groups_db, \
 get_feature_group_by_name_db, delete_feature_group_by_name
 from trainingmgr.constants.states import States
 from trainingmgr.common.exceptions_utls import APIException,TMException,DBException
 from trainingmgr.common.trainingmgr_operations import create_dme_filtered_data_job
 from trainingmgr.schemas import ma, TrainingJobSchema , FeatureGroupSchema
+from trainingmgr.db.trainingjob_db import get_all_versions_info_by_name
 
 ERROR_TYPE_KF_ADAPTER_JSON = "Kf adapter doesn't sends json type response"
 MIMETYPE_JSON = "application/json"
@@ -331,7 +332,7 @@ def handle_async_feature_engineering_status_exception_case(lock, dataextraction_
             except KeyError as key_err:
                 logger.error("The training job key doesn't exist in DATAEXTRACTION_JOBS_CACHE: " + str(key_err))
 
-def validate_trainingjob_name(trainingjob_name, ps_db_obj):
+def validate_trainingjob_name(trainingjob_name):
     """
     This function returns True if given trainingjob_name exists in db otherwise
     it returns False.
@@ -343,13 +344,13 @@ def validate_trainingjob_name(trainingjob_name, ps_db_obj):
         raise TMException("The name of training job is invalid.")
 
     try:
-        results = get_all_versions_info_by_name(trainingjob_name, ps_db_obj)
+        results = get_all_versions_info_by_name(trainingjob_name)
     except Exception as err:
         errmsg = str(err)
         raise DBException("Could not get info from db for " + trainingjob_name + "," + errmsg)
     if results:
         isavailable = True
-    return isavailable    
+    return isavailable     
 
 def get_pipelines_details(training_config_obj):
     logger=training_config_obj.logger
