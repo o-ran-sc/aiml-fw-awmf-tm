@@ -230,3 +230,29 @@ def change_field_of_latest_version(trainingjob_name, field, field_value):
 
     except Exception as err:
         raise DBException("Failed to execute query in change_field_of_latest_version,"  + str(err))
+    
+def get_latest_version_trainingjob_name(trainingjob_name):
+    """
+    This function returns latest version of given trainingjob_name.
+    """
+    try:
+        trainingjob_max_version = TrainingJob.query.filter(TrainingJob.trainingjob_name == trainingjob_name).order_by(TrainingJob.version.desc()).first()
+
+    except Exception as err:
+        raise DBException(DB_QUERY_EXEC_ERROR + \
+            "get_latest_version_trainingjob_name"  + str(err))
+    
+    return trainingjob_max_version.version
+
+def update_model_download_url(trainingjob_name, version, url):
+    """
+    This function updates model download url for given <trainingjob_name, version>.
+    """
+    try:
+
+        trainingjob_max_version = TrainingJob.query.filter(TrainingJob.trainingjob_name == trainingjob_name).filter(TrainingJob.version == version).first()
+        trainingjob_max_version.model_url = url
+    except Exception as err:
+        raise DBException(DB_QUERY_EXEC_ERROR + \
+            "update_model_download_url"  + str(err))
+    db.session.commit()
