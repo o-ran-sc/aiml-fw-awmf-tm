@@ -252,7 +252,36 @@ def update_model_download_url(trainingjob_name, version, url):
 
         trainingjob_max_version = TrainingJob.query.filter(TrainingJob.trainingjob_name == trainingjob_name).filter(TrainingJob.version == version).first()
         trainingjob_max_version.model_url = url
+        db.session.commit()
     except Exception as err:
         raise DBException(DB_QUERY_EXEC_ERROR + \
             "update_model_download_url"  + str(err))
-    db.session.commit()
+
+def change_field_value_by_version(trainingjob_name, version, field, field_value):
+    """
+    This function updates field's value to field_value of <trainingjob_name, version> trainingjob.
+    """
+    conn = None
+    try:
+        if field == "deletion_in_progress":
+            trainingjob = TrainingJob.query.filter(TrainingJob.trainingjob_name == trainingjob_name).filter(TrainingJob.version == version).first()
+            trainingjob.deletion_in_progress = field_value
+            trainingjob.updation_time = datetime.datetime.utcnow()
+            db.session.commit()
+    except Exception as err:
+        raise DBException("Failed to execute query in change_field_value_by_version," + str(err))
+
+def delete_trainingjob_version(trainingjob_name, version):
+    """
+    This function deletes the trainingjob entry by <trainingjob_name, version> .
+    """
+
+    try:
+        trainingjob = TrainingJob.query.filter(TrainingJob.trainingjob_name == trainingjob_name).filter(TrainingJob.version == version).first()
+        if trainingjob:
+            db.session.delete(trainingjob)
+        db.session.commit()
+ 
+    except Exception as err:
+        raise DBException(DB_QUERY_EXEC_ERROR + \
+            "delete_trainingjob_version" + str(err))
