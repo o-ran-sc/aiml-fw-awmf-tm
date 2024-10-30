@@ -311,14 +311,14 @@ def get_metrics(trainingjob_name, version, mm_sdk):
 
 def handle_async_feature_engineering_status_exception_case(lock, dataextraction_job_cache, code,
                                                            message, logger, is_success,
-                                                           trainingjob_name, ps_db_obj, mm_sdk):
+                                                           trainingjob_name, mm_sdk):
     """
     This function changes IN_PROGRESS state to FAILED state and calls response_for_training function
     and remove trainingjob_name from dataextraction_job_cache.
     """
     try:
-        change_in_progress_to_failed_by_latest_version(trainingjob_name, ps_db_obj)
-        response_for_training(code, message, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk)
+        change_in_progress_to_failed_by_latest_version(trainingjob_name)
+        response_for_training(code, message, logger, is_success, trainingjob_name, mm_sdk)
     except Exception as err:
         logger.error("Failed in handle_async_feature_engineering_status_exception_case" + str(err))
     finally:

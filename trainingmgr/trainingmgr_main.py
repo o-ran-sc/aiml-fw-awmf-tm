@@ -1302,12 +1302,12 @@ def get_metadata(trainingjob_name):
 
     LOGGER.debug("Request metadata for trainingjob(name of trainingjob is %s) ", trainingjob_name)
     try:
-        results = get_all_versions_info_by_name(trainingjob_name, PS_DB_OBJ)
+        results = get_all_versions_info_by_name(trainingjob_name)
         if results:
             info_list = []
             for trainingjob_info in results:
-                if (get_one_word_status(json.loads(trainingjob_info[9])) == States.FINISHED.name and
-                        not trainingjob_info[19]):                   
+                if (get_one_word_status(json.loads(trainingjob_info.steps_state)) == States.FINISHED.name and
+                        not trainingjob_info.deletion_in_progress):                   
                     LOGGER.debug("Downloading metric for " +trainingjob_name )
                     data = get_metrics(trainingjob_name, trainingjob_info[11], MM_SDK)
                     url = "http://" + str(TRAININGMGR_CONFIG_OBJ.my_ip) + ":" + \
@@ -1315,7 +1315,7 @@ def get_metadata(trainingjob_name):
                         trainingjob_name + "/" + str(trainingjob_info[11]) + "/Model.zip"
                     dict_data = {
                         "accuracy": data,
-                        "version": trainingjob_info[11],
+                        "version": trainingjob_info.version,
                         "url": url
                     }
                     info_list.append(dict_data)
@@ -1671,12 +1671,13 @@ def async_feature_engineering_status():
                             trainingjob_name + " " + json.dumps(response))
 
                 if response["task_status"] == "Completed":
-                    change_steps_state_of_latest_version(trainingjob_name, PS_DB_OBJ,
-                                                            Steps.DATA_EXTRACTION.name,
-                                                            States.FINISHED.name)
-                    change_steps_state_of_latest_version(trainingjob_name, PS_DB_OBJ,
-                                                            Steps.DATA_EXTRACTION_AND_TRAINING.name,
-                                                            States.IN_PROGRESS.name)
+                    with APP.app_context():
+                        change_steps_state_of_latest_version(trainingjob_name,
+                                                                Steps.DATA_EXTRACTION.name,
+                                                                States.FINISHED.name)
+                        change_steps_state_of_latest_version(trainingjob_name,
+                                                                Steps.DATA_EXTRACTION_AND_TRAINING.name,
+                                                                States.IN_PROGRESS.name)
                     kf_response = requests.post(url_pipeline_run,
                                                 data=json.dumps({"trainingjob_name": trainingjob_name}),
                                                 headers={
@@ -1700,8 +1701,7 @@ def async_feature_engineering_status():
                                                     DATAEXTRACTION_JOBS_CACHE,
                                                     status.HTTP_500_INTERNAL_SERVER_ERROR,
                                                     str(err) + "(trainingjob name is " + trainingjob_name + ")",
-                                                    LOGGER, False, trainingjob_name,
-                                                    PS_DB_OBJ, MM_SDK)
+                                                    LOGGER, False, trainingjob_name, MM_SDK)
 
         #Wait and fetch latest list of trainingjobs
         time.sleep(10)
