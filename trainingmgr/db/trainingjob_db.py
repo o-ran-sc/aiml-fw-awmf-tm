@@ -212,3 +212,21 @@ def get_field_by_latest_version(trainingjob_name, field):
         raise DBException("Failed to execute query in get_field_by_latest_version,"  + str(err))
 
     return result
+
+def change_field_of_latest_version(trainingjob_name, field, field_value):
+    """
+    This function updates the field's value for given trainingjob.
+    """
+
+    try:
+        trainingjob_max_version = TrainingJob.query.filter(TrainingJob.trainingjob_name == trainingjob_name).order_by(TrainingJob.version.desc()).first()
+        if field == "notification_url":
+            trainingjob_max_version.notification_url = field_value
+            trainingjob_max_version.updation_time = datetime.datetime.utcnow()
+        if field == "run_id":
+            trainingjob_max_version.run_id = field_value
+            trainingjob_max_version.updation_time = datetime.datetime.utcnow()
+        db.session.commit()
+
+    except Exception as err:
+        raise DBException("Failed to execute query in change_field_of_latest_version,"  + str(err))
