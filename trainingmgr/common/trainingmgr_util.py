@@ -43,7 +43,7 @@ PATTERN = re.compile(r"\w+")
 featuregroup_schema = FeatureGroupSchema()
 featuregroups_schema = FeatureGroupSchema(many = True)
 
-def response_for_training(code, message, logger, is_success, trainingjob_name, ps_db_obj, mm_sdk):
+def response_for_training(code, message, logger, is_success, trainingjob_name, mm_sdk):
     """
     Post training job completion,this function provides notifications to the subscribers, 
     who subscribed for the result of training job and provided a notification url during 
@@ -54,37 +54,34 @@ def response_for_training(code, message, logger, is_success, trainingjob_name, p
     
     try :
         #TODO DB query optimization, all data to fetch in one call
-        notif_url_result = get_field_by_latest_version(trainingjob_name, ps_db_obj, "notification_url")
-        if notif_url_result :
-            notification_url = notif_url_result[0][0]
-            model_url_result = None
-            if notification_url != '':
-                model_url_result = get_field_by_latest_version(trainingjob_name, ps_db_obj, "model_url")
-                model_url = model_url_result[0][0]
-                version = get_latest_version_trainingjob_name(trainingjob_name, ps_db_obj)
-                metrics = get_metrics(trainingjob_name, version, mm_sdk)
+        notif_url = get_field_by_latest_version(trainingjob_name, "notification_url")
+        if notif_url :
 
-                req_json = None
-                if is_success:
-                    req_json = {
-                        "result": "success", "model_url": model_url,
-                        "trainingjob_name": trainingjob_name, "metrics": metrics
-                    }
-                else:
-                    req_json = {"result": "failed", "trainingjob_name": trainingjob_name}
-            
-                response = requests.post(notification_url,
-                        data=json.dumps(req_json),
-                        headers={
-                            'content-type': MIMETYPE_JSON,
-                            'Accept-Charset': 'UTF-8'
-                        })
-                if ( response.headers['content-type'] != MIMETYPE_JSON
-                        or response.status_code != status.HTTP_200_OK ):
-                    err_msg = "Failed to notify the subscribed url " + trainingjob_name
-                    raise TMException(err_msg)
+            model_url = get_field_by_latest_version(trainingjob_name, "model_url")
+            version = get_latest_version_trainingjob_name(trainingjob_name)
+            metrics = get_metrics(trainingjob_name, version, mm_sdk)
+
+            req_json = None
+            if is_success:
+                req_json = {
+                    "result": "success", "model_url": model_url,
+                    "trainingjob_name": trainingjob_name, "metrics": metrics
+                }
+            else:
+                req_json = {"result": "failed", "trainingjob_name": trainingjob_name}
+        
+            response = requests.post(notif_url,
+                    data=json.dumps(req_json),
+                    headers={
+                        'content-type': MIMETYPE_JSON,
+                        'Accept-Charset': 'UTF-8'
+                    })
+            if ( response.headers['content-type'] != MIMETYPE_JSON
+                    or response.status_code != status.HTTP_200_OK ):
+                err_msg = "Failed to notify the subscribed url " + trainingjob_name
+                raise TMException(err_msg)
     except Exception as err:
-        change_in_progress_to_failed_by_latest_version(trainingjob_name, ps_db_obj)
+        change_in_progress_to_failed_by_latest_version(trainingjob_name)
         raise APIException(status.HTTP_500_INTERNAL_SERVER_ERROR,
                             str(err) + "(trainingjob name is " + trainingjob_name + ")") from None
     if is_success:
