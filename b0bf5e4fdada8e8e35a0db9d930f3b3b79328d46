@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "42faa748_3124ac5f",
+        "filename": "tests/test_tm_apis.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-10-30T06:51:35Z",
+      "side": 1,
+      "message": "instead commenting who",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 42,
+        "endChar": 29
+      },
+      "revId": "b0bf5e4fdada8e8e35a0db9d930f3b3b79328d46",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c924778f_34d1fc0d",
+        "filename": "tests/test_tm_apis.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-10-30T06:51:35Z",
+      "side": 1,
+      "message": "instead commenting whole file I would suggest to add the annotation: \n\n@pytest.mark.skip(\"\")\nclass Test_response_for_training:",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 42,
+        "endChar": 29
+      },
+      "revId": "b0bf5e4fdada8e8e35a0db9d930f3b3b79328d46",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
