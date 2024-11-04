@@ -1,45 +1,48 @@
-# ==================================================================================
-#
-#       Copyright (c) 2022 Samsung Electronics Co., Ltd. All Rights Reserved.
-#
-#   Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
-#
-#          http://www.apache.org/licenses/LICENSE-2.0
-#
-#   Unless required by applicable law or agreed to in writing, software
-#   distributed under the License is distributed on an "AS IS" BASIS,
-#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#   See the License for the specific language governing permissions and
-#   limitations under the License.
-#
-# ==================================================================================
-#Base Image
-FROM python:3.10
+# Base Image
+FROM python:3.10 AS builder
 
-# location in the container
-ENV TA_DIR /home/app
-WORKDIR ${TA_DIR}
+
+# Location in the container
+WORKDIR /app
 
 # Install dependencies
 RUN apt-get update && \
-    apt-get install -y python3-pip apt-utils
-
+    apt-get install -y --no-install-recommends python3-pip apt-utils && \
+    rm -rf /var/lib/apt/lists/*
 # Copy sources into the container
 COPY . .
 
+
+# Install dependencies
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Clone SDK repositories
 RUN git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/feature-store" /SDK/featurestoresdk_main
 RUN git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/model-storage" /SDK/modelmetricssdk_main
 
-RUN pip3 install /SDK/featurestoresdk_main/.
-RUN pip3 install /SDK/modelmetricssdk_main/.
+# Install SDKs
+RUN pip3 install --no-cache-dir /SDK/featurestoresdk_main/.
+RUN pip3 install --no-cache-dir /SDK/modelmetricssdk_main/.
+
+# Final stage
+FROM python:3.10-slim
+
+# Location in the container
+ENV TA_DIR /app
+WORKDIR ${TA_DIR}
+
+COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
+
+# Copy the application code
+COPY --from=builder ${TA_DIR} ${TA_DIR}
+
 RUN pip3 install .
-RUN pip3 install -r requirements.txt
+# Expose the ports
+EXPOSE 5050
+
+# COPY model-storage /SDK/featurestoresdk_main
 
 WORKDIR ${TA_DIR}/trainingmgr
 
+# Start the application
 CMD ["python3", "trainingmgr_main.py"]
-#Expose the ports
-EXPOSE 5050
-
