@@ -302,7 +302,7 @@ class Test_get_trainingjob_by_name_version:
             training_config = json.dumps(training_config),
             creation_time=creation_time,
             run_id="test_run_id",
-            steps_state=json.dumps({"step1": "completed"}),
+            steps_state_id=1,
             updation_time=updation_time,
             version=1,
             model_url="http://test.model.url",
