@@ -15,12 +15,19 @@
 #   limitations under the License.
 #
 # ==================================================================================
-from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
+from sqlalchemy import Integer, String, Column, DateTime
+from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
+from . import db
 
-from trainingmgr.models.trainingjob import TrainingJob
-from trainingmgr.models.featuregroup import FeatureGroup
-from trainingmgr.models.steps_state import TrainingJobStatus
+class TrainingJobStatus(db.Model):
+    __tablename__ = 'training_job_status_table'
+   
+    id = Column(Integer, primary_key=True)
+    states = Column(String, nullable=False)
+    creation_time = Column(DateTime(timezone=False), server_default=func.now(),nullable=False)
+    updation_time = Column(DateTime(timezone=False),onupdate=func.now() ,nullable=True)
 
-__all_ = ['TrainingJob', 'FeatureGroup', 'TrainingJobStatus']
+    # Establish a relationship to TrainingJob
+    trainingjobs = relationship("TrainingJob", back_populates="steps_state")
