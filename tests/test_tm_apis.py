@@ -18,7 +18,7 @@
 import json
 import requests
 from unittest import mock
-from mock import patch
+from mock import patch, MagicMock
 import pytest
 import flask
 from requests.models import Response
@@ -296,13 +296,15 @@ class Test_get_trainingjob_by_name_version:
             }
         }
         
-            
+        mock_steps_state = MagicMock()
+        mock_steps_state.states = {"step1":"completed"}  
+
         return TrainingJob(
             trainingjob_name="test_job",
             training_config = json.dumps(training_config),
             creation_time=creation_time,
             run_id="test_run_id",
-            steps_state=json.dumps({"step1": "completed"}),
+            steps_state=mock_steps_state,
             updation_time=updation_time,
             version=1,
             model_url="http://test.model.url",
