@@ -182,7 +182,7 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                 # "query_filter": trainingjob.query_filter,
                 "creation_time": str(trainingjob.creation_time),
                 "run_id": trainingjob.run_id,
-                "steps_state": json.loads(trainingjob.steps_state),
+                "steps_state": trainingjob.steps_state.states ,
                 "updation_time": str(trainingjob.updation_time),
                 "version": trainingjob.version,
                 # "enable_versioning": trainingjob.enable_versioning,
