@@ -230,7 +230,9 @@ def get_feature_group_by_name(featuregroup_name, logger):
         logger.error(str(err))
     return api_response, response_code
 
-def edit_feature_group_by_name(featuregroup_name, featuregroup, logger, tm_conf_obj):
+from trainingmgr.models.featuregroup import FeatureGroup 
+def edit_feature_group_by_name(featuregroup_name: str, 
+                               featuregroup: FeatureGroup, logger, tm_conf_obj):
     """
     Function fetching a feature group
 
@@ -263,7 +265,9 @@ def edit_feature_group_by_name(featuregroup_name, featuregroup, logger, tm_conf_
         response_code =status.HTTP_200_OK
         # TODO: Implement the process where DME edits from the dashboard are applied to the endpoint
         if featuregroup.enable_dme == True :
-            response= create_dme_filtered_data_job(tm_conf_obj, featuregroup)
+            response= create_dme_filtered_data_job(tm_conf_obj, featuregroup.source_name, featuregroup.feature_list, 
+                                                   featuregroup.host, featuregroup.port, 
+                                                   featuregroup.measured_obj_class)
             if response.status_code != 201:
                 api_response={"Exception": "Cannot create dme job"}
                 delete_feature_group_by_name(featuregroup)
