@@ -1,0 +1,12 @@
+Verified+1: Rajdeep Singh <rajdeep.sin@samsung.com>
+Verified+1: Swaraj Kumar <swaraj.kumar@samsung.com>
+Code-Review+2: Rajdeep Singh <rajdeep.sin@samsung.com>
+Code-Review+2: Swaraj Kumar <swaraj.kumar@samsung.com>
+Verified+1: ORAN Required GHA <releng+oran.required.gha@linuxfoundation.org>
+Verified+1: o-ran-sc release <collab-it+o-ran-sc-release@linuxfoundation.org>
+Verified+1: ORAN Jobbuilder <releng+oran-jobbuilder@linuxfoundation.org>
+Submitted-by: Swaraj Kumar <swaraj.kumar@samsung.com>
+Submitted-at: Thu, 07 Nov 2024 07:22:33 +0000
+Reviewed-on: https://gerrit.o-ran-sc.org/r/c/aiml-fw/awmf/tm/+/13727
+Project: aiml-fw/awmf/tm
+Branch: refs/heads/master
