@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "864f241d_80a1ff2e",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 603,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-11-11T13:56:04Z",
+      "side": 1,
+      "message": "could you make utility to send the notification to avoid code duplication also handle the error or success scenario by debug/Info logging",
+      "range": {
+        "startLine": 597,
+        "startChar": 16,
+        "endLine": 603,
+        "endChar": 50
+      },
+      "revId": "7ae8c9273b36bb00bb55f9264ea7af4df5f40a4f",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
