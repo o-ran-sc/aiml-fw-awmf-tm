@@ -115,7 +115,7 @@ def get_steps_state_db(trainingjob_name, version):
     """
 
     try:
-        steps_state = TrainingJob.query.filter(TrainingJob.trainingjob_name == trainingjob_name).filter(TrainingJob.version == version).first().steps_state
+        steps_state = TrainingJob.query.filter(TrainingJob.trainingjob_name == trainingjob_name).filter(TrainingJob.version == version).first().steps_state.states
     except Exception as err:
         raise DBException("Failed to execute query in get_field_of_given_version" + str(err))
 

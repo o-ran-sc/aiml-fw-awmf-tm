@@ -26,6 +26,7 @@ import requests
 import validators
 from trainingmgr.common.exceptions_utls import TMException
 from flask_api import status
+from trainingmgr.db.trainingjob_db import get_steps_state_db
 
 MIMETYPE_JSON = "application/json"
 
@@ -182,3 +183,14 @@ def get_model_info(training_config_obj, model_name):
         errMsg="model info can't be fetched, model_name: {} , err: {}".format(model_name, response.text)
         logger.error(errMsg)
         raise TMException(errMsg)
+
+def notification_rapp(trainingjob, training_config_obj):
+    steps_state = get_steps_state_db(trainingjob.trainingjob_name)
+    response = requests.post(trainingjob.notification_url,
+                            data=json.dumps(steps_state),
+                            headers={
+                                'content-type': MIMETYPE_JSON,
+                                'Accept-Charset': 'UTF-8'
+                            })
+    if response.status_code != 200:
+        raise TMException("Notification failed: "+response.text)

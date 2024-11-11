@@ -36,7 +36,7 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from modelmetricsdk.model_metrics_sdk import ModelMetricsSdk
 from trainingmgr.common.trainingmgr_operations import data_extraction_start, training_start, data_extraction_status, create_dme_filtered_data_job, delete_dme_filtered_data_job, \
-    get_model_info
+    get_model_info, notification_rapp
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.trainingmgr_util import get_one_word_status, check_trainingjob_data, \
     check_key_in_dictionary, get_one_key, \
@@ -469,6 +469,7 @@ def data_extraction_notification():
                                                 States.IN_PROGRESS.name)
             change_field_of_latest_version(trainingjob_name,
                                         "run_id", json_data["run_id"])
+            notification_rapp(trainingjob, TRAININGMGR_CONFIG_OBJ)
         else:
             raise TMException("KF Adapter- run_status in not scheduled")
     except requests.exceptions.ConnectionError as err:
@@ -570,21 +571,26 @@ def pipeline_notification():
         run_status = request.json["run_status"]
 
         if run_status == 'SUCCEEDED':
+
+            trainingjob_info=get_trainingjob_info_by_name(trainingjob_name)
             change_steps_state_of_latest_version(trainingjob_name,
                                                     Steps.TRAINING.name,
                                                     States.FINISHED.name)
             change_steps_state_of_latest_version(trainingjob_name,
                                                     Steps.TRAINING_AND_TRAINED_MODEL.name,
                                                     States.IN_PROGRESS.name)
-                   
+            notification_rapp(trainingjob_info, TRAININGMGR_CONFIG_OBJ)
+
             version = get_latest_version_trainingjob_name(trainingjob_name)
+
             change_steps_state_of_latest_version(trainingjob_name,
                                                     Steps.TRAINING_AND_TRAINED_MODEL.name,
                                                     States.FINISHED.name)
             change_steps_state_of_latest_version(trainingjob_name,
                                                     Steps.TRAINED_MODEL.name,
                                                     States.IN_PROGRESS.name)
-                                                    
+            notification_rapp(trainingjob_info, TRAININGMGR_CONFIG_OBJ)
+
             if MM_SDK.check_object(trainingjob_name, version, "Model.zip"):
                 model_url = "http://" + str(TRAININGMGR_CONFIG_OBJ.my_ip) + ":" + \
                             str(TRAININGMGR_CONFIG_OBJ.my_port) + "/model/" + \
@@ -596,10 +602,9 @@ def pipeline_notification():
                 change_steps_state_of_latest_version(trainingjob_name,
                                                         Steps.TRAINED_MODEL.name,
                                                         States.FINISHED.name)
+                notification_rapp(trainingjob_info, TRAININGMGR_CONFIG_OBJ)
                 # upload to the mme
-                trainingjob_info=get_trainingjob_info_by_name(trainingjob_name)
-
-                is_mme = getField(trainingjob_info.training_config, "is_mme")
+                is_mme= trainingjob_info.is_mme
                 if is_mme:   
                     model_name=trainingjob_info.model_name #model_name
                     file=MM_SDK.get_model_zip(trainingjob_name, str(version))
