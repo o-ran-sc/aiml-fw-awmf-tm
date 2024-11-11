@@ -460,6 +460,13 @@ def data_extraction_notification():
                                                 States.IN_PROGRESS.name)
             change_field_of_latest_version(trainingjob_name,
                                         "run_id", json_data["run_id"])
+            steps_state = get_steps_state_db(trainingjob_name)
+            response = requests.post(trainingjob.notification_url,
+                                                data=json.dumps(steps_state),
+                                                headers={
+                                                    'content-type': MIMETYPE_JSON,
+                                                    'Accept-Charset': 'UTF-8'
+                                                })
         else:
             raise TMException("KF Adapter- run_status in not scheduled")
     except requests.exceptions.ConnectionError as err:
@@ -587,7 +594,13 @@ def pipeline_notification():
                                                         States.FINISHED.name)
                 # upload to the mme
                 trainingjob_info=get_trainingjob_info_by_name(trainingjob_name)
-
+                steps_state = get_steps_state_db(trainingjob_name)
+                response = requests.post(trainingjob_info.notification_url,
+                                                data=json.dumps(steps_state),
+                                                headers={
+                                                    'content-type': MIMETYPE_JSON,
+                                                    'Accept-Charset': 'UTF-8'
+                                                })
                 is_mme= trainingjob_info.is_mme
                 if is_mme:   
                     model_name=trainingjob_info.model_name #model_name
