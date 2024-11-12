@@ -62,12 +62,14 @@ from trainingmgr.db.trainingjob_db import add_update_trainingjob, get_trainingjo
     get_all_jobs_latest_status_version, change_steps_state_of_latest_version, get_info_by_version, \
     get_steps_state_db, change_field_of_latest_version, get_latest_version_trainingjob_name, get_info_of_latest_version, \
     change_field_value_by_version, delete_trainingjob_version
+from trainingmgr.controller.trainingjob_controller import training_job_controller
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig, getField
 
 APP = Flask(__name__)
 
 from middleware.loggingMiddleware import LoggingMiddleware
 APP.wsgi_app = LoggingMiddleware(APP.wsgi_app)
+APP.register_blueprint(training_job_controller)
 TRAININGMGR_CONFIG_OBJ = None
 PS_DB_OBJ = None
 LOGGER = None
