@@ -81,24 +81,24 @@ class PSDB():
         try:
             cur2.execute("create table if not exists trainingjob_info(" + \
                         "trainingjob_name varchar(128) NOT NULL," + \
-                        "description varchar(2000) NOT NULL," + \
-                        "feature_list varchar(2000) NOT NULL," + \
-                        "pipeline_name varchar(128) NOT NULL," + \
-                        "experiment_name varchar(128) NOT NULL," + \
-                        "arguments varchar(2000) NOT NULL," + \
-                        "query_filter varchar(2000) NOT NULL," + \
+                        "training_config varchar(5000) NOT NULL," + \
+                        # "feature_list varchar(2000) NOT NULL," + \
+                        # "pipeline_name varchar(128) NOT NULL," + \
+                        # "experiment_name varchar(128) NOT NULL," + \
+                        # "arguments varchar(2000) NOT NULL," + \
+                        # "query_filter varchar(2000) NOT NULL," + \
                         "creation_time TIMESTAMP NOT NULL," + \
                         "run_id varchar(1000) NOT NULL," + \
                         "steps_state varchar(1000) NOT NULL," + \
                         "updation_time TIMESTAMP NOT NULL," + \
                         "version INTEGER  NOT NULL," + \
-                        "enable_versioning BOOLEAN NOT NULL," + \
-                        "pipeline_version varchar(128) NOT NULL," + \
-                        "datalake_source varchar(2000) NOT NULL," + \
+                        # "enable_versioning BOOLEAN NOT NULL," + \
+                        # "pipeline_version varchar(128) NOT NULL," + \
+                        # "datalake_source varchar(2000) NOT NULL," + \
                         "model_url varchar(100) NOT NULL," + \
                         "notification_url varchar(1000) NOT NULL," + \
                         "deletion_in_progress BOOLEAN NOT NULL," + \
-                        "is_mme BOOLEAN NOT NULL," + \
+                        # "is_mme BOOLEAN NOT NULL," + \
                         "model_name varchar(128) NOT NULL," + \
                         "model_info varchar(1000) NOT NULL," \
                         "PRIMARY KEY (trainingjob_name,version)" + \

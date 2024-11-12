@@ -49,11 +49,7 @@ from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
 from trainingmgr.db.trainingmgr_ps_db import PSDB
 from trainingmgr.common.exceptions_utls import DBException
-from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainingjobs, \
-    change_in_progress_to_failed_by_latest_version, \
-    get_all_versions_info_by_name, \
-    update_model_download_url, \
-    get_field_of_given_version
+from trainingmgr.db.common_db_fun import get_data_extraction_in_progress_trainingjobs
 from trainingmgr.models import db, TrainingJob, FeatureGroup
 from trainingmgr.schemas import ma, TrainingJobSchema , FeatureGroupSchema
 from trainingmgr.db.featuregroup_db import add_featuregroup, edit_featuregroup, get_feature_groups_db, \
@@ -61,7 +57,9 @@ from trainingmgr.db.featuregroup_db import add_featuregroup, edit_featuregroup, 
 from trainingmgr.db.trainingjob_db import add_update_trainingjob, get_trainingjob_info_by_name, \
     get_all_jobs_latest_status_version, change_steps_state_of_latest_version, get_info_by_version, \
     get_steps_state_db, change_field_of_latest_version, get_latest_version_trainingjob_name, get_info_of_latest_version, \
-    change_field_value_by_version, delete_trainingjob_version
+    change_field_value_by_version, delete_trainingjob_version, change_in_progress_to_failed_by_latest_version, \
+        update_model_download_url, get_all_versions_info_by_name
+from trainingmgr.common.trainingConfig_parser import validateTrainingConfig, getField
 
 APP = Flask(__name__)
 
@@ -82,6 +80,7 @@ NOT_LIST="not given as list"
 trainingjob_schema = TrainingJobSchema()
 trainingjobs_schema = TrainingJobSchema(many=True)
 
+
 @APP.errorhandler(APIException)
 def error(err):
     """
@@ -92,7 +91,7 @@ def error(err):
                               status=err.code,
                               mimetype=MIMETYPE_JSON)
 
-
+# Training-Config Handled
 @APP.route('/trainingjobs/<trainingjob_name>/<version>', methods=['GET'])
 def get_trainingjob_by_name_version(trainingjob_name, version):
     """
@@ -174,23 +173,24 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
         if trainingjob:
             dict_data = {
                 "trainingjob_name": trainingjob.trainingjob_name,
-                "description": trainingjob.description,
-                "feature_list": trainingjob.feature_group_name,
-                "pipeline_name": trainingjob.pipeline_name,
-                "experiment_name": trainingjob.experiment_name,
-                "arguments": trainingjob.arguments,
-                "query_filter": trainingjob.query_filter,
+                "training_config": json.loads(trainingjob.training_config),
+                # "description": trainingjob.description,
+                # "feature_list": trainingjob.feature_group_name,
+                # "pipeline_name": trainingjob.pipeline_name,
+                # "experiment_name": trainingjob.experiment_name,
+                # "arguments": trainingjob.arguments,
+                # "query_filter": trainingjob.query_filter,
                 "creation_time": str(trainingjob.creation_time),
                 "run_id": trainingjob.run_id,
                 "steps_state": json.loads(trainingjob.steps_state),
                 "updation_time": str(trainingjob.updation_time),
                 "version": trainingjob.version,
-                "enable_versioning": trainingjob.enable_versioning,
-                "pipeline_version": trainingjob.pipeline_version,
-                "datalake_source": get_one_key(json.loads(trainingjob.datalake_source)['datalake_source']),
+                # "enable_versioning": trainingjob.enable_versioning,
+                # "pipeline_version": trainingjob.pipeline_version,
+                # "datalake_source": get_one_key(json.loads(trainingjob.datalake_source)['datalake_source']),
                 "model_url": trainingjob.model_url,
                 "notification_url": trainingjob.notification_url,
-                "is_mme": trainingjob.is_mme, 
+                # "is_mme": trainingjob.is_mme, 
                 "model_name": trainingjob.model_name,
                 "model_info": trainingjob.model_info,
                 "accuracy": data
@@ -210,7 +210,8 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                                         status=response_code,
                                         mimetype=MIMETYPE_JSON)
 
-@APP.route('/trainingjobs/<trainingjob_name>/<version>/steps_state', methods=['GET']) # Handled in GUI
+# Training-Config Handled (No Change)
+@APP.route('/trainingjobs/<trainingjob_name>/<version>/steps_state', methods=['GET']) 
 def get_steps_state(trainingjob_name, version):
     """
     Function handling rest end points to get steps_state information for
@@ -278,6 +279,7 @@ def get_steps_state(trainingjob_name, version):
                                       status=response_code,
                                       mimetype=MIMETYPE_JSON)
 
+# Training-Config Handled (No Change)
 @APP.route('/model/<trainingjob_name>/<version>/Model.zip', methods=['GET'])
 def get_model(trainingjob_name, version):
     """
@@ -306,8 +308,8 @@ def get_model(trainingjob_name, version):
     except Exception:
         return {"Exception": "error while downloading model"}, status.HTTP_500_INTERNAL_SERVER_ERROR
 
-
-@APP.route('/trainingjobs/<trainingjob_name>/training', methods=['POST']) # Handled in GUI
+# Training-Config Handled
+@APP.route('/trainingjobs/<trainingjob_name>/training', methods=['POST'])
 def training(trainingjob_name):
     """
     Rest end point to start training job.
@@ -346,8 +348,9 @@ def training(trainingjob_name):
                         "(trainingjob: " + trainingjob_name + ")") from None
         else:
 
-            trainingjob = get_trainingjob_info_by_name(trainingjob_name)
-            featuregroup= get_feature_group_by_name_db(trainingjob.feature_group_name)
+            trainingjob = get_trainingjob_info_by_name(trainingjob_name) 
+            
+            featuregroup= get_feature_group_by_name_db(getField(trainingjob.training_config, "feature_group_name"))
             feature_list_string = featuregroup.feature_list
             influxdb_info_dic={}
             influxdb_info_dic["host"]=featuregroup.host
@@ -357,8 +360,8 @@ def training(trainingjob_name):
             influxdb_info_dic["db_org"] = featuregroup.db_org
             influxdb_info_dic["source_name"]= featuregroup.source_name
             _measurement = featuregroup.measurement
-            query_filter = trainingjob.query_filter
-            datalake_source = json.loads(trainingjob.datalake_source)['datalake_source']
+            query_filter = getField(trainingjob.training_config, "query_filter")
+            datalake_source = {featuregroup.datalake_source: {}} # Datalake source should be taken from FeatureGroup (not TrainingJob)
             LOGGER.debug('Starting Data Extraction...')
             de_response = data_extraction_start(TRAININGMGR_CONFIG_OBJ, trainingjob_name,
                                          feature_list_string, query_filter, datalake_source,
@@ -386,11 +389,13 @@ def training(trainingjob_name):
                 raise TMException("Data extraction doesn't send json type response" + \
                         "(trainingjob name is " + trainingjob_name + ")") from None
     except Exception as err:
+        # print(traceback.format_exc())
         response_data =  {"Exception": str(err)}
         LOGGER.debug("Error is training, job name:" + trainingjob_name + str(err))         
     return APP.response_class(response=json.dumps(response_data),status=response_code,
                             mimetype=MIMETYPE_JSON)
 
+# Training-Config Handled
 @APP.route('/trainingjob/dataExtractionNotification', methods=['POST'])
 def data_extraction_notification():
     """
@@ -426,13 +431,17 @@ def data_extraction_notification():
             
         trainingjob_name = request.json["trainingjob_name"]
         trainingjob = get_trainingjob_info_by_name(trainingjob_name)
-        arguments = trainingjob.arguments
+        arguments = getField(trainingjob.training_config, "arguments")
         arguments["version"] = trainingjob.version
+        # Arguments values must be of type string
+        for key, val in arguments.items():
+            if not isinstance(val, str):
+                arguments[key] = str(val)
         LOGGER.debug(arguments)
-
+        # Experiment name is harded to be Default
         dict_data = {
-            "pipeline_name": trainingjob.pipeline_name, "experiment_name": trainingjob.experiment_name,
-            "arguments": arguments, "pipeline_version": trainingjob.pipeline_version
+            "pipeline_name": getField(trainingjob.training_config, "pipeline_name"), "experiment_name": 'Default',
+            "arguments": arguments, "pipeline_version": getField(trainingjob.training_config, "pipeline_version")
         }
 
         response = training_start(TRAININGMGR_CONFIG_OBJ, dict_data, trainingjob_name)
@@ -483,6 +492,7 @@ def data_extraction_notification():
                                     status=status.HTTP_200_OK,
                                     mimetype=MIMETYPE_JSON)
 
+# Training-Config Handled (No Change)
 @APP.route('/pipelines/<pipe_name>', methods=['GET'])
 def get_pipeline_info_by_name(pipe_name):
     """
@@ -525,7 +535,8 @@ def get_pipeline_info_by_name(pipe_name):
     return APP.response_class(response=json.dumps(api_response),
                               status=response_code,
                               mimetype=MIMETYPE_JSON)
-    
+
+# Training-Config Handled ..
 @APP.route('/trainingjob/pipelineNotification', methods=['POST'])
 def pipeline_notification():
     """
@@ -578,7 +589,7 @@ def pipeline_notification():
                 model_url = "http://" + str(TRAININGMGR_CONFIG_OBJ.my_ip) + ":" + \
                             str(TRAININGMGR_CONFIG_OBJ.my_port) + "/model/" + \
                             trainingjob_name + "/" + str(version) + "/Model.zip"
-                
+
                 update_model_download_url(trainingjob_name, version, model_url, PS_DB_OBJ)
 
                 
@@ -588,7 +599,7 @@ def pipeline_notification():
                 # upload to the mme
                 trainingjob_info=get_trainingjob_info_by_name(trainingjob_name)
 
-                is_mme= trainingjob_info.is_mme
+                is_mme = getField(trainingjob_info.training_config, "is_mme")
                 if is_mme:   
                     model_name=trainingjob_info.model_name #model_name
                     file=MM_SDK.get_model_zip(trainingjob_name, str(version))
@@ -624,7 +635,7 @@ def pipeline_notification():
                                             "Pipeline notification success.",
                                             LOGGER, True, trainingjob_name, MM_SDK)
 
-
+# Training-Config Handled (No Change)
 @APP.route('/trainingjobs/latest', methods=['GET'])
 def trainingjobs_operations():
     """
@@ -673,6 +684,7 @@ def trainingjobs_operations():
                         status=response_code,
                         mimetype=MIMETYPE_JSON)
 
+# Training-Config Handled (No Change) ..
 @APP.route("/pipelines/<pipe_name>/upload", methods=['POST'])
 def upload_pipeline(pipe_name):
     """
@@ -771,8 +783,7 @@ def upload_pipeline(pipe_name):
                                   mimetype=MIMETYPE_JSON)
 
 
-
-
+# Training-Config Handled (No Change)
 @APP.route("/pipelines/<pipeline_name>/versions", methods=['GET'])
 def get_versions_for_pipeline(pipeline_name):
     """
@@ -826,6 +837,7 @@ def get_versions_for_pipeline(pipeline_name):
             status=response_code,
             mimetype=MIMETYPE_JSON)
  
+# Training-Config Handled (No Change)
 @APP.route('/pipelines', methods=['GET'])
 def get_pipelines():
     """
@@ -859,6 +871,7 @@ def get_pipelines():
         api_response =  {"Exception": str(err)}
     return APP.response_class(response=json.dumps(api_response),status=response_code,mimetype=MIMETYPE_JSON)
 
+# Training-Config Handled (No Change)
 @APP.route('/experiments', methods=['GET'])
 def get_all_experiment_names():
     """
@@ -907,11 +920,11 @@ def get_all_experiment_names():
                                   status=reponse_code,
                                   mimetype=MIMETYPE_JSON)
 
-
-@APP.route('/trainingjobs/<trainingjob_name>', methods=['POST', 'PUT']) # Handled in GUI
+# Training-Config handled
+@APP.route('/trainingjobs/<trainingjob_name>', methods=['POST', 'PUT'])
 def trainingjob_operations(trainingjob_name):
     """
-    Rest endpoind to create or update trainingjob
+    Rest endpoint to create or update trainingjob
     Precondtion for update : trainingjob's overall_status should be failed
     or finished and deletion processs should not be in progress
 
@@ -922,34 +935,32 @@ def trainingjob_operations(trainingjob_name):
     Args in json:
         if post/put request is called
             json with below fields are given:
-                description: str
-                    description
-                featuregroup_name: str
-                    feature group name
-                pipeline_name: str
-                    name of pipeline
-                experiment_name: str
-                    name of experiment
-                arguments: dict
-                    key-value pairs related to hyper parameters and
-                    "trainingjob":<trainingjob_name> key-value pair
-                query_filter: str
-                    string indication sql where clause for filtering out features
-                enable_versioning: bool
-                    flag for trainingjob versioning
-                pipeline_version: str
-                    pipeline version
-                datalake_source: str
-                    string indicating datalake source
-                _measurement: str
-                    _measurement for influx db datalake
-                bucket: str
-                    bucket name for influx db datalake
-                is_mme: boolean
-                    whether mme is enabled 
-                model_name: str
-                    name of the model
-
+                modelName: str
+                    Name of model
+                trainingConfig: dict
+                    Training-Configurations, parameter as follows
+                    is_mme: boolean
+                        whether mme is enabled
+                    description: str
+                        description
+                    dataPipeline: dict
+                        Configurations related to dataPipeline, parameter as follows
+                        feature_group_name: str
+                            feature group name
+                        query_filter: str
+                            string indication sql where clause for filtering out features
+                        arguments: dict
+                            key-value pairs related to hyper parameters and
+                            "trainingjob":<trainingjob_name> key-value pair
+                    trainingPipeline: dict
+                        Configurations related to trainingPipeline, parameter as follows
+                        pipeline_name: str
+                            name of pipeline
+                        pipeline_version: str
+                            pipeline version
+                        enable_versioning: bool
+                            flag for trainingjob versioning 
+                
     Returns:
         1. For post request
             json:
@@ -972,6 +983,10 @@ def trainingjob_operations(trainingjob_name):
     if not check_trainingjob_name_or_featuregroup_name(trainingjob_name):
         return {"Exception":"The trainingjob_name is not correct"}, status.HTTP_400_BAD_REQUEST
     
+    trainingConfig = request.json["training_config"]
+    if(not validateTrainingConfig(trainingConfig)):
+        return {"Exception":"The TrainingConfig is not correct"}, status.HTTP_400_BAD_REQUEST
+    
     LOGGER.debug("Training job create/update request(trainingjob name  %s) ", trainingjob_name )
     try:
         json_data = request.json
@@ -982,9 +997,11 @@ def trainingjob_operations(trainingjob_name):
                 response_code = status.HTTP_409_CONFLICT
                 raise TMException("trainingjob name(" + trainingjob_name + ") is already present in database")
             else:
-                trainingjob = trainingjob_schema.load(request.get_json())
+                processed_json_data = request.get_json()
+                processed_json_data['training_config'] = json.dumps(request.get_json()["training_config"])
+                trainingjob = trainingjob_schema.load(processed_json_data)
                 model_info=""
-                if trainingjob.is_mme: 
+                if  getField(trainingjob.training_config, "is_mme"):
                     pipeline_dict =json.loads(TRAININGMGR_CONFIG_OBJ.pipeline)
                     model_info=get_model_info(TRAININGMGR_CONFIG_OBJ, trainingjob.model_name)
                     s=model_info["meta-info"]["feature-list"]
@@ -1013,7 +1030,9 @@ def trainingjob_operations(trainingjob_name):
                 response_code = status.HTTP_404_NOT_FOUND
                 raise TMException("Trainingjob name(" + trainingjob_name + ") is not  present in database")
             else:
-                trainingjob = trainingjob_schema.load(request.get_json())
+                processed_json_data = request.get_json()
+                processed_json_data['training_config'] = json.dumps(request.get_json()["training_config"])
+                trainingjob = trainingjob_schema.load(processed_json_data)
                 trainingjob_info = get_trainingjob_info_by_name(trainingjob_name)
                 if trainingjob_info:
                     if trainingjob_info.deletion_in_progress:
@@ -1034,6 +1053,7 @@ def trainingjob_operations(trainingjob_name):
                     status= response_code,
                     mimetype=MIMETYPE_JSON)
 
+# Training-Config Handled (No Change) ..
 @APP.route('/trainingjobs/retraining', methods=['POST'])
 def retraining():
     """
@@ -1137,6 +1157,7 @@ def retraining():
         status=status.HTTP_200_OK,
         mimetype='application/json')
 
+# Training-Config Handled (No Change) ..
 @APP.route('/trainingjobs', methods=['DELETE'])
 def delete_list_of_trainingjob_version():
     """
@@ -1264,6 +1285,7 @@ def delete_list_of_trainingjob_version():
         status=status.HTTP_200_OK,
         mimetype='application/json')
 
+# Training-Config Handled (No Change)
 @APP.route('/trainingjobs/metadata/<trainingjob_name>')
 def get_metadata(trainingjob_name):
     """
@@ -1646,6 +1668,7 @@ def delete_list_of_feature_group():
         status=status.HTTP_200_OK,
         mimetype='application/json')
 
+# Training-Config Handled (No Change)
 def async_feature_engineering_status():
     """
     This function takes trainingjobs from DATAEXTRACTION_JOBS_CACHE and checks data extraction status

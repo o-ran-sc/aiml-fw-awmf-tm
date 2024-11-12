@@ -36,7 +36,7 @@ from trainingmgr.common.tmgr_logger import TMLogger
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.exceptions_utls import DBException, TMException
 from trainingmgr.models import TrainingJob
-
+from trainingmgr.common.trainingConfig_parser import getField
 trainingmgr_main.LOGGER = pytest.logger
 trainingmgr_main.LOCK = Lock()
 trainingmgr_main.DATAEXTRACTION_JOBS_CACHE = {}
@@ -281,26 +281,33 @@ class Test_get_trainingjob_by_name_version:
         """Create a mock TrainingJob object."""
         creation_time = datetime.datetime.now()
         updation_time = datetime.datetime.now()
+        training_config = {
+            "is_mme" : True,
+            "description": "Test description",
+            "dataPipeline": {
+                "feature_group_name": "test_feature_group",
+                "query_filter": "",
+                "arguments": {"epochs" : 1, "trainingjob_name": "test_job"}
+            },
+            "trainingPipeline": {
+                    "pipeline_name": "test_pipeline",
+                    "pipeline_version": "2",
+                    "enable_versioning": True
+            }
+        }
+        
+            
         return TrainingJob(
             trainingjob_name="test_job",
-            description="Test description",
-            feature_group_name="test_feature_group",
-            pipeline_name="test_pipeline",
-            experiment_name="test_experiment",
-            arguments=json.dumps({"param1": "value1"}),
-            query_filter="test_filter",
+            training_config = json.dumps(training_config),
             creation_time=creation_time,
             run_id="test_run_id",
             steps_state=json.dumps({"step1": "completed"}),
             updation_time=updation_time,
             version=1,
-            enable_versioning=True,
-            pipeline_version="v1",
-            datalake_source=json.dumps({"datalake_source": {"source1": "path1"}}),
             model_url="http://test.model.url",
             notification_url="http://test.notification.url",
             deletion_in_progress=False,
-            is_mme=True,
             model_name="test_model",
             model_info="test_model_info"
         )
@@ -329,11 +336,10 @@ class Test_get_trainingjob_by_name_version:
         assert 'trainingjob' in data
         job_data = data['trainingjob']
         assert job_data['trainingjob_name'] == "test_job"
-        assert job_data['description'] == "Test description"
-        assert job_data['feature_list'] == "test_feature_group"
-        assert job_data['pipeline_name'] == "test_pipeline"
-        assert job_data['experiment_name'] == "test_experiment"
-        assert job_data['is_mme'] is True
+        assert job_data['training_config']['description'] == "Test description"
+        assert job_data['training_config']['dataPipeline']['feature_group_name'] == "test_feature_group"
+        assert job_data['training_config']['trainingPipeline']['pipeline_name'] == "test_pipeline"
+        assert job_data['training_config']['is_mme'] is True
         assert job_data['model_name'] == "test_model"
         assert job_data['model_info'] == "test_model_info"
         assert job_data['accuracy'] == mock_metrics
