@@ -24,3 +24,5 @@ class TrainingJobSchema(ma.SQLAlchemyAutoSchema):
         model = TrainingJob
         include_relationships = True
         load_instance = True
+         
+        

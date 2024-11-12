@@ -445,3 +445,4 @@ class PipelineInfo:
             "description": self.description,
             "created_at": self.created_at
         }
+        
