@@ -24,12 +24,12 @@ from trainingmgr.models import db, TrainingJob, FeatureGroup
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
 from sqlalchemy.sql import func
+from trainingmgr.common.trainingConfig_parser import getField
 
 
 
 DB_QUERY_EXEC_ERROR = "Failed to execute query in "
 PATTERN = re.compile(r"\w+")
-
 
 def get_all_versions_info_by_name(trainingjob_name):
     """
@@ -45,11 +45,13 @@ def add_update_trainingjob(trainingjob, adding):
     try:
         # arguments_string = json.dumps({"arguments": trainingjob.arguments})
         datalake_source_dic = {}
-        datalake_source_dic[trainingjob.datalake_source] = {}
-        trainingjob.datalake_source = json.dumps({"datalake_source": datalake_source_dic})
+        # Needs to be populated from feature_group
+        # datalake_source_dic[trainingjob.datalake_source] = {}
+        # trainingjob.datalake_source = json.dumps({"datalake_source": datalake_source_dic}) 
         trainingjob.creation_time = datetime.datetime.utcnow()
         trainingjob.updation_time = trainingjob.creation_time
         run_id = "No data available"
+        trainingjob.run_id = run_id
         steps_state = {
             Steps.DATA_EXTRACTION.name: States.NOT_STARTED.name,
             Steps.DATA_EXTRACTION_AND_TRAINING.name: States.NOT_STARTED.name,
@@ -59,21 +61,20 @@ def add_update_trainingjob(trainingjob, adding):
         }
         trainingjob.steps_state=json.dumps(steps_state)
         trainingjob.model_url = "No data available."
+        trainingjob.notification_url = "No data available."
         trainingjob.deletion_in_progress = False
         trainingjob.version = 1
+        
         if not adding:
-
             trainingjob_max_version = db.session.query(TrainingJob).filter(TrainingJob.trainingjob_name == trainingjob.trainingjob_name).order_by(TrainingJob.version.desc()).first()
-            
-            if trainingjob_max_version.enable_versioning:
+            if  getField(trainingjob_max_version.training_config, "enable_versioning"):
                 trainingjob.version = trainingjob_max_version.version + 1
                 db.session.add(trainingjob)
             else:
-
-                for key, value in trainingjob.items():
-                    if(key == 'id'):
+                for attr in vars(trainingjob):
+                    if(attr == 'id' or attr == '_sa_instance_state'):
                         continue
-                    setattr(trainingjob_max_version, key, value)
+                    setattr(trainingjob_max_version, attr, getattr(trainingjob, attr))
 
         else:
             db.session.add(trainingjob)
