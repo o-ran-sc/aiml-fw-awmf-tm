@@ -210,7 +210,7 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                                         status=response_code,
                                         mimetype=MIMETYPE_JSON)
 
-@APP.route('/trainingjobs/<trainingjob_name>/<version>/steps_state', methods=['GET']) # Handled in GUI
+@APP.route('/trainingjobs/<trainingjob_name>/<version>/steps_state', methods=['GET']) 
 def get_steps_state(trainingjob_name, version):
     """
     Function handling rest end points to get steps_state information for
@@ -307,7 +307,7 @@ def get_model(trainingjob_name, version):
         return {"Exception": "error while downloading model"}, status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
-@APP.route('/trainingjobs/<trainingjob_name>/training', methods=['POST']) # Handled in GUI
+@APP.route('/trainingjobs/<trainingjob_name>/training', methods=['POST'])
 def training(trainingjob_name):
     """
     Rest end point to start training job.
@@ -772,7 +772,6 @@ def upload_pipeline(pipe_name):
 
 
 
-
 @APP.route("/pipelines/<pipeline_name>/versions", methods=['GET'])
 def get_versions_for_pipeline(pipeline_name):
     """
@@ -908,7 +907,7 @@ def get_all_experiment_names():
                                   mimetype=MIMETYPE_JSON)
 
 
-@APP.route('/trainingjobs/<trainingjob_name>', methods=['POST', 'PUT']) # Handled in GUI
+@APP.route('/trainingjobs/<trainingjob_name>', methods=['POST', 'PUT'])
 def trainingjob_operations(trainingjob_name):
     """
     Rest endpoind to create or update trainingjob
@@ -922,34 +921,32 @@ def trainingjob_operations(trainingjob_name):
     Args in json:
         if post/put request is called
             json with below fields are given:
-                description: str
-                    description
-                featuregroup_name: str
-                    feature group name
-                pipeline_name: str
-                    name of pipeline
-                experiment_name: str
-                    name of experiment
-                arguments: dict
-                    key-value pairs related to hyper parameters and
-                    "trainingjob":<trainingjob_name> key-value pair
-                query_filter: str
-                    string indication sql where clause for filtering out features
-                enable_versioning: bool
-                    flag for trainingjob versioning
-                pipeline_version: str
-                    pipeline version
-                datalake_source: str
-                    string indicating datalake source
-                _measurement: str
-                    _measurement for influx db datalake
-                bucket: str
-                    bucket name for influx db datalake
-                is_mme: boolean
-                    whether mme is enabled 
-                model_name: str
-                    name of the model
-
+                modelName: str
+                    Name of model
+                trainingConfig: dict
+                    Training-Configurations, parameter as follows
+                    is_mme: boolean
+                        whether mme is enabled
+                    description: str
+                        description
+                    dataPipeline: dict
+                        Configurations related to dataPipeline, parameter as follows
+                        feature_group_name: str
+                            feature group name
+                        query_filter: str
+                            string indication sql where clause for filtering out features
+                        arguments: dict
+                            key-value pairs related to hyper parameters and
+                            "trainingjob":<trainingjob_name> key-value pair
+                    trainingPipeline: dict
+                        Configurations related to trainingPipeline, parameter as follows
+                        pipeline_name: str
+                            name of pipeline
+                        pipeline_version: str
+                            pipeline version
+                        enable_versioning: bool
+                            flag for trainingjob versioning 
+                
     Returns:
         1. For post request
             json:
@@ -982,9 +979,11 @@ def trainingjob_operations(trainingjob_name):
                 response_code = status.HTTP_409_CONFLICT
                 raise TMException("trainingjob name(" + trainingjob_name + ") is already present in database")
             else:
-                trainingjob = trainingjob_schema.load(request.get_json())
+                processed_json_data = trainingjob_schema.preprocessData(request.get_json())
+                LOGGER.debug("Create request json Preprocessed : " + json.dumps(processed_json_data))
+                trainingjob = trainingjob_schema.load(processed_json_data)
                 model_info=""
-                if trainingjob.is_mme: 
+                if trainingjob.is_mme:
                     pipeline_dict =json.loads(TRAININGMGR_CONFIG_OBJ.pipeline)
                     model_info=get_model_info(TRAININGMGR_CONFIG_OBJ, trainingjob.model_name)
                     s=model_info["meta-info"]["feature-list"]
@@ -1013,7 +1012,9 @@ def trainingjob_operations(trainingjob_name):
                 response_code = status.HTTP_404_NOT_FOUND
                 raise TMException("Trainingjob name(" + trainingjob_name + ") is not  present in database")
             else:
-                trainingjob = trainingjob_schema.load(request.get_json())
+                processed_json_data = trainingjob_schema.preprocessData(request.get_json())
+                LOGGER.debug("Update request json Preprocessed : " + json.dumps(processed_json_data))
+                trainingjob = trainingjob_schema.load(processed_json_data)
                 trainingjob_info = get_trainingjob_info_by_name(trainingjob_name)
                 if trainingjob_info:
                     if trainingjob_info.deletion_in_progress:
