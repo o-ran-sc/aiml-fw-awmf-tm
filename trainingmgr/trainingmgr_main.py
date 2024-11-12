@@ -59,13 +59,14 @@ from trainingmgr.db.trainingjob_db import add_update_trainingjob, get_trainingjo
     get_steps_state_db, change_field_of_latest_version, get_latest_version_trainingjob_name, get_info_of_latest_version, \
     change_field_value_by_version, delete_trainingjob_version, change_in_progress_to_failed_by_latest_version, \
         update_model_download_url, get_all_versions_info_by_name
+from trainingmgr.controller.trainingjob_controller import training_job_controller
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig, getField
 
 APP = Flask(__name__)
-
+TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
 from middleware.loggingMiddleware import LoggingMiddleware
 APP.wsgi_app = LoggingMiddleware(APP.wsgi_app)
-TRAININGMGR_CONFIG_OBJ = None
+APP.register_blueprint(training_job_controller)
 PS_DB_OBJ = None
 LOGGER = None
 MM_SDK = None
@@ -1730,7 +1731,6 @@ def async_feature_engineering_status():
         time.sleep(10)
 
 if __name__ == "__main__":
-    TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
     try:
         if TRAININGMGR_CONFIG_OBJ.is_config_loaded_properly() is False:
             raise TMException("Not all configuration loaded.")

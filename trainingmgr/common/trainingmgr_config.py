@@ -19,7 +19,7 @@
 """
 This module is for loading training manager configuration.
 """
-
+import os
 from os import getenv
 from trainingmgr.common.tmgr_logger import TMLogger
 
@@ -63,7 +63,8 @@ class TrainingMgrConfig:
         self.__allow_control_access_origin = getenv('ACCESS_CONTROL_ALLOW_ORIGIN').rstrip() if getenv('ACCESS_CONTROL_ALLOW_ORIGIN') is not None else None
         self.__pipeline = getenv('PIPELINE').rstrip() if getenv('PIPELINE') is not None else None
 
-        self.tmgr_logger = TMLogger("common/conf_log.yaml")
+        conf_filepath = getenv("CONF_LOG", "common/conf_log.yaml")
+        self.tmgr_logger = TMLogger(conf_filepath)
         self.__logger = self.tmgr_logger.logger
         self.__initialized = True
 
