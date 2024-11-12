@@ -24,6 +24,7 @@ from trainingmgr.models import db, TrainingJob, FeatureGroup
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
 from sqlalchemy.sql import func
+from sqlalchemy.exc import NoResultFound
 
 
 
@@ -285,3 +286,26 @@ def delete_trainingjob_version(trainingjob_name, version):
     except Exception as err:
         raise DBException(DB_QUERY_EXEC_ERROR + \
             "delete_trainingjob_version" + str(err))
+
+def delete_trainingjob_by_id(id: int):
+    """
+    This function delets the trainingjob using the id which is PK
+
+    Args:
+        id (int): Primary key ID of the trainingjob
+    
+    Returns:
+        bool: True if the trainingjob was not found and dleted, false if not found.
+    """
+    try:
+        tj = db.session.query(TrainingJob).get(id)
+        if tj:
+            db.session.delete(tj)
+            db.session.commit()
+            return True
+    
+    except NoResultFound:
+        return False
+    except Exception as e:
+        db.session.rollback()
+        raise DBException(f'{DB_QUERY_EXEC_ERROR} : {str(e)}' )
