@@ -15,8 +15,13 @@
 #   limitations under the License.
 #
 # ==================================================================================
-from trainingmgr.db.trainingjob_db import delete_trainingjob_by_id
+from trainingmgr.db.trainingjob_db import delete_trainingjob_by_id, create_trainingjob
 from trainingmgr.common.exceptions_utls import DBException
+from trainingmgr.schemas import TrainingJobSchema
+
+def create_training_job(data):
+    create_trainingjob(data)
+    
 
 def delete_training_job(training_job_id : int):
     """

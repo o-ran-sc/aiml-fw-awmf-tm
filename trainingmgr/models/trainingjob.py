@@ -20,12 +20,14 @@ from datetime import datetime
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, ForeignKey, String, DateTime, Column, Boolean
 from sqlalchemy.orm import relationship
-from sqlalchemy import PrimaryKeyConstraint, ForeignKeyConstraint, UniqueConstraint
-import json
+
+from . import db
+from sqlalchemy import ForeignKeyConstraint, UniqueConstraint
+
 
 class ModelID(db.Model):
     __tablename__ = 'model'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     modelname = db.Column(db.String(128), nullable=False)
     modelversion = db.Column(db.String(128), nullable=False)
     artifactversion = db.Column(db.String(128), nullable=True)
@@ -34,12 +36,12 @@ class ModelID(db.Model):
         UniqueConstraint("modelname", "modelversion", name="unique model"),
     )
 
-    trainingJob = relationship("TrainingJob", back_populates='modelref')
+    trainingJob = relationship("TrainingJob", back_populates='modelId')
 
 
 class TrainingJob(db.Model):
     __tablename__ = "trainingjob_info_table"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     trainingjob_name= Column(String(128), nullable=False)
     run_id = Column(String(1000), nullable=True)
     steps_state_id = Column(Integer, ForeignKey('training_job_status_table.id'), nullable=True)
@@ -65,7 +67,7 @@ class TrainingJob(db.Model):
     )
     
 
-    modelref = relationship("ModelID", back_populates="trainingJob")
+    modelId = relationship("ModelID", back_populates="trainingJob")
 
     # # Serialize and Deserialize training_config to/from JSON
     # @property
@@ -75,5 +77,7 @@ class TrainingJob(db.Model):
     # @training_config_data.setter
     # def training_config_data(self, value):
     #     self.training_config = json.dumps(value)
+
     def __repr__(self):
         return f'<Trainingjob {self.trainingjob_name}>'
+
