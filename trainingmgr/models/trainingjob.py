@@ -18,6 +18,23 @@
 from . import db
 from datetime import datetime
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
+from sqlalchemy import PrimaryKeyConstraint, ForeignKeyConstraint, UniqueConstraint
+import json
+
+class ModelID(db.Model):
+    __tablename__ = 'model'
+    id = db.Column(db.Integer, primary_key=True)
+    modelname = db.Column(db.String(128), nullable=False)
+    modelversion = db.Column(db.String(128), nullable=False)
+    artifactversion = db.Column(db.String(128), nullable=True)
+    
+    __table_args__ = (
+        UniqueConstraint("modelname", "modelversion", name="unique model"),
+    )
+
+    trainingJob = relationship("TrainingJob", backref='model')
+
 
 class TrainingJob(db.Model):
     __tablename__ = "trainingjob_info_table"
@@ -46,8 +63,26 @@ class TrainingJob(db.Model):
     # After-training
     model_url = db.Column(db.String(1000), nullable=True)
     notification_url = db.Column(db.String(1000), nullable=True)
-    model_name = db.Column(db.String(128), nullable=True)
+    model_id = db.Column(db.Integer, nullable=False)
     model_info = db.Column(db.String(1000), nullable=True)
 
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["model_id"],
+            ["model.id"]
+        ),
+    )
+    
+
+    # modelID = relationship("ModelID", back_populates="trainingjob_info_table")
+
+    # # Serialize and Deserialize training_config to/from JSON
+    # @property
+    # def training_config_data(self):
+    #     return json.loads(self.training_config)
+
+    # @training_config_data.setter
+    # def training_config_data(self, value):
+    #     self.training_config = json.dumps(value)
     def __repr__(self):
         return f'<Trainingjob {self.trainingjob_name}>'
