@@ -18,11 +18,28 @@
 
 from trainingmgr.schemas import ma
 from trainingmgr.models import TrainingJob
+from trainingmgr.models.trainingjob import ModelID
 
+from marshmallow import pre_load
+
+class ModelSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = ModelID
+        load_instance = True
 class TrainingJobSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = TrainingJob
-        include_relationships = True
         load_instance = True
+    
+    modelId = ma.Nested(ModelSchema)
+    
+    @pre_load
+    def processModelId(self, data, **kwargs):
+        modelname = data['modelId']['modelname']
+        modelversion = data['modelId']['modelversion']
+
+        modeldict = dict(modelname=modelname, modelversion=modelversion)
+        data['modelId'] = modeldict
+        return data
          
         

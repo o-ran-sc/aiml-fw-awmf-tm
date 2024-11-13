@@ -288,6 +288,12 @@ def delete_trainingjob_version(trainingjob_name, version):
         raise DBException(DB_QUERY_EXEC_ERROR + \
             "delete_trainingjob_version" + str(err))
 
+from trainingmgr.schemas import TrainingJobSchema
+def create_trainingjob(data):
+        tj = TrainingJobSchema().load(data)
+        db.session.add(tj)
+        db.session.commit()
+
 def delete_trainingjob_by_id(id: int):
     """
     This function delets the trainingjob using the id which is PK
