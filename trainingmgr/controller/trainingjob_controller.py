@@ -15,8 +15,8 @@
 #   limitations under the License.
 #
 # ==================================================================================
-from flask import Blueprint, jsonify
-from trainingmgr.service.training_job_service import delete_training_job
+from flask import Blueprint, jsonify, request
+from trainingmgr.service.training_job_service import delete_training_job, create_training_job
 
 training_job_controller = Blueprint('training_job_controller', __name__)
 
@@ -37,3 +37,10 @@ def delete_trainingjob(training_job_id):
         return jsonify({
             'message': str(e)
         }), 500
+    
+@training_job_controller.route('/training-jobs', methods=['POST'])
+def create_trainingjob():
+    data = request.get_json()
+    create_training_job(data)
+    print(f'create traiing job: {data}')
+    return '', 200

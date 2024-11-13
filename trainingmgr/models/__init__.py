@@ -22,4 +22,4 @@ db = SQLAlchemy()
 from trainingmgr.models.trainingjob import TrainingJob
 from trainingmgr.models.featuregroup import FeatureGroup
 
-__all_ = ['TrainingJob', 'FeatureGroup']
+__all__ = ['TrainingJob', 'FeatureGroup', 'ModelID']

@@ -15,16 +15,18 @@
 #   limitations under the License.
 #
 # ==============================================================================
-from trainingmgr.models import db
-from datetime import datetime
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
-from sqlalchemy import PrimaryKeyConstraint, ForeignKeyConstraint, UniqueConstraint
-import json
+from sqlalchemy import ForeignKeyConstraint, UniqueConstraint
+
+from . import db
+from sqlalchemy.orm import relationship
+
+
 
 class ModelID(db.Model):
     __tablename__ = 'model'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     modelname = db.Column(db.String(128), nullable=False)
     modelversion = db.Column(db.String(128), nullable=False)
     artifactversion = db.Column(db.String(128), nullable=True)
@@ -33,25 +35,25 @@ class ModelID(db.Model):
         UniqueConstraint("modelname", "modelversion", name="unique model"),
     )
 
-    trainingJob = relationship("TrainingJob", back_populates='modelref')
+    trainingJob = relationship("TrainingJob", back_populates='modelId')
 
 
 class TrainingJob(db.Model):
     __tablename__ = "trainingjob_info_table"
     # Meta
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=True)
     trainingjob_name= db.Column(db.String(128), nullable=False)
     run_id = db.Column(db.String(1000), nullable=True)
     steps_state = db.Column(db.String(1000), nullable=True)
-    creation_time = db.Column(db.DateTime(timezone=False), server_default=func.now(),nullable=False)
+    creation_time = db.Column(db.DateTime(timezone=False), server_default=func.now(),nullable=True)
     updation_time = db.Column(db.DateTime(timezone=False),onupdate=func.now() ,nullable=True)
     version = db.Column(db.Integer, nullable=True)
     deletion_in_progress = db.Column(db.Boolean, nullable=True)
-    training_config = db.Column(db.String(5000), nullable=False)
+    training_config = db.Column(db.String(5000), nullable=True)
     # After-training
     model_url = db.Column(db.String(1000), nullable=True)
     notification_url = db.Column(db.String(1000), nullable=True)
-    model_id = db.Column(db.Integer, nullable=False)
+    model_id = db.Column(db.Integer, nullable=True)
     model_info = db.Column(db.String(1000), nullable=True)
 
     __table_args__ = (
@@ -62,7 +64,7 @@ class TrainingJob(db.Model):
     )
     
 
-    modelref = relationship("ModelID", back_populates="trainingJob")
+    modelId = relationship("ModelID", back_populates="trainingJob")
 
     # # Serialize and Deserialize training_config to/from JSON
     # @property
@@ -72,5 +74,7 @@ class TrainingJob(db.Model):
     # @training_config_data.setter
     # def training_config_data(self, value):
     #     self.training_config = json.dumps(value)
+
     def __repr__(self):
         return f'<Trainingjob {self.trainingjob_name}>'
+
