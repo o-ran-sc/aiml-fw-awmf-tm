@@ -41,7 +41,6 @@ trainingmgr_main.LOGGER = pytest.logger
 trainingmgr_main.LOCK = Lock()
 trainingmgr_main.DATAEXTRACTION_JOBS_CACHE = {}
 
-@pytest.mark.skip("")
 class Test_upload_pipeline:
     def setup_method(self):
         self.client = trainingmgr_main.APP.test_client(self)
@@ -64,7 +63,6 @@ class Test_upload_pipeline:
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
         assert expected_data in response.json.keys()
 
-@pytest.mark.skip("")
 class Test_data_extraction_notification:
     def setup_method(self):
         self.client = trainingmgr_main.APP.test_client(self)
@@ -100,14 +98,19 @@ class Test_data_extraction_notification:
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)
         assert response.status_code == status.HTTP_200_OK
-        
-@pytest.mark.skip("")
+
+class DbResultHelper:
+    def __init__(self, trainingjob_name, version, steps_state):
+        self.trainingjob_name = trainingjob_name
+        self.version = version
+        self.steps_state = steps_state
+
 class Test_trainingjobs_operations:
     def setup_method(self):
         self.client = trainingmgr_main.APP.test_client(self)
         self.logger = trainingmgr_main.LOGGER
 
-    db_result2 = [('usecase2', 'version2', '{"overall_status":"status_ok"}')]
+    db_result2 = [DbResultHelper('usecase2', 'version2', '1')]
     @patch('trainingmgr.trainingmgr_main.get_all_jobs_latest_status_version', return_value = db_result2)
     @patch('trainingmgr.trainingmgr_main.get_one_word_status', return_value = "status OK")
     def test_trainingjobs_operations(self,mock1,mock2):
