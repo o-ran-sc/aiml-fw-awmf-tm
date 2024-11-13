@@ -23,4 +23,4 @@ from trainingmgr.models.trainingjob import TrainingJob
 from trainingmgr.models.featuregroup import FeatureGroup
 from trainingmgr.models.steps_state import TrainingJobStatus
 
-__all_ = ['TrainingJob', 'FeatureGroup', 'TrainingJobStatus']
+__all__ = ['TrainingJob', 'FeatureGroup', 'ModelID']

@@ -15,16 +15,15 @@
 #   limitations under the License.
 #
 # ==================================================================================
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
-from trainingmgr.service.training_job_service import delete_training_job
+from trainingmgr.service.training_job_service import delete_training_job, create_training_job
 
 training_job_controller = Blueprint('training_job_controller', __name__)
 LOGGER = TrainingMgrConfig().logger
 
 @training_job_controller.route('/training-jobs/<int:training_job_id>', methods=['DELETE'])
 def delete_trainingjob(training_job_id):
-    TrainingMgrConfig.logger
     LOGGER.debug(f'delete training job : {training_job_id}')
     try:
         if delete_training_job(str(training_job_id)):
@@ -36,6 +35,18 @@ def delete_trainingjob(training_job_id):
                 'message': 'training job with given id is not found'
             }), 500 
          
+    except Exception as e:
+        return jsonify({
+            'message': str(e)
+        }), 500
+    
+@training_job_controller.route('/training-jobs', methods=['POST'])
+def create_trainingjob():
+    try:
+        data = request.get_json()
+        create_training_job(data)
+        LOGGER.debug(f'create training job Successfully: {data}')
+        return '', 200
     except Exception as e:
         return jsonify({
             'message': str(e)
