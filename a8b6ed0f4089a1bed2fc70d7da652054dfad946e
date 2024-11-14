@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "056f243d_b366fef5",
+        "filename": "trainingmgr/db/trainingjob_db.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 292,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-11-14T09:59:32Z",
+      "side": 1,
+      "message": "error handling and replace print with log",
+      "revId": "a8b6ed0f4089a1bed2fc70d7da652054dfad946e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac3cf0d6_9c6b2025",
+        "filename": "trainingmgr/schemas/trainingjob_schema.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-11-14T09:59:32Z",
+      "side": 1,
+      "message": "please put model schema in schema folder",
+      "revId": "a8b6ed0f4089a1bed2fc70d7da652054dfad946e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4ea68623_5b3e3d89",
+        "filename": "trainingmgr/schemas/trainingjob_schema.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-11-14T09:59:32Z",
+      "side": 1,
+      "message": "loaded modelname twice and use .get method only for both modelName and modelVersion",
+      "revId": "a8b6ed0f4089a1bed2fc70d7da652054dfad946e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad4b68e1_bd2094b0",
+        "filename": "trainingmgr/service/training_job_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-11-14T09:59:32Z",
+      "side": 1,
+      "message": "Hey Subhash, I believe loading of object from json should happen here, rather than in db layer.",
+      "revId": "a8b6ed0f4089a1bed2fc70d7da652054dfad946e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
