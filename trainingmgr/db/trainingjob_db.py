@@ -319,3 +319,7 @@ def delete_trainingjob_by_id(id: int):
     except Exception as e:
         db.session.rollback()
         raise DBException(f'{DB_QUERY_EXEC_ERROR} : {str(e)}' )
+
+def get_trainingjob(id: int):
+    tj = db.session.query(TrainingJob).get(id)
+    return tj
