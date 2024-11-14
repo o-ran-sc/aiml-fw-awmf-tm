@@ -16,7 +16,7 @@
 #
 # ==================================================================================
 from flask import Blueprint, jsonify, request
-from trainingmgr.service.training_job_service import delete_training_job, create_training_job
+from trainingmgr.service.training_job_service import delete_training_job, create_training_job, get_training_job
 
 training_job_controller = Blueprint('training_job_controller', __name__)
 
@@ -44,3 +44,8 @@ def create_trainingjob():
     create_training_job(data)
     print(f'create traiing job: {data}')
     return '', 200
+
+@training_job_controller.route('/training-jobs/<int:training_job_id>', methods=['GET'])
+def get_trainingjob(training_job_id):
+    print(f'get the trainingjob correspoinding to id: {training_job_id}')
+    return jsonify(get_training_job(training_job_id)), 200
