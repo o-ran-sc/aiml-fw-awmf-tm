@@ -41,6 +41,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0fed0038_5eaf324c",
+        "filename": "trainingmgr/common/trainingConfig_parser.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-11-14T09:09:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "28f12e27_5deed1d4",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 11
+      },
+      "revId": "0e56b531bb64109df69d8dccc485db46f2761a34",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ab99f4b0_112c2f7d",
