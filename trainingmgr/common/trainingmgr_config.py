@@ -29,10 +29,20 @@ class TrainingMgrConfig:
     This class conatains method for getting configuration varibles.
     """
 
+    __instance = None
+
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super(TrainingMgrConfig, cls).__new__(cls)
+            cls.__instance.__initialized = False
+        return cls.__instance
+
     def __init__(self):
         """
         This constructor filling configuration varibles.
         """
+        if self.__initialized:
+            return
         self.__kf_adapter_port = getenv('KF_ADAPTER_PORT').rstrip() if getenv('KF_ADAPTER_PORT') is not None else None
         self.__kf_adapter_ip = getenv('KF_ADAPTER_IP').rstrip() if getenv('KF_ADAPTER_IP') is not None else None
 
@@ -55,6 +65,7 @@ class TrainingMgrConfig:
 
         self.tmgr_logger = TMLogger("common/conf_log.yaml")
         self.__logger = self.tmgr_logger.logger
+        self.__initialized = True
 
     @property
     def kf_adapter_port(self):
@@ -243,13 +254,19 @@ class TrainingMgrConfig:
         if all environment variables got value then function returns True
         otherwise it return False.
         """
-        all_present = True
+        return all([val is not None for val in [self.__kf_adapter_ip, 
+                                                self.__kf_adapter_port,
+                    self.__data_extraction_ip, 
+                    self.__data_extraction_port,
+                    self.__my_port, 
+                    self.__ps_ip, 
+                    self.__ps_port, 
+                    self.__ps_user,
+                    self.__ps_password, 
+                    self.__my_ip,
+                    self.__model_management_service_ip, 
+                    self.__model_management_service_port, 
+                    self.__allow_control_access_origin,
+                    self.__pipeline, 
+                    self.__logger]])
 
-        for var in [self.__kf_adapter_ip, self.__kf_adapter_port,
-                    self.__data_extraction_ip, self.__data_extraction_port,
-                    self.__my_port, self.__ps_ip, self.__ps_port, self.__ps_user,
-                    self.__ps_password, self.__my_ip,self.__model_management_service_ip, self.__model_management_service_port, 
-                    self.__allow_control_access_origin,self.__pipeline, self.__logger]:
-            if var is None:
-                all_present = False
-        return all_present
