@@ -320,8 +320,13 @@ def delete_trainingjob_by_id(id: int):
         db.session.rollback()
         raise DBException(f'{DB_QUERY_EXEC_ERROR} : {str(e)}' )
 
-def get_trainingjob(id: int):
-    tj = db.session.query(TrainingJob).get(id)
-    print(f'{TrainingJobSchema().dump(tj)}')
+def get_trainingjob(id: int=None):
+    if id is not None:
+        tj = TrainingJob.query.filter(TrainingJob.id==id).one()
+        print(f'{TrainingJobSchema().dump(tj)}')
+        return tj
+    else:
+        tjs = TrainingJob.query.all()
+        return tjs
     return tj
 
