@@ -65,6 +65,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0ebb0d74_29a12d07",
+        "filename": "trainingmgr/common/trainingConfig_parser.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2024-11-15T06:58:29Z",
+      "side": 1,
+      "message": "Added the header in Patchset 5",
+      "parentUuid": "28f12e27_5deed1d4",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 11
+      },
+      "revId": "0e56b531bb64109df69d8dccc485db46f2761a34",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ab99f4b0_112c2f7d",
@@ -101,6 +125,30 @@
       "writtenOn": "2024-11-14T13:41:04Z",
       "side": 1,
       "message": "Done",
+      "parentUuid": "ab99f4b0_112c2f7d",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 86
+      },
+      "revId": "0e56b531bb64109df69d8dccc485db46f2761a34",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "34201d21_27deedbf",
+        "filename": "trainingmgr/db/trainingjob_db.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2024-11-15T06:58:29Z",
+      "side": 1,
+      "message": "Currently, It is also getting used by retraining api, Therefore, it is not removed now",
       "parentUuid": "ab99f4b0_112c2f7d",
       "range": {
         "startLine": 46,

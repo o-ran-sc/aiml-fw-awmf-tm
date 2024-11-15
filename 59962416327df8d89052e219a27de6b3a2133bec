@@ -48,6 +48,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e2ce2cfd_030c3a1d",
+        "filename": "trainingmgr/models/trainingjob.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2024-11-15T06:58:29Z",
+      "side": 1,
+      "message": "Training_Config as string Added",
+      "parentUuid": "4f5c2ac5_8f0fc564",
+      "range": {
+        "startLine": 35,
+        "startChar": 2,
+        "endLine": 48,
+        "endChar": 64
+      },
+      "revId": "59962416327df8d89052e219a27de6b3a2133bec",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0021d2bd_8be6ed1f",
@@ -61,6 +85,30 @@
       "writtenOn": "2024-11-12T08:03:15Z",
       "side": 1,
       "message": "any specific reason to change load -\u003e preprocessData",
+      "range": {
+        "startLine": 982,
+        "startChar": 57,
+        "endLine": 982,
+        "endChar": 71
+      },
+      "revId": "59962416327df8d89052e219a27de6b3a2133bec",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6a227fe4_4670c1ea",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 982,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2024-11-15T06:58:29Z",
+      "side": 1,
+      "message": "It is removed",
+      "parentUuid": "0021d2bd_8be6ed1f",
       "range": {
         "startLine": 982,
         "startChar": 57,
@@ -107,6 +155,30 @@
       "writtenOn": "2024-11-14T09:09:15Z",
       "side": 1,
       "message": "Done",
+      "parentUuid": "5fc72505_65816adf",
+      "range": {
+        "startLine": 1017,
+        "startChar": 16,
+        "endLine": 1017,
+        "endChar": 74
+      },
+      "revId": "59962416327df8d89052e219a27de6b3a2133bec",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fac8b098_c5ebf4cf",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1017,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2024-11-15T06:58:29Z",
+      "side": 1,
+      "message": "It is removed",
       "parentUuid": "5fc72505_65816adf",
       "range": {
         "startLine": 1017,
