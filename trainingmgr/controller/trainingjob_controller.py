@@ -17,7 +17,7 @@
 # ==================================================================================
 from flask import Blueprint, jsonify, request
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
-from trainingmgr.service.training_job_service import delete_training_job, create_training_job, get_training_job
+from trainingmgr.service.training_job_service import delete_training_job, create_training_job, get_training_job, get_trainining_jobs
 
 training_job_controller = Blueprint('training_job_controller', __name__)
 LOGGER = TrainingMgrConfig().logger
@@ -52,6 +52,12 @@ def create_trainingjob():
         return jsonify({
             'message': str(e)
         }), 500
+
+@training_job_controller.route('/training-jobs/', methods=['GET'])
+def get_trainingjobs():
+    LOGGER.debug(f'get the trainingjobs')
+    resp = get_trainining_jobs()
+    return jsonify(resp), 200
 
 @training_job_controller.route('/training-jobs/<int:training_job_id>', methods=['GET'])
 def get_trainingjob(training_job_id):
