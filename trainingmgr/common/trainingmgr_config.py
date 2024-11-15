@@ -29,10 +29,20 @@ class TrainingMgrConfig:
     This class conatains method for getting configuration varibles.
     """
 
+    __instance = None
+
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super(TrainingMgrConfig, cls).__new__(cls)
+            cls.__instance.__initialized = False
+        return cls.__instance
+
     def __init__(self):
         """
         This constructor filling configuration varibles.
         """
+        if self.__initialized:
+            return
         self.__kf_adapter_port = getenv('KF_ADAPTER_PORT').rstrip() if getenv('KF_ADAPTER_PORT') is not None else None
         self.__kf_adapter_ip = getenv('KF_ADAPTER_IP').rstrip() if getenv('KF_ADAPTER_IP') is not None else None
 
@@ -55,6 +65,7 @@ class TrainingMgrConfig:
 
         self.tmgr_logger = TMLogger("common/conf_log.yaml")
         self.__logger = self.tmgr_logger.logger
+        self.__initialized = True
 
     @property
     def kf_adapter_port(self):
