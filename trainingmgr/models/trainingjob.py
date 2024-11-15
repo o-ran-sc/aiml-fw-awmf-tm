@@ -29,9 +29,16 @@ class TrainingJob(db.Model):
     updation_time = db.Column(db.DateTime(timezone=False),onupdate=func.now() ,nullable=True)
     version = db.Column(db.Integer, nullable=True)
     deletion_in_progress = db.Column(db.Boolean, nullable=True)
+    # As per R1AP v6 (Optional)
+    model_location = db.Column(db.String(1000), nullable=True)
+    training_dataset = db.Column(db.String(1000), nullable=True)
+    validation_dataset = db.Column(db.String(1000), nullable=True)
     training_config = db.Column(db.String(5000), nullable=False)
-    model_url = db.Column(db.String(1000), nullable=True)
     notification_url = db.Column(db.String(1000), nullable=True)
+    consumer_rapp_id = db.Column(db.String(1000), nullable=True)
+    producer_rapp_id = db.Column(db.String(1000), nullable=True)
+    
+    model_url = db.Column(db.String(1000), nullable=True)
     model_name = db.Column(db.String(128), nullable=True)
     model_info = db.Column(db.String(1000), nullable=True)
 
