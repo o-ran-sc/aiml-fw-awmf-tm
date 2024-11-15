@@ -49,9 +49,16 @@ class TrainingJob(db.Model):
     updation_time = Column(DateTime(timezone=False),onupdate=func.now() ,nullable=True)
     version = Column(Integer, nullable=True)
     deletion_in_progress = Column(Boolean, nullable=True)
-    training_config = Column(String(5000), nullable=False)
+    # As per R1AP v6 (Optional)
+    model_location = db.Column(db.String(1000), nullable=True)
+    training_dataset = db.Column(db.String(1000), nullable=True)
+    validation_dataset = db.Column(db.String(1000), nullable=True)
+    training_config = db.Column(db.String(5000), nullable=False)
+    notification_url = db.Column(db.String(1000), nullable=True)
+    consumer_rapp_id = db.Column(db.String(1000), nullable=True)
+    producer_rapp_id = db.Column(db.String(1000), nullable=True)
+    
     model_url = Column(String(1000), nullable=True)
-    notification_url = Column(String(1000), nullable=True)
     model_id = Column(Integer, nullable=False)
 
     #defineing relationships
