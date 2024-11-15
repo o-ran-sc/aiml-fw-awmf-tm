@@ -188,6 +188,30 @@
       },
       "revId": "59962416327df8d89052e219a27de6b3a2133bec",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9c82325b_478409df",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1017,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-11-15T07:15:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fac8b098_c5ebf4cf",
+      "range": {
+        "startLine": 1017,
+        "startChar": 16,
+        "endLine": 1017,
+        "endChar": 74
+      },
+      "revId": "59962416327df8d89052e219a27de6b3a2133bec",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
