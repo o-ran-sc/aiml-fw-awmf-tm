@@ -19,9 +19,19 @@ from trainingmgr.db.trainingjob_db import delete_trainingjob_by_id, create_train
 from trainingmgr.common.exceptions_utls import DBException
 from trainingmgr.schemas import TrainingJobSchema
 
+trainingJobSchema = TrainingJobSchema()
+trainingJobsSchema = TrainingJobSchema(many=True)
+
 def get_training_job(training_job_id: int):
     tj =get_trainingjob(training_job_id)
-    return TrainingJobSchema().dump(tj)
+    return trainingJobSchema.dump(tj)
+
+def get_trainining_jobs():
+    print(f'service layer triggers get')
+    tjs = get_trainingjob()
+    print(f'resp : {tjs}')
+    result = trainingJobsSchema.dump(tjs)
+    return result
 
 def create_training_job(data):
     create_trainingjob(data)
