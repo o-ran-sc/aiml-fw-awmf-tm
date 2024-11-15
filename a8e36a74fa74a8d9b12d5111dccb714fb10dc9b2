@@ -48,6 +48,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef3c3923_e1706e64",
+        "filename": "trainingmgr/db/trainingjob_db.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-11-15T07:14:53Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "36a87bf6_764b11dc",
+      "range": {
+        "startLine": 54,
+        "startChar": 8,
+        "endLine": 54,
+        "endChar": 35
+      },
+      "revId": "a8e36a74fa74a8d9b12d5111dccb714fb10dc9b2",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "50e61024_0a09f5b1",
@@ -95,6 +119,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4ca1ca16_f43fd536",
+        "filename": "trainingmgr/db/trainingjob_db.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-11-15T07:14:53Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "2eb97267_8ebd9053",
+      "range": {
+        "startLine": 64,
+        "startChar": 7,
+        "endLine": 64,
+        "endChar": 59
+      },
+      "revId": "a8e36a74fa74a8d9b12d5111dccb714fb10dc9b2",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "749af662_b8fd3499",
@@ -132,6 +180,30 @@
       "side": 1,
       "message": "It already imported from \"trainingjob_db.py\", Earlier, It was getting imported from common_db_fun, but I changed that in this patchset, Check the trainingmgr_main Imports.",
       "parentUuid": "749af662_b8fd3499",
+      "range": {
+        "startLine": 171,
+        "startChar": 22,
+        "endLine": 171,
+        "endChar": 41
+      },
+      "revId": "a8e36a74fa74a8d9b12d5111dccb714fb10dc9b2",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae4b0834_a6cc8a24",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-11-15T07:14:53Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "faeb2a4d_a00a8f56",
       "range": {
         "startLine": 171,
         "startChar": 22,

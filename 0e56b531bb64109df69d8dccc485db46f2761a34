@@ -160,6 +160,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "53fde096_b1a8669b",
+        "filename": "trainingmgr/db/trainingjob_db.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-11-15T07:14:53Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "34201d21_27deedbf",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 86
+      },
+      "revId": "0e56b531bb64109df69d8dccc485db46f2761a34",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f8965c36_3f78a8f4",
