@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "915cd558_d23939ef",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-11-15T09:44:39Z",
+      "side": 1,
+      "message": "I agree with comments, this is WIP commit. I will incorporate the suggested changes :)",
+      "revId": "a8b6ed0f4089a1bed2fc70d7da652054dfad946e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "056f243d_b366fef5",
@@ -65,6 +82,24 @@
       "writtenOn": "2024-11-14T09:59:32Z",
       "side": 1,
       "message": "Hey Subhash, I believe loading of object from json should happen here, rather than in db layer.",
+      "revId": "a8b6ed0f4089a1bed2fc70d7da652054dfad946e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7001d224_4b63bfe0",
+        "filename": "trainingmgr/service/training_job_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-11-15T09:44:39Z",
+      "side": 1,
+      "message": "I agree.",
+      "parentUuid": "ad4b68e1_bd2094b0",
       "revId": "a8b6ed0f4089a1bed2fc70d7da652054dfad946e",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
