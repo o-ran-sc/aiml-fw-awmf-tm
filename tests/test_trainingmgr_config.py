@@ -111,8 +111,8 @@ class Test_trainingmgr_config:
 
     @patch('trainingmgr.common.trainingmgr_config.TMLogger', return_value = TMLogger("tests/common/conf_log.yaml"))
     def test_is_config_loaded_properly_return_false(self,mock1):
-        os.environ.pop("KF_ADAPTER_IP")
-        self.TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
+        self.TRAININGMGR_CONFIG_OBJ._TrainingMgrConfig__kf_adapter_ip = None
         expected_data = False
-        result = TrainingMgrConfig.is_config_loaded_properly(self.TRAININGMGR_CONFIG_OBJ)
+
+        result = self.TRAININGMGR_CONFIG_OBJ.is_config_loaded_properly()
         assert result == expected_data
