@@ -18,22 +18,27 @@
 from . import db
 from datetime import datetime
 from sqlalchemy.sql import func
+from sqlalchemy import Integer, ForeignKey, String, DateTime, Column, Boolean
+from sqlalchemy.orm import relationship
 
 class TrainingJob(db.Model):
     __tablename__ = "trainingjob_info_table"
-    id = db.Column(db.Integer, primary_key=True)
-    trainingjob_name= db.Column(db.String(128), nullable=False)
-    run_id = db.Column(db.String(1000), nullable=True)
-    steps_state = db.Column(db.String(1000), nullable=True)
-    creation_time = db.Column(db.DateTime(timezone=False), server_default=func.now(),nullable=False)
-    updation_time = db.Column(db.DateTime(timezone=False),onupdate=func.now() ,nullable=True)
-    version = db.Column(db.Integer, nullable=True)
-    deletion_in_progress = db.Column(db.Boolean, nullable=True)
-    training_config = db.Column(db.String(5000), nullable=False)
-    model_url = db.Column(db.String(1000), nullable=True)
-    notification_url = db.Column(db.String(1000), nullable=True)
-    model_name = db.Column(db.String(128), nullable=True)
-    model_info = db.Column(db.String(1000), nullable=True)
+    id = Column(Integer, primary_key=True)
+    trainingjob_name= Column(String(128), nullable=False)
+    run_id = Column(String(1000), nullable=True)
+    steps_state_id = Column(Integer, ForeignKey('training_job_status_table.id'), nullable=True)
+    creation_time = Column(DateTime(timezone=False), server_default=func.now(),nullable=False)
+    updation_time = Column(DateTime(timezone=False),onupdate=func.now() ,nullable=True)
+    version = Column(Integer, nullable=True)
+    deletion_in_progress = Column(Boolean, nullable=True)
+    training_config = Column(String(5000), nullable=False)
+    model_url = Column(String(1000), nullable=True)
+    notification_url = Column(String(1000), nullable=True)
+    model_name = Column(String(128), nullable=True)
+    model_info = Column(String(1000), nullable=True)
+
+    #defineing relationships
+    steps_state = relationship("TrainingJobStatus", back_populates="trainingjobs")
 
     def __repr__(self):
         return f'<Trainingjob {self.trainingjob_name}>'
