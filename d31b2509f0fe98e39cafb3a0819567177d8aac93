@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2f34a5c3_3cab7dbf",
+        "filename": "trainingmgr/models/trainingjob.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-11-20T05:19:29Z",
+      "side": 1,
+      "message": "please define this model in a new file",
+      "revId": "d31b2509f0fe98e39cafb3a0819567177d8aac93",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
