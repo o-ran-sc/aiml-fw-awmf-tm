@@ -1,0 +1,9 @@
+Verified+1: Rajdeep Singh <rajdeep.sin@samsung.com>
+Verified+1: ORAN Required GHA <releng+oran.required.gha@linuxfoundation.org>
+Verified+1: o-ran-sc release <collab-it+o-ran-sc-release@linuxfoundation.org>
+Code-Review+2: Rajdeep Singh <rajdeep.sin@samsung.com>
+Submitted-by: Rajdeep Singh <rajdeep.sin@samsung.com>
+Submitted-at: Wed, 20 Nov 2024 07:09:55 +0000
+Reviewed-on: https://gerrit.o-ran-sc.org/r/c/aiml-fw/awmf/tm/+/13749
+Project: aiml-fw/awmf/tm
+Branch: refs/heads/master
