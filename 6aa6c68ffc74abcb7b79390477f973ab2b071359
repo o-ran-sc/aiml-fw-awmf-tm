@@ -36,6 +36,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8db91654_fe0e99a8",
+        "filename": "trainingmgr/models/__init__.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-11-20T07:09:40Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "d84fffe4_2e18a8ec",
+      "revId": "6aa6c68ffc74abcb7b79390477f973ab2b071359",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8870551f_b1382e0b",
@@ -67,6 +85,24 @@
       "side": 1,
       "message": "I already rebased the code, I added the properties to item",
       "parentUuid": "8870551f_b1382e0b",
+      "revId": "6aa6c68ffc74abcb7b79390477f973ab2b071359",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9d13d64f_55e7b3c8",
+        "filename": "trainingmgr/models/trainingjob.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-11-20T07:09:40Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "0fd0452b_bcac562c",
       "revId": "6aa6c68ffc74abcb7b79390477f973ab2b071359",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }

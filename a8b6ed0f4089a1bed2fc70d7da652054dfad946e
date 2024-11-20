@@ -70,6 +70,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c815057_e392cb7c",
+        "filename": "trainingmgr/db/trainingjob_db.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 293,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-11-20T07:09:40Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "019d8524_102a5be2",
+      "revId": "a8b6ed0f4089a1bed2fc70d7da652054dfad946e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ac3cf0d6_9c6b2025",
