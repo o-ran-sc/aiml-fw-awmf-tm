@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8870551f_b1382e0b",
+        "filename": "trainingmgr/models/trainingjob.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-11-20T06:09:20Z",
+      "side": 1,
+      "message": "these changes are already merged by me, please pull those changes and review again",
+      "revId": "6aa6c68ffc74abcb7b79390477f973ab2b071359",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
