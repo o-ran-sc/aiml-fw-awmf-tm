@@ -20,7 +20,7 @@ import datetime
 import re
 import json
 from trainingmgr.common.exceptions_utls import DBException
-from trainingmgr.models import db, TrainingJob, FeatureGroup
+from trainingmgr.models import db, TrainingJob, TrainingJobStatus
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
 from sqlalchemy.sql import func
@@ -51,8 +51,6 @@ def add_update_trainingjob(trainingjob, adding):
         # trainingjob.datalake_source = json.dumps({"datalake_source": datalake_source_dic}) 
         trainingjob.creation_time = datetime.datetime.utcnow()
         trainingjob.updation_time = trainingjob.creation_time
-        run_id = "No data available"
-        trainingjob.run_id = run_id
         steps_state = {
             Steps.DATA_EXTRACTION.name: States.NOT_STARTED.name,
             Steps.DATA_EXTRACTION_AND_TRAINING.name: States.NOT_STARTED.name,
@@ -60,9 +58,10 @@ def add_update_trainingjob(trainingjob, adding):
             Steps.TRAINING_AND_TRAINED_MODEL.name: States.NOT_STARTED.name,
             Steps.TRAINED_MODEL.name: States.NOT_STARTED.name
         }
-        trainingjob.steps_state=json.dumps(steps_state)
-        trainingjob.model_url = "No data available."
-        trainingjob.notification_url = "No data available."
+        training_job_status = TrainingJobStatus(states= json.dumps(steps_state))
+        db.session.add(training_job_status)
+        db.session.commit()     #to get the steps_state id
+
         trainingjob.deletion_in_progress = False
         trainingjob.version = 1
         
@@ -78,6 +77,7 @@ def add_update_trainingjob(trainingjob, adding):
                     setattr(trainingjob_max_version, attr, getattr(trainingjob, attr))
 
         else:
+            trainingjob.steps_state_id = training_job_status.id
             db.session.add(trainingjob)
         db.session.commit()
 

@@ -605,7 +605,7 @@ def pipeline_notification():
                                                         States.FINISHED.name)
                 notification_rapp(trainingjob_info, TRAININGMGR_CONFIG_OBJ)
                 # upload to the mme
-                is_mme= trainingjob_info.is_mme
+                is_mme = getField(trainingjob_info.training_config, "is_mme")
                 if is_mme:   
                     model_name=trainingjob_info.model_name #model_name
                     file=MM_SDK.get_model_zip(trainingjob_name, str(version))
