@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f923b820_b0c2e06c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-11-21T11:33:09Z",
+      "side": 1,
+      "message": "Test cases are failing",
+      "revId": "68858bcdf64641d5b383a619ae8e6fdccafc088a",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "be21f9fe_976ab7d1",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 609,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-11-21T11:33:09Z",
+      "side": 1,
+      "message": "I have added this in my patch",
+      "revId": "68858bcdf64641d5b383a619ae8e6fdccafc088a",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
