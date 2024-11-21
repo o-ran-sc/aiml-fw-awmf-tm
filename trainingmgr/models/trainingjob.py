@@ -52,9 +52,7 @@ class TrainingJob(db.Model):
     training_config = Column(String(5000), nullable=False)
     model_url = Column(String(1000), nullable=True)
     notification_url = Column(String(1000), nullable=True)
-    model_name = db.Column(db.String(128), nullable=True)
     model_id = Column(Integer, nullable=False)
-    model_info = Column(String(1000), nullable=True)
 
     #defineing relationships
     steps_state = relationship("TrainingJobStatus", back_populates="trainingjobs")

@@ -146,8 +146,6 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                              url for downloading model
                         notification_url: str
                              url of notification server
-                        is_mme: boolean
-                            whether the mme is enabled
                         model_name: str
                             model name 
                         model_info: str
@@ -191,7 +189,6 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                 # "datalake_source": get_one_key(json.loads(trainingjob.datalake_source)['datalake_source']),
                 "model_url": trainingjob.model_url,
                 "notification_url": trainingjob.notification_url,
-                # "is_mme": trainingjob.is_mme, 
                 "model_name": trainingjob.model_name,
                 "model_info": trainingjob.model_info,
                 "accuracy": data
@@ -605,19 +602,6 @@ def pipeline_notification():
                                                         States.FINISHED.name)
                 notification_rapp(trainingjob_info, TRAININGMGR_CONFIG_OBJ)
                 # upload to the mme
-                is_mme = getField(trainingjob_info.training_config, "is_mme")
-                if is_mme:   
-                    model_name=trainingjob_info.model_name #model_name
-                    file=MM_SDK.get_model_zip(trainingjob_name, str(version))
-                    url ="http://"+str(TRAININGMGR_CONFIG_OBJ.model_management_service_ip)+":"+str(TRAININGMGR_CONFIG_OBJ.model_management_service_port)+"/uploadModel/{}".format(model_name)
-                    LOGGER.debug("url for upload is: ", url)
-                    resp2=requests.post(url=url, files={"file":('Model.zip', file, 'application/zip')})
-                    if resp2.status_code != status.HTTP_200_OK :
-                        errMsg= "Upload to mme failed"
-                        LOGGER.error(errMsg + trainingjob_name)
-                        raise TMException(errMsg + trainingjob_name)
-                    
-                    LOGGER.debug("Model uploaded to the MME")
             else:
                 errMsg = "Trained model is not available  "
                 LOGGER.error(errMsg + trainingjob_name)
@@ -945,8 +929,6 @@ def trainingjob_operations(trainingjob_name):
                     Name of model
                 trainingConfig: dict
                     Training-Configurations, parameter as follows
-                    is_mme: boolean
-                        whether mme is enabled
                     description: str
                         description
                     dataPipeline: dict
@@ -1006,26 +988,6 @@ def trainingjob_operations(trainingjob_name):
                 processed_json_data = request.get_json()
                 processed_json_data['training_config'] = json.dumps(request.get_json()["training_config"])
                 trainingjob = trainingjob_schema.load(processed_json_data)
-                model_info=""
-                if  getField(trainingjob.training_config, "is_mme"):
-                    pipeline_dict =json.loads(TRAININGMGR_CONFIG_OBJ.pipeline)
-                    model_info=get_model_info(TRAININGMGR_CONFIG_OBJ, trainingjob.model_name)
-                    s=model_info["meta-info"]["feature-list"]
-                    model_type=model_info["meta-info"]["model-type"]
-                    try:
-                        pipeline_name=pipeline_dict[str(model_type)]
-                    except Exception as err:
-                        err="Doesn't support the model type"
-                        raise TMException(err)
-                    pipeline_version=pipeline_name
-                    feature_list=','.join(s)
-                    result= get_feature_groups_db(PS_DB_OBJ)
-                    for res in result:
-                        if feature_list==res[1]:
-                            featuregroup_name=res[0]
-                            break 
-                    if featuregroup_name =="":
-                        return {"Exception":"The no feature group with mentioned feature list, create a feature group"}, status.HTTP_406_NOT_ACCEPTABLE
                 add_update_trainingjob(trainingjob, True)
                 api_response =  {"result": "Information stored in database."}                 
                 response_code = status.HTTP_201_CREATED
