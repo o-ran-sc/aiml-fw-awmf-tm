@@ -605,7 +605,7 @@ def pipeline_notification():
                                                         States.FINISHED.name)
                 notification_rapp(trainingjob_info, TRAININGMGR_CONFIG_OBJ)
                 # upload to the mme
-                is_mme= trainingjob_info.is_mme
+                is_mme = getField(trainingjob_info.training_config, "is_mme")
                 if is_mme:   
                     model_name=trainingjob_info.model_name #model_name
                     file=MM_SDK.get_model_zip(trainingjob_name, str(version))
@@ -1020,6 +1020,7 @@ def trainingjob_operations(trainingjob_name):
                     pipeline_version=pipeline_name
                     feature_list=','.join(s)
                     result= get_feature_groups_db(PS_DB_OBJ)
+                    featuregroup_name=""
                     for res in result:
                         if feature_list==res[1]:
                             featuregroup_name=res[0]
@@ -1044,7 +1045,7 @@ def trainingjob_operations(trainingjob_name):
                     if trainingjob_info.deletion_in_progress:
                         raise TMException("Failed to process request for trainingjob(" + trainingjob_name + ") " + \
                                         " deletion in progress")
-                    if (get_one_word_status(json.loads(trainingjob_info.steps_state))
+                    if (get_one_word_status(json.loads(trainingjob_info.steps_state.states))
                             not in [States.FAILED.name, States.FINISHED.name]):
                         raise TMException("Trainingjob(" + trainingjob_name + ") is not in finished or failed status")
 
