@@ -282,7 +282,6 @@ class Test_get_trainingjob_by_name_version:
         creation_time = datetime.datetime.now()
         updation_time = datetime.datetime.now()
         training_config = {
-            "is_mme" : True,
             "description": "Test description",
             "dataPipeline": {
                 "feature_group_name": "test_feature_group",
@@ -309,9 +308,7 @@ class Test_get_trainingjob_by_name_version:
             version=1,
             model_url="http://test.model.url",
             notification_url="http://test.notification.url",
-            deletion_in_progress=False,
-            model_name="test_model",
-            model_info="test_model_info"
+            deletion_in_progress=False
         )
 
     @pytest.fixture
@@ -341,9 +338,6 @@ class Test_get_trainingjob_by_name_version:
         assert job_data['training_config']['description'] == "Test description"
         assert job_data['training_config']['dataPipeline']['feature_group_name'] == "test_feature_group"
         assert job_data['training_config']['trainingPipeline']['pipeline_name'] == "test_pipeline"
-        assert job_data['training_config']['is_mme'] is True
-        assert job_data['model_name'] == "test_model"
-        assert job_data['model_info'] == "test_model_info"
         assert job_data['accuracy'] == mock_metrics
 
     @patch('trainingmgr.trainingmgr_main.check_trainingjob_name_and_version', return_value=False)
