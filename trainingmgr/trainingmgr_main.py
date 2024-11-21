@@ -599,7 +599,6 @@ def pipeline_notification():
                                                         Steps.TRAINED_MODEL.name,
                                                         States.FINISHED.name)
                 notification_rapp(trainingjob_info, TRAININGMGR_CONFIG_OBJ)
-                # upload to the mme
             else:
                 errMsg = "Trained model is not available  "
                 LOGGER.error(errMsg + trainingjob_name)
@@ -1004,7 +1003,7 @@ def trainingjob_operations(trainingjob_name):
                     if trainingjob_info.deletion_in_progress:
                         raise TMException("Failed to process request for trainingjob(" + trainingjob_name + ") " + \
                                         " deletion in progress")
-                    if (get_one_word_status(json.loads(trainingjob_info.steps_state))
+                    if (get_one_word_status(json.loads(trainingjob_info.steps_state.states))
                             not in [States.FAILED.name, States.FINISHED.name]):
                         raise TMException("Trainingjob(" + trainingjob_name + ") is not in finished or failed status")
 
