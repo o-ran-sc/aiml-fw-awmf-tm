@@ -40,7 +40,6 @@ def __getLeafPaths():
         It returns paths possible to retrieve data
         Based on TrainingConfig Schema:
         {
-            "is_mme" : false,
             "description": "This is something3",
             "dataPipeline": {
                 "feature_group_name": "base2",
@@ -54,7 +53,6 @@ def __getLeafPaths():
         }
     '''
     paths = {
-        "is_mme": ["is_mme"],
         "description": ["description"],
         "feature_group_name": ["dataPipeline", "feature_group_name"],
         "query_filter" : ["dataPipeline", "query_filter"],
