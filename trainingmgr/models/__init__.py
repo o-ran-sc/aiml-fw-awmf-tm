@@ -19,7 +19,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-from trainingmgr.models.trainingjob import TrainingJob
+from trainingmgr.models.trainingjob import TrainingJob, ModelID
 from trainingmgr.models.featuregroup import FeatureGroup
 from trainingmgr.models.steps_state import TrainingJobStatus
 

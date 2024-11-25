@@ -15,8 +15,8 @@
 #   limitations under the License.
 #
 # ==================================================================================
-from trainingmgr.db.trainingjob_db import delete_trainingjob_by_id, create_trainingjob, get_trainingjob
-from trainingmgr.common.exceptions_utls import DBException
+from trainingmgr.db.trainingjob_db import delete_trainingjob_by_id, create_trainingjob, get_trainingjob, get_trainingjob_by_modelId_db
+from trainingmgr.common.exceptions_utls import DBException, TMException
 from trainingmgr.schemas import TrainingJobSchema
 
 trainingJobSchema = TrainingJobSchema()
@@ -31,8 +31,11 @@ def get_trainining_jobs():
     result = trainingJobsSchema.dump(tjs)
     return result
 
-def create_training_job(data):
-    create_trainingjob(data)
+def create_training_job(trainingjob):
+    try:
+        create_trainingjob(trainingjob)
+    except DBException as err:
+        raise TMException(f"create_training_job failed with exception : {str(err)}")
     
 
 def delete_training_job(training_job_id : int):
@@ -54,4 +57,12 @@ def delete_training_job(training_job_id : int):
         return delete_trainingjob_by_id(id=training_job_id)
     except Exception as err :
         raise DBException(f"delete_trainining_job failed with exception : {str(err)}")
+    
+def get_trainingjob_by_modelId(model_id):
+    try:
+        trainingjob = get_trainingjob_by_modelId_db(model_id)
+        return trainingjob
+
+    except Exception as err:
+        raise DBException(f"get_trainingjob_by_modelId failed with exception : {str(err)}")
 
