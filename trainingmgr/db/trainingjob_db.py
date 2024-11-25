@@ -20,12 +20,13 @@ import datetime
 import re
 import json
 from trainingmgr.common.exceptions_utls import DBException
-from trainingmgr.models import db, TrainingJob, TrainingJobStatus
+from trainingmgr.common.trainingConfig_parser import getField
+from trainingmgr.models import db, TrainingJob, TrainingJobStatus, ModelID
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
 from sqlalchemy.sql import func
-from sqlalchemy.exc import NoResultFound
-from trainingmgr.common.trainingConfig_parser import getField
+from sqlalchemy.orm.exc import NoResultFound
+
 
 
 
@@ -37,6 +38,20 @@ def get_all_versions_info_by_name(trainingjob_name):
     This function returns information of given trainingjob_name for all version.
     """   
     return TrainingJob.query.filter_by(trainingjob_name=trainingjob_name).all()
+
+
+def get_trainingjob_info_by_name(trainingjob_name):
+    """
+    This function returns information of training job by name and 
+    by default latest version
+    """
+
+    try:
+        trainingjob_max_version = TrainingJob.query.filter(TrainingJob.trainingjob_name == trainingjob_name).order_by(TrainingJob.version.desc()).first()
+    except Exception as err:
+        raise DBException(DB_QUERY_EXEC_ERROR + \
+            "get_trainingjob_info_by_name"  + str(err))
+    return trainingjob_max_version
 
 def add_update_trainingjob(trainingjob, adding):
     """
@@ -84,20 +99,7 @@ def add_update_trainingjob(trainingjob, adding):
     except Exception as err:
         raise DBException(DB_QUERY_EXEC_ERROR + \
             "add_update_trainingjob"  + str(err))
-
-def get_trainingjob_info_by_name(trainingjob_name):
-    """
-    This function returns information of training job by name and 
-    by default latest version
-    """
-
-    try:
-        trainingjob_max_version = TrainingJob.query.filter(TrainingJob.trainingjob_name == trainingjob_name).order_by(TrainingJob.version.desc()).first()
-    except Exception as err:
-        raise DBException(DB_QUERY_EXEC_ERROR + \
-            "get_trainingjob_info_by_name"  + str(err))
-    return trainingjob_max_version
-
+    
 def get_info_by_version(trainingjob_name, version):
     """
     This function returns information for given <trainingjob_name, version> trainingjob.
@@ -288,11 +290,26 @@ def delete_trainingjob_version(trainingjob_name, version):
         raise DBException(DB_QUERY_EXEC_ERROR + \
             "delete_trainingjob_version" + str(err))
 
-from trainingmgr.schemas import TrainingJobSchema
-def create_trainingjob(data):
-        tj = TrainingJobSchema().load(data)
-        db.session.add(tj)
-        db.session.commit()
+def create_trainingjob(trainingjob):
+        
+        steps_state = {
+            Steps.DATA_EXTRACTION.name: States.NOT_STARTED.name,
+            Steps.DATA_EXTRACTION_AND_TRAINING.name: States.NOT_STARTED.name,
+            Steps.TRAINING.name: States.NOT_STARTED.name,
+            Steps.TRAINING_AND_TRAINED_MODEL.name: States.NOT_STARTED.name,
+            Steps.TRAINED_MODEL.name: States.NOT_STARTED.name
+        }
+
+        try:
+            training_job_status = TrainingJobStatus(states= json.dumps(steps_state))
+            db.session.add(training_job_status)
+            db.session.commit()     #to get the steps_state id
+
+            trainingjob.steps_state_id = training_job_status.id
+            db.session.add(trainingjob)
+            db.session.commit()
+        except Exception as err:
+            raise DBException(f'{DB_QUERY_EXEC_ERROR} in the create_trainingjob : {str(err)}')
 
 def delete_trainingjob_by_id(id: int):
     """
@@ -325,3 +342,20 @@ def get_trainingjob(id: int=None):
         tjs = TrainingJob.query.all()
         return tjs
     return tj
+
+def get_trainingjob_by_modelId_db(model_id):
+    try:
+        trainingjob = (
+            db.session.query(TrainingJob)
+            .join(ModelID)
+            .filter(
+                ModelID.modelname == model_id.modelname,
+                ModelID.modelversion == model_id.modelversion
+            )
+            .one()
+        )
+        return trainingjob
+    except NoResultFound:
+        return None
+    except Exception as e:
+        raise DBException(f'{DB_QUERY_EXEC_ERROR} in the get_trainingjob_by_modelId_db : {str(e)}')
