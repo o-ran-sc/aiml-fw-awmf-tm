@@ -20,12 +20,12 @@ import datetime
 import re
 import json
 from trainingmgr.common.exceptions_utls import DBException
-from trainingmgr.models import db, TrainingJob, TrainingJobStatus
+from trainingmgr.models import db, TrainingJob, TrainingJobStatus, ModelID
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
 from sqlalchemy.sql import func
-from sqlalchemy.exc import NoResultFound
-from trainingmgr.common.trainingConfig_parser import getField
+from sqlalchemy.orm.exc import NoResultFound
+
 
 
 
@@ -38,52 +38,6 @@ def get_all_versions_info_by_name(trainingjob_name):
     """   
     return TrainingJob.query.filter_by(trainingjob_name=trainingjob_name).all()
 
-def add_update_trainingjob(trainingjob, adding):
-    """
-    This function add the new row or update existing row with given information
-    """
-
-    try:
-        # arguments_string = json.dumps({"arguments": trainingjob.arguments})
-        datalake_source_dic = {}
-        # Needs to be populated from feature_group
-        # datalake_source_dic[trainingjob.datalake_source] = {}
-        # trainingjob.datalake_source = json.dumps({"datalake_source": datalake_source_dic}) 
-        trainingjob.creation_time = datetime.datetime.utcnow()
-        trainingjob.updation_time = trainingjob.creation_time
-        steps_state = {
-            Steps.DATA_EXTRACTION.name: States.NOT_STARTED.name,
-            Steps.DATA_EXTRACTION_AND_TRAINING.name: States.NOT_STARTED.name,
-            Steps.TRAINING.name: States.NOT_STARTED.name,
-            Steps.TRAINING_AND_TRAINED_MODEL.name: States.NOT_STARTED.name,
-            Steps.TRAINED_MODEL.name: States.NOT_STARTED.name
-        }
-        training_job_status = TrainingJobStatus(states= json.dumps(steps_state))
-        db.session.add(training_job_status)
-        db.session.commit()     #to get the steps_state id
-
-        trainingjob.deletion_in_progress = False
-        trainingjob.version = 1
-        
-        if not adding:
-            trainingjob_max_version = db.session.query(TrainingJob).filter(TrainingJob.trainingjob_name == trainingjob.trainingjob_name).order_by(TrainingJob.version.desc()).first()
-            if  getField(trainingjob_max_version.training_config, "enable_versioning"):
-                trainingjob.version = trainingjob_max_version.version + 1
-                db.session.add(trainingjob)
-            else:
-                for attr in vars(trainingjob):
-                    if(attr == 'id' or attr == '_sa_instance_state'):
-                        continue
-                    setattr(trainingjob_max_version, attr, getattr(trainingjob, attr))
-
-        else:
-            trainingjob.steps_state_id = training_job_status.id
-            db.session.add(trainingjob)
-        db.session.commit()
-
-    except Exception as err:
-        raise DBException(DB_QUERY_EXEC_ERROR + \
-            "add_update_trainingjob"  + str(err))
 
 def get_trainingjob_info_by_name(trainingjob_name):
     """
@@ -288,11 +242,26 @@ def delete_trainingjob_version(trainingjob_name, version):
         raise DBException(DB_QUERY_EXEC_ERROR + \
             "delete_trainingjob_version" + str(err))
 
-from trainingmgr.schemas import TrainingJobSchema
-def create_trainingjob(data):
-        tj = TrainingJobSchema().load(data)
-        db.session.add(tj)
-        db.session.commit()
+def create_trainingjob(trainingjob):
+        
+        steps_state = {
+            Steps.DATA_EXTRACTION.name: States.NOT_STARTED.name,
+            Steps.DATA_EXTRACTION_AND_TRAINING.name: States.NOT_STARTED.name,
+            Steps.TRAINING.name: States.NOT_STARTED.name,
+            Steps.TRAINING_AND_TRAINED_MODEL.name: States.NOT_STARTED.name,
+            Steps.TRAINED_MODEL.name: States.NOT_STARTED.name
+        }
+
+        try:
+            training_job_status = TrainingJobStatus(states= json.dumps(steps_state))
+            db.session.add(training_job_status)
+            db.session.commit()     #to get the steps_state id
+
+            trainingjob.steps_state_id = training_job_status.id
+            db.session.add(trainingjob)
+            db.session.commit()
+        except Exception as err:
+            raise DBException(f'{DB_QUERY_EXEC_ERROR} in the create_trainingjob : {str(err)}')
 
 def delete_trainingjob_by_id(id: int):
     """
@@ -320,3 +289,20 @@ def delete_trainingjob_by_id(id: int):
 def get_trainingjob(id: int):
     tj = db.session.query(TrainingJob).get(id)
     return tj
+
+def get_trainingjob_by_modelId_db(model_id):
+    try:
+        trainingjob = (
+            db.session.query(TrainingJob)
+            .join(ModelID)
+            .filter(
+                ModelID.modelname == model_id.modelname,
+                ModelID.modelversion == model_id.modelversion
+            )
+            .one()
+        )
+        return trainingjob
+    except NoResultFound:
+        return None
+    except Exception as e:
+        raise DBException(f'{DB_QUERY_EXEC_ERROR} in the get_trainingjob_by_name_db : {str(e)}')
