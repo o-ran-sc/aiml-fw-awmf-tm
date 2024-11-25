@@ -67,6 +67,7 @@ TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
 from middleware.loggingMiddleware import LoggingMiddleware
 APP.wsgi_app = LoggingMiddleware(APP.wsgi_app)
 APP.register_blueprint(training_job_controller)
+
 PS_DB_OBJ = None
 LOGGER = None
 MM_SDK = None
