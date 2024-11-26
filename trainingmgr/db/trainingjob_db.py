@@ -25,7 +25,7 @@ from trainingmgr.models import db, TrainingJob, TrainingJobStatus, ModelID
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
 from sqlalchemy.sql import func
-from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound
 
 
 
@@ -345,12 +345,14 @@ def delete_trainingjob_by_id(id: int):
 
 def get_trainingjob(id: int=None):
     if id is not None:
-        tj = TrainingJob.query.filter(TrainingJob.id==id).one()
-        return tj
+        try:
+            tj = TrainingJob.query.filter(TrainingJob.id==id).one()
+            return tj
+        except NoResultFound as err:
+            raise DBException(f"Failed to get trainingjob by id: {id} due to {str(err)}")
     else:
         tjs = TrainingJob.query.all()
         return tjs
-    return tj
 
 def get_trainingjob_by_modelId_db(model_id):
     try:

@@ -93,13 +93,31 @@ def create_trainingjob():
 @training_job_controller.route('/training-jobs/', methods=['GET'])
 def get_trainingjobs():
     LOGGER.debug(f'get the trainingjobs')
-    resp = get_trainining_jobs()
-    return jsonify(resp), 200
+    try:
+        resp = get_trainining_jobs()
+        return jsonify(resp), 200
+    except TMException as err:
+        return jsonify({
+            'message': str(err)
+        }), 400
+    except Exception as e:
+        return jsonify({
+            'message': str(e)
+        }), 500
 
 @training_job_controller.route('/training-jobs/<int:training_job_id>', methods=['GET'])
 def get_trainingjob(training_job_id):
     LOGGER.debug(f'get the trainingjob correspoinding to id: {training_job_id}')
-    return jsonify(get_training_job(training_job_id)), 200
+    try:
+        return jsonify(get_training_job(training_job_id)), 200
+    except TMException as err:
+        return jsonify({
+            'message': str(err)
+        }), 400
+    except Exception as e:
+        return jsonify({
+            'message': str(e)
+        }), 500
 
 @training_job_controller.route('/training-jobs/<int:training_job_id>/status', methods=['GET'])
 def get_trainingjob_status(training_job_id):
