@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "87d598d7_1cd74019",
+        "filename": ".dockerignore",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-11-26T09:27:56Z",
+      "side": 1,
+      "message": "if we don\u0027t copy the test folder then we will not be able to run UT in 1st stage of docker build.",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 6
+      },
+      "revId": "f85e1b74b2a102bd3ec0b48c95ae76c83395afdc",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
