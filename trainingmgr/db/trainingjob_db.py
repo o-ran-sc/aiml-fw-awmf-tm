@@ -221,7 +221,6 @@ def change_field_of_latest_version(trainingjob_name, field, field_value):
     """
     This function updates the field's value for given trainingjob.
     """
-
     try:
         trainingjob_max_version = TrainingJob.query.filter(TrainingJob.trainingjob_name == trainingjob_name).order_by(TrainingJob.version.desc()).first()
         if field == "notification_url":
@@ -231,7 +230,6 @@ def change_field_of_latest_version(trainingjob_name, field, field_value):
             trainingjob_max_version.run_id = field_value
             trainingjob_max_version.updation_time = datetime.datetime.utcnow()
         db.session.commit()
-
     except Exception as err:
         raise DBException("Failed to execute query in change_field_of_latest_version,"  + str(err))
     
@@ -261,19 +259,16 @@ def update_model_download_url(trainingjob_name, version, url):
         raise DBException(DB_QUERY_EXEC_ERROR + \
             "update_model_download_url"  + str(err))
 
-def change_field_value_by_version(trainingjob_name, version, field, field_value):
+def change_field_value(traininigjob_id, field, value):
     """
-    This function updates field's value to field_value of <trainingjob_name, version> trainingjob.
+    This function updates field's value to field_value of trainingjob.
     """
-    conn = None
     try:
-        if field == "deletion_in_progress":
-            trainingjob = TrainingJob.query.filter(TrainingJob.trainingjob_name == trainingjob_name).filter(TrainingJob.version == version).first()
-            trainingjob.deletion_in_progress = field_value
-            trainingjob.updation_time = datetime.datetime.utcnow()
-            db.session.commit()
+        trainingjob = TrainingJob.query.filter(TrainingJob.id==traininigjob_id).one()
+        setattr(trainingjob, field, value)
+        db.session.commit()
     except Exception as err:
-        raise DBException("Failed to execute query in change_field_value_by_version," + str(err))
+        raise DBException("Failed to execute query in change_field_value," + str(err))
 
 def delete_trainingjob_version(trainingjob_name, version):
     """
