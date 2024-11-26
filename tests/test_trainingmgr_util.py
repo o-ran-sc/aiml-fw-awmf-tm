@@ -480,8 +480,14 @@ class Test_handle_async_feature_engineering_status_exception_case:
 
 class Test_get_one_word_status:
     def test_get_one_word_status(self):
-           steps_state = [0,1,2,3]
-           expected_data = "IN_PROGRESS"
+           steps_state = {
+                    "DATA_EXTRACTION": "NOT_STARTED",
+                    "DATA_EXTRACTION_AND_TRAINING": "NOT_STARTED",
+                    "TRAINED_MODEL": "NOT_STARTED",
+                    "TRAINING": "NOT_STARTED",
+                    "TRAINING_AND_TRAINED_MODEL": "NOT_STARTED"
+                }
+           expected_data = "NOT_STARTED"
            assert get_one_word_status(steps_state) == expected_data,"data not equal"
 
 class Test_validate_trainingjob_name:

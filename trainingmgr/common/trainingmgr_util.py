@@ -104,28 +104,25 @@ def check_key_in_dictionary(fields, dictionary):
 
 def get_one_word_status(steps_state):
     """
-    This function converts steps_state to one word status(we call it overall_status also)
-    and return it.
+    Converts steps_state to a single word status (overall_status) and returns it.
     """
-    failed_count = 0
-    finished_count = 0
-    not_started_count = 0
-    in_progress_count = 0
-    for step in steps_state:
-        if steps_state[step] == States.FAILED.name:
-            failed_count = failed_count + 1
-        elif steps_state[step] == States.FINISHED.name:
-            finished_count = finished_count + 1
-        elif steps_state[step] == States.NOT_STARTED.name:
-            not_started_count = not_started_count + 1
-        else:
-            in_progress_count = in_progress_count + 1
-    if failed_count > 0:
+    status_counts = {
+        States.FAILED.name: 0,
+        States.FINISHED.name: 0,
+        States.NOT_STARTED.name: 0,
+        States.IN_PROGRESS.name: 0,
+    }
+   
+    for step_status in steps_state.values():
+        status_counts[step_status] += 1
+   
+    if status_counts[States.FAILED.name] > 0:
         return States.FAILED.name
-    if not_started_count == len(steps_state):
+    if status_counts[States.NOT_STARTED.name] == len(steps_state):
         return States.NOT_STARTED.name
-    if finished_count == len(steps_state):
+    if status_counts[States.FINISHED.name] == len(steps_state):
         return States.FINISHED.name
+   
     return States.IN_PROGRESS.name
 
 
