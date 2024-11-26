@@ -23,7 +23,8 @@ from marshmallow import ValidationError
 from trainingmgr.common.exceptions_utls import TMException
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.schemas.trainingjob_schema import TrainingJobSchema
-from trainingmgr.service.training_job_service import delete_training_job, create_training_job, get_training_job, get_trainingjob_by_modelId, get_trainining_jobs
+from trainingmgr.service.training_job_service import delete_training_job, create_training_job, get_training_job, get_trainingjob_by_modelId, get_trainining_jobs,\
+get_steps_state
 from trainingmgr.common.trainingmgr_util import check_key_in_dictionary
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig
 
@@ -99,3 +100,14 @@ def get_trainingjobs():
 def get_trainingjob(training_job_id):
     LOGGER.debug(f'get the trainingjob correspoinding to id: {training_job_id}')
     return jsonify(get_training_job(training_job_id)), 200
+
+@training_job_controller.route('/training-jobs/<int:training_job_id>/status', methods=['GET'])
+def get_trainingjob_status(training_job_id):
+    LOGGER.debug(f'request to get the training_job status of {training_job_id}')
+    try:
+        status = get_steps_state(training_job_id)
+        return jsonify(json.loads(status)), 200
+    except Exception as err:
+        return jsonify({
+            'message': str(e)
+        }), 500

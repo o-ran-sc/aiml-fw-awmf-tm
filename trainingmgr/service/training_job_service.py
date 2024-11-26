@@ -65,4 +65,11 @@ def get_trainingjob_by_modelId(model_id):
 
     except Exception as err:
         raise DBException(f"get_trainingjob_by_modelId failed with exception : {str(err)}")
+    
+def get_steps_state(trainingjob_id):
+    try:    
+        trainingjob = get_trainingjob(trainingjob_id)
+        return trainingjob.steps_state.states
+    except Exception as err:
+        raise DBException(f"get failed to get the status with exception : {str(err)}") 
 
