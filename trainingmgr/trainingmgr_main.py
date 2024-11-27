@@ -60,6 +60,7 @@ from trainingmgr.db.trainingjob_db import add_update_trainingjob, get_trainingjo
     change_field_value_by_version, delete_trainingjob_version, change_in_progress_to_failed_by_latest_version, \
         update_model_download_url, get_all_versions_info_by_name
 from trainingmgr.controller.trainingjob_controller import training_job_controller
+from trainingmgr.controller.pipeline_controller import pipeline_controller
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig, getField
 
 APP = Flask(__name__)
@@ -67,6 +68,7 @@ TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
 from middleware.loggingMiddleware import LoggingMiddleware
 APP.wsgi_app = LoggingMiddleware(APP.wsgi_app)
 APP.register_blueprint(training_job_controller)
+APP.register_blueprint(pipeline_controller)
 
 PS_DB_OBJ = None
 LOGGER = None
