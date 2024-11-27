@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "825c2a0b_49a465fb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-11-27T10:43:06Z",
+      "side": 1,
+      "message": "apart from this comment everything looks good",
+      "revId": "b8cc9df10f8f67f3eef930be7dc2fad65b5e9c11",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "61b085f9_5a681b4b",
+        "filename": "trainingmgr/controller/pipeline_controller.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2024-11-27T10:43:06Z",
+      "side": 1,
+      "message": "return as jsonify",
+      "revId": "b8cc9df10f8f67f3eef930be7dc2fad65b5e9c11",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
