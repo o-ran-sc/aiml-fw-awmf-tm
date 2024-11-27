@@ -16,6 +16,29 @@
       "message": "lgtm",
       "revId": "103268d77bd9dadba5b94685b1d805496d5fafc5",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0eb045a9_d0ee6042",
+        "filename": "Dockerfile",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-11-27T19:12:21Z",
+      "side": 1,
+      "message": "this could be now replaced with `pip install`",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 117
+      },
+      "revId": "103268d77bd9dadba5b94685b1d805496d5fafc5",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
