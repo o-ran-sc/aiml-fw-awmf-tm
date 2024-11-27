@@ -25,15 +25,14 @@ trainingJobsSchema = TrainingJobSchema(many=True)
 def get_training_job(training_job_id: int):
     try:
         tj =get_trainingjob(training_job_id)
-        return trainingJobSchema.dump(tj)
+        return tj
     except DBException as err:
         raise TMException(f"get_training_job by id failed with exception : {str(err)}")
 
 def get_trainining_jobs():
     try:
         tjs = get_trainingjob()
-        result = trainingJobsSchema.dump(tjs)
-        return result
+        return tjs
     except DBException as err:
         raise TMException(f"get_training_jobs failed with exception : {str(err)}")
 

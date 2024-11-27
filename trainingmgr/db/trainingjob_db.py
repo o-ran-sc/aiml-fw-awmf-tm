@@ -370,3 +370,13 @@ def get_trainingjob_by_modelId_db(model_id):
         return None
     except Exception as e:
         raise DBException(f'{DB_QUERY_EXEC_ERROR} in the get_trainingjob_by_modelId_db : {str(e)}')
+    
+def change_steps_state(trainingjob, step: Steps, state:States):
+    try:
+        steps_state = json.loads(trainingjob.steps_state.states)
+        steps_state[step] = state
+        trainingjob.steps_state.states=json.dumps(steps_state)
+        db.session.add(trainingjob)
+        db.session.commit()
+    except Exception as e:
+        raise DBException(f'{DB_QUERY_EXEC_ERROR} in the change_steps_state : {str(e)}')

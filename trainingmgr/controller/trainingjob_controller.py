@@ -94,7 +94,7 @@ def create_trainingjob():
 def get_trainingjobs():
     LOGGER.debug(f'get the trainingjobs')
     try:
-        resp = get_trainining_jobs()
+        resp = trainingjob_schema.dump(get_trainining_jobs())
         return jsonify(resp), 200
     except TMException as err:
         return jsonify({
@@ -109,7 +109,7 @@ def get_trainingjobs():
 def get_trainingjob(training_job_id):
     LOGGER.debug(f'get the trainingjob correspoinding to id: {training_job_id}')
     try:
-        return jsonify(get_training_job(training_job_id)), 200
+        return jsonify(trainingjob_schema.dump(get_training_job(training_job_id))), 200
     except TMException as err:
         return jsonify({
             'message': str(err)
@@ -127,5 +127,5 @@ def get_trainingjob_status(training_job_id):
         return jsonify(json.loads(status)), 200
     except Exception as err:
         return jsonify({
-            'message': str(e)
+            'message': str(err)
         }), 500
