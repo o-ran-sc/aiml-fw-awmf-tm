@@ -15,7 +15,8 @@
 #   limitations under the License.
 #
 # ==================================================================================
-from trainingmgr.db.trainingjob_db import delete_trainingjob_by_id, create_trainingjob, get_trainingjob, get_trainingjob_by_modelId_db
+from trainingmgr.db.trainingjob_db import delete_trainingjob_by_id, create_trainingjob, get_trainingjob, get_trainingjob_by_modelId_db, \
+change_steps_state
 from trainingmgr.common.exceptions_utls import DBException, TMException
 from trainingmgr.schemas import TrainingJobSchema
 
@@ -78,3 +79,8 @@ def get_steps_state(trainingjob_id):
     except Exception as err:
         raise DBException(f"get failed to get the status with exception : {str(err)}") 
 
+def change_status_tj(trainingjob, step:str, state:str):
+    try:
+        change_steps_state(trainingjob, step, state)
+    except DBException as err:
+        raise TMException(f"change status of tj failed with exception : {str(err)}")
