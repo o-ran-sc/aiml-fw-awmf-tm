@@ -41,6 +41,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5afc7ce2_245fc1ac",
+        "filename": "trainingmgr/common/trainingmgr_config.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2024-11-28T12:37:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "383e83bd_ba119e27",
+      "range": {
+        "startLine": 46,
+        "startChar": 7,
+        "endLine": 46,
+        "endChar": 79
+      },
+      "revId": "b8cc9df10f8f67f3eef930be7dc2fad65b5e9c11",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "61b085f9_5a681b4b",
@@ -58,6 +82,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4585cc40_043c830e",
+        "filename": "trainingmgr/controller/pipeline_controller.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2024-11-28T12:37:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "61b085f9_5a681b4b",
+      "revId": "b8cc9df10f8f67f3eef930be7dc2fad65b5e9c11",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e7989da6_b51fedc1",
@@ -71,6 +113,30 @@
       "writtenOn": "2024-11-27T19:03:57Z",
       "side": 1,
       "message": "It should not be inside DB, should be in models folder\n\nAlso we could make it `dataclass` : https://docs.python.org/3.9/library/dataclasses.html",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 19
+      },
+      "revId": "b8cc9df10f8f67f3eef930be7dc2fad65b5e9c11",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3bea0d7d_404329ca",
+        "filename": "trainingmgr/db/pipeline_mgr.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2024-11-28T12:37:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e7989da6_b51fedc1",
       "range": {
         "startLine": 30,
         "startChar": 0,
@@ -104,6 +170,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bb8ddfab_6e551fc5",
+        "filename": "trainingmgr/db/pipeline_mgr.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2024-11-28T12:37:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fed66e04_2853faa3",
+      "range": {
+        "startLine": 63,
+        "startChar": 30,
+        "endLine": 63,
+        "endChar": 116
+      },
+      "revId": "b8cc9df10f8f67f3eef930be7dc2fad65b5e9c11",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e38f42f2_e476f35e",
@@ -117,6 +207,30 @@
       "writtenOn": "2024-11-27T19:03:57Z",
       "side": 1,
       "message": "I think this method would not be needed as we ensured the vars in main of application.",
+      "range": {
+        "startLine": 68,
+        "startChar": 4,
+        "endLine": 76,
+        "endChar": 51
+      },
+      "revId": "b8cc9df10f8f67f3eef930be7dc2fad65b5e9c11",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20c5fdb5_30d39701",
+        "filename": "trainingmgr/db/pipeline_mgr.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2024-11-28T12:37:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e38f42f2_e476f35e",
       "range": {
         "startLine": 68,
         "startChar": 4,
