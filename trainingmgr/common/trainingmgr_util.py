@@ -347,6 +347,7 @@ def validate_trainingjob_name(trainingjob_name):
         isavailable = True
     return isavailable     
 
+# Handled by Pipeline_Manager (to be deleted in future)
 def get_pipelines_details(training_config_obj):
     logger=training_config_obj.logger
     try:
@@ -374,6 +375,7 @@ def check_trainingjob_name_or_featuregroup_name(name):
         return True
     return False
 
+# Handled by PipelineMgr (To be removed in future)
 def fetch_pipeline_info_by_name(training_config_obj, pipe_name):
     """
     This function returns the information for a specific pipeline
@@ -421,6 +423,7 @@ def fetch_pipeline_info_by_name(training_config_obj, pipe_name):
         logger.error(err_msg)
         raise TMException(err_msg)
 
+# Moved to pipelineMgr, To be removed in future 
 class PipelineInfo:
     def __init__(self, pipeline_id, display_name, description, created_at):
         self.pipeline_id = pipeline_id

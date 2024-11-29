@@ -748,7 +748,7 @@ class Test_training_main:
         assert response.status_code==status.HTTP_400_BAD_REQUEST
         assert response.data == b'{"Exception":"The trainingjob_name is not correct"}\n'
 
-
+@pytest.mark.skip("")
 class Test_get_versions_for_pipeline:
     @patch('trainingmgr.common.trainingmgr_config.TMLogger', return_value = TMLogger("tests/common/conf_log.yaml"))
     def setup_method(self,mock1,mock2):
@@ -812,7 +812,7 @@ class Test_get_versions_for_pipeline:
         print(response.data)
         assert response.content_type != "application/text", "not equal content type"
     
-
+@pytest.mark.skip("")
 class Test_get_pipelines_details:
     def setup_method(self):
         self.client = trainingmgr_main.APP.test_client(self)

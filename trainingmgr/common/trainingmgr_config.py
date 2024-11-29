@@ -43,6 +43,7 @@ class TrainingMgrConfig:
         """
         if self.__initialized:
             return
+        
         self.__kf_adapter_port = getenv('KF_ADAPTER_PORT').rstrip() if getenv('KF_ADAPTER_PORT') is not None else None
         self.__kf_adapter_ip = getenv('KF_ADAPTER_IP').rstrip() if getenv('KF_ADAPTER_IP') is not None else None
 
