@@ -347,6 +347,7 @@ def validate_trainingjob_name(trainingjob_name):
         isavailable = True
     return isavailable     
 
+# Handled by Pipeline_Manager (to be deleted in future)
 def get_pipelines_details(training_config_obj):
     logger=training_config_obj.logger
     try:

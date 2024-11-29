@@ -488,7 +488,7 @@ def data_extraction_notification():
                                     status=status.HTTP_200_OK,
                                     mimetype=MIMETYPE_JSON)
 
-
+# Moved to Pipeline_controller (To be deleted in future)
 @APP.route('/pipelines/<pipe_name>', methods=['GET'])
 def get_pipeline_info_by_name(pipe_name):
     """
@@ -670,7 +670,7 @@ def trainingjobs_operations():
                         status=response_code,
                         mimetype=MIMETYPE_JSON)
 
-
+# Moved to Pipeline_controller (To be deleted in future)
 @APP.route("/pipelines/<pipe_name>/upload", methods=['POST'])
 def upload_pipeline(pipe_name):
     """
@@ -769,6 +769,7 @@ def upload_pipeline(pipe_name):
                                   mimetype=MIMETYPE_JSON)
 
 
+# Moved to Pipeline_controller (To be deleted in future)
 @APP.route("/pipelines/<pipeline_name>/versions", methods=['GET'])
 def get_versions_for_pipeline(pipeline_name):
     """
@@ -822,7 +823,7 @@ def get_versions_for_pipeline(pipeline_name):
             status=response_code,
             mimetype=MIMETYPE_JSON)
  
-
+# Moved to Pipeline_controller (To be deleted in future)
 @APP.route('/pipelines', methods=['GET'])
 def get_pipelines():
     """
