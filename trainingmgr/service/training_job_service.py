@@ -17,7 +17,7 @@
 # ==================================================================================
 import json
 from trainingmgr.db.trainingjob_db import delete_trainingjob_by_id, create_trainingjob, get_trainingjob, get_trainingjob_by_modelId_db, \
-change_steps_state, change_field_value
+change_steps_state, change_field_value, change_field_value, change_steps_state_df, changeartifact
 from trainingmgr.common.exceptions_utls import DBException, TMException
 from trainingmgr.common.trainingConfig_parser import getField, setField
 from trainingmgr.schemas import TrainingJobSchema
@@ -27,6 +27,8 @@ from trainingmgr.constants.states import States
 from trainingmgr.service.pipeline_service import terminate_training_service
 from trainingmgr.service.featuregroup_service import get_featuregroup_from_inputDataType
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
+from trainingmgr.constants.steps import Steps
+from trainingmgr.constants.states import States
 
 trainingJobSchema = TrainingJobSchema()
 trainingJobsSchema = TrainingJobSchema(many=True)
@@ -103,16 +105,14 @@ def delete_training_job(training_job_id : int):
             return False
     except Exception as err :
         raise DBException(f"delete_trainining_job failed with exception : {str(err)}")
-    
-    
 def get_trainingjob_by_modelId(model_id):
     try:
         trainingjob = get_trainingjob_by_modelId_db(model_id)
         return trainingjob
 
     except Exception as err:
-        raise DBException(f"get_trainingjob_by_modelId failed with exception : {str(err)}")
-    
+        raise DBException(f"get_trainingjob_by_name failed with exception : {str(err)}")
+
 def get_steps_state(trainingjob_id):
     try:    
         trainingjob = get_trainingjob(trainingjob_id)
@@ -120,8 +120,51 @@ def get_steps_state(trainingjob_id):
     except Exception as err:
         raise DBException(f"get failed to get the status with exception : {str(err)}") 
 
-def change_status_tj(trainingjob, step:str, state:str):
+def change_status_tj(trainingjob_id, step:str, state:str):
     try:
-        change_steps_state(trainingjob, step, state)
+        change_steps_state(trainingjob_id, step, state)
     except DBException as err:
         raise TMException(f"change status of tj failed with exception : {str(err)}")
+    
+def change_status_tj_dif(trainingjob_id, step:str, state:str):
+    try:
+        change_steps_state_df(trainingjob_id, step, state)
+    except DBException as err:
+        raise TMException(f"change status of tj dif failed with exception : {str(err)}")
+
+def get_data_extraction_in_progress_trainingjobs():
+    result = {}
+    try:
+        trainingjobs = get_trainingjob()
+        for trainingjob in trainingjobs:
+            status = json.loads(trainingjob.steps_state.states)
+            if status[Steps.DATA_EXTRACTION.name] == States.IN_PROGRESS.name:
+                result[trainingjob.id] = "Scheduled"
+    except Exception as err:
+        raise DBException("get_data_extraction_in_progress_trainingjobs," + str(err))
+    return result
+
+def change_update_field_value(trainingjob_id, field, value):
+    try:
+        change_field_value(trainingjob_id, field, value)
+    except Exception as err:
+        raise TMException(f"failed to update the filed with exception : {str(err)}")
+    
+def update_artifact_version(trainingjob_id, artifact_version : str, level : str):
+    try: 
+        major, minor , patch= map(int, artifact_version.split('.'))
+        if level =="major":
+            major += 1
+        elif level =="minor":
+            minor +=1
+        elif level =="patch":
+            patch +=1
+        else :
+            raise ValueError("Invalid level passed. choose major or minor")
+        
+        new_artifact_version = f'{major}.{minor}.{patch}'
+        
+        changeartifact(trainingjob_id, new_artifact_version)
+        return f'{major}.{minor}.{patch}'
+    except Exception as err:
+        raise TMException(f"failed to update_artifact_version with exception : {str(err)}")
