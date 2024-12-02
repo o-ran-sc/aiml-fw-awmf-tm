@@ -34,7 +34,6 @@ from trainingmgr.constants.states import States
 from trainingmgr.common.exceptions_utls import APIException,TMException,DBException
 from trainingmgr.common.trainingmgr_operations import create_dme_filtered_data_job
 from trainingmgr.schemas import ma, TrainingJobSchema , FeatureGroupSchema
-from trainingmgr.db.trainingjob_db import get_all_versions_info_by_name
 from trainingmgr.constants.steps import Steps
 
 ERROR_TYPE_KF_ADAPTER_JSON = "Kf adapter doesn't sends json type response"
@@ -338,25 +337,25 @@ def handle_async_feature_engineering_status_exception_case(lock, dataextraction_
             except KeyError as key_err:
                 logger.error("The training job key doesn't exist in DATAEXTRACTION_JOBS_CACHE: " + str(key_err))
 
-def validate_trainingjob_name(trainingjob_name):
-    """
-    This function returns True if given trainingjob_name exists in db otherwise
-    it returns False.
-    """
-    results = None
-    isavailable = False
-    if (not re.fullmatch(PATTERN, trainingjob_name) or
-        len(trainingjob_name) < 3 or len(trainingjob_name) > 63):
-        raise TMException("The name of training job is invalid.")
+# def validate_trainingjob_name(trainingjob_name):
+#     """
+#     This function returns True if given trainingjob_name exists in db otherwise
+#     it returns False.
+#     """
+#     results = None
+#     isavailable = False
+#     if (not re.fullmatch(PATTERN, trainingjob_name) or
+#         len(trainingjob_name) < 3 or len(trainingjob_name) > 63):
+#         raise TMException("The name of training job is invalid.")
 
-    try:
-        results = get_all_versions_info_by_name(trainingjob_name)
-    except Exception as err:
-        errmsg = str(err)
-        raise DBException("Could not get info from db for " + trainingjob_name + "," + errmsg)
-    if results:
-        isavailable = True
-    return isavailable     
+#     try:
+#         results = get_all_versions_info_by_name(trainingjob_name)
+#     except Exception as err:
+#         errmsg = str(err)
+#         raise DBException("Could not get info from db for " + trainingjob_name + "," + errmsg)
+#     if results:
+#         isavailable = True
+#     return isavailable     
 
 
 def check_trainingjob_name_and_version(trainingjob_name, version):

@@ -42,12 +42,10 @@ class ModelID(db.Model):
 class TrainingJob(db.Model):
     __tablename__ = "trainingjob_info_table"
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    trainingjob_name= Column(String(128), nullable=False)
     run_id = Column(String(1000), nullable=True)
     steps_state_id = Column(Integer, ForeignKey('training_job_status_table.id'), nullable=True)
     creation_time = Column(DateTime(timezone=False), server_default=func.now(),nullable=False)
     updation_time = Column(DateTime(timezone=False),onupdate=func.now() ,nullable=True)
-    version = Column(Integer, nullable=True)
     deletion_in_progress = Column(Boolean, nullable=True)
     # As per R1AP v6 (Optional)
     model_location = db.Column(db.String(1000), nullable=True)

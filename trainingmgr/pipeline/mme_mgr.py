@@ -66,7 +66,7 @@ class MmeMgr:
             else:
                 err_msg = f"Unexpected response from KFAdapter: {response.status_code}"
                 LOGGER.error(err_msg)
-                return TMException(err_msg)
+                raise TMException(err_msg)
 
         except requests.RequestException as err:
             err_msg = f"Error communicating with MME : {str(err)}"
