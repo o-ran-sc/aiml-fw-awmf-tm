@@ -22,6 +22,30 @@
       },
       "revId": "f1726cf26bda36c58f5d04a41e76a5dc8c13b8df",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "03ef3c01_f3b8ecc3",
+        "filename": "trainingmgr/db/pipeline_mgr.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2024-12-02T09:15:13Z",
+      "side": 1,
+      "message": "It will be migrated to a new folder in the next commit.",
+      "parentUuid": "bd8d8c08_a543b0b3",
+      "range": {
+        "startLine": 33,
+        "startChar": 6,
+        "endLine": 33,
+        "endChar": 17
+      },
+      "revId": "f1726cf26bda36c58f5d04a41e76a5dc8c13b8df",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
