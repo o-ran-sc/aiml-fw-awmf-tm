@@ -39,14 +39,14 @@ def create_url_host_port(protocol, host, port, path=''):
         raise TMException('URL validation error: '+ url)
     return url
 
-def data_extraction_start(training_config_obj, trainingjob_name, feature_list_str, query_filter,
-                          datalake_source, _measurement, influxdb_info_dic):
+def data_extraction_start(training_config_obj, featuregroup_name, feature_list_str, query_filter,
+                          datalake_source, _measurement, influxdb_info_dic, training_job_id):
     """
     This function calls data extraction module for data extraction of trainingjob_name training and
     returns response which we is gotten by calling data extraction module.
     """
     logger = training_config_obj.logger
-    logger.debug('training manager is calling data extraction for '+trainingjob_name)
+    logger.debug('training manager is calling data extraction for '+ featuregroup_name)
     data_extraction_ip = training_config_obj.data_extraction_ip
     data_extraction_port = training_config_obj.data_extraction_port
     url = 'http://'+str(data_extraction_ip)+':'+str(data_extraction_port)+'/feature-groups' #NOSONAR
@@ -74,7 +74,7 @@ def data_extraction_start(training_config_obj, trainingjob_name, feature_list_st
 
     sink = {}
     sink_inner_dic = {}
-    sink_inner_dic['CollectionName'] = trainingjob_name
+    sink_inner_dic['CollectionName'] = featuregroup_name
     sink['CassandraSink'] = sink_inner_dic
 
     dictionary = {}
@@ -82,6 +82,7 @@ def data_extraction_start(training_config_obj, trainingjob_name, feature_list_st
     dictionary.update(transform)
     dictionary['sink'] = sink
     dictionary['influxdb_info']= influxdb_info_dic
+    dictionary["trainingjob_id"] = training_job_id
    
     logger.debug(json.dumps(dictionary))
 

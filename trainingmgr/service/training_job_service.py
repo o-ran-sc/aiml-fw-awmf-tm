@@ -15,10 +15,13 @@
 #   limitations under the License.
 #
 # ==================================================================================
+import json
 from trainingmgr.db.trainingjob_db import delete_trainingjob_by_id, create_trainingjob, get_trainingjob, get_trainingjob_by_modelId_db, \
 change_steps_state
 from trainingmgr.common.exceptions_utls import DBException, TMException
 from trainingmgr.schemas import TrainingJobSchema
+from trainingmgr.constants.steps import Steps
+from trainingmgr.constants.states import States
 
 trainingJobSchema = TrainingJobSchema()
 trainingJobsSchema = TrainingJobSchema(many=True)
@@ -84,3 +87,15 @@ def change_status_tj(trainingjob, step:str, state:str):
         change_steps_state(trainingjob, step, state)
     except DBException as err:
         raise TMException(f"change status of tj failed with exception : {str(err)}")
+    
+def get_data_extraction_in_progress_trainingjobs():
+    result = {}
+    try:
+        trainingjobs = get_trainingjob()
+        for trainingjob in trainingjobs:
+            status = json.loads(trainingjob.steps_state.states)
+            if status[Steps.DATA_EXTRACTION.name] == States.IN_PROGRESS.name:
+                result[trainingjob] = "Scheduled"
+    except Exception as err:
+        raise DBException("get_data_extraction_in_progress_trainingjobs," + str(err))
+    return result
