@@ -23,10 +23,12 @@ Training manager main operations
 
 import json
 import requests
+from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 import validators
 from trainingmgr.common.exceptions_utls import TMException
 from flask_api import status
-from trainingmgr.db.trainingjob_db import get_steps_state_db
+TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
+LOGGER = TRAININGMGR_CONFIG_OBJ.logger
 
 MIMETYPE_JSON = "application/json"
 
@@ -39,14 +41,14 @@ def create_url_host_port(protocol, host, port, path=''):
         raise TMException('URL validation error: '+ url)
     return url
 
-def data_extraction_start(training_config_obj, trainingjob_name, feature_list_str, query_filter,
-                          datalake_source, _measurement, influxdb_info_dic):
+def data_extraction_start(training_config_obj, featuregroup_name, feature_list_str, query_filter,
+                          datalake_source, _measurement, influxdb_info_dic, training_job_id):
     """
     This function calls data extraction module for data extraction of trainingjob_name training and
     returns response which we is gotten by calling data extraction module.
     """
     logger = training_config_obj.logger
-    logger.debug('training manager is calling data extraction for '+trainingjob_name)
+    logger.debug('training manager is calling data extraction for '+ featuregroup_name)
     data_extraction_ip = training_config_obj.data_extraction_ip
     data_extraction_port = training_config_obj.data_extraction_port
     url = 'http://'+str(data_extraction_ip)+':'+str(data_extraction_port)+'/feature-groups' #NOSONAR
@@ -74,7 +76,7 @@ def data_extraction_start(training_config_obj, trainingjob_name, feature_list_st
 
     sink = {}
     sink_inner_dic = {}
-    sink_inner_dic['CollectionName'] = trainingjob_name
+    sink_inner_dic['CollectionName'] = featuregroup_name
     sink['CassandraSink'] = sink_inner_dic
 
     dictionary = {}
@@ -82,6 +84,7 @@ def data_extraction_start(training_config_obj, trainingjob_name, feature_list_st
     dictionary.update(transform)
     dictionary['sink'] = sink
     dictionary['influxdb_info']= influxdb_info_dic
+    dictionary["trainingjob_id"] = training_job_id
    
     logger.debug(json.dumps(dictionary))
 
@@ -91,38 +94,43 @@ def data_extraction_start(training_config_obj, trainingjob_name, feature_list_st
                                       'Accept-Charset': 'UTF-8'})
     return response
 
-def data_extraction_status(trainingjob_name,training_config_obj):
+def data_extraction_status(featuregroup_name, trainingjob_id, training_config_obj):
     """
     This function calls data extraction module for getting data extraction status of
     trainingjob_name training and returns it.
     """
-    logger = training_config_obj.logger
-    logger.debug('training manager is calling data extraction for '+trainingjob_name)
+    LOGGER.debug(f'training manager is calling data extraction for trainingjob_id {str(featuregroup_name)}')
     data_extraction_ip = training_config_obj.data_extraction_ip
     data_extraction_port = training_config_obj.data_extraction_port
-    url = 'http://'+str(data_extraction_ip)+':'+str(data_extraction_port)+'/task-status/'+trainingjob_name #NOSONAR
-    logger.debug(url)
+    task_id = featuregroup_name + "_" + str(trainingjob_id)
+    url = 'http://'+str(data_extraction_ip)+':'+str(data_extraction_port)+'/task-status/'+str(task_id) #NOSONAR
+    LOGGER.debug(url)
     response = requests.get(url)
     return response
 
-def training_start(training_config_obj, dict_data, trainingjob_name):
+def training_start(training_config_obj, dict_data, trainingjob_id):
     """
     This function calls kf_adapter module to start pipeline of trainingjob_name training and returns
     response which is gotten by calling kf adapter module.
     """
-    logger = training_config_obj.logger
-    logger.debug('training manager is calling kf_adapter for pipeline run for '+trainingjob_name)
-    logger.debug('training manager will send to kf_adapter: '+json.dumps(dict_data))
-    kf_adapter_ip = training_config_obj.kf_adapter_ip
-    kf_adapter_port = training_config_obj.kf_adapter_port
-    url = 'http://'+str(kf_adapter_ip)+':'+str(kf_adapter_port)+'/trainingjobs/' + trainingjob_name + '/execution' #NOSONAR
-    logger.debug(url)
-    response = requests.post(url,
-                             data=json.dumps(dict_data),
-                             headers={'content-type': MIMETYPE_JSON,
-                                      'Accept-Charset': 'UTF-8'})
+    try:
 
-    return response
+        LOGGER.debug('training manager is calling kf_adapter for pipeline run for '+str(trainingjob_id))
+        LOGGER.debug('training manager will send to kf_adapter: '+json.dumps(dict_data))
+        kf_adapter_ip = training_config_obj.kf_adapter_ip
+        kf_adapter_port = training_config_obj.kf_adapter_port
+        url = 'http://'+str(kf_adapter_ip)+':'+str(kf_adapter_port)+'/trainingjobs/' + str(trainingjob_id) + '/execution' #NOSONAR
+        LOGGER.debug(url)
+        response = requests.post(url,
+                                data=json.dumps(dict_data),
+                                headers={'content-type': MIMETYPE_JSON,
+                                        'Accept-Charset': 'UTF-8'})
+
+        return response
+    except Exception as err:
+        errMsg= f'the training start failed as {str(err)}'
+        LOGGER.error(errMsg)
+        raise TMException(errMsg)
 
 def create_dme_filtered_data_job(training_config_obj, source_name, features, feature_group_name,host, port ,measured_obj_class):
     """
@@ -184,13 +192,13 @@ def get_model_info(training_config_obj, model_name):
         logger.error(errMsg)
         raise TMException(errMsg)
 
-def notification_rapp(trainingjob, training_config_obj):
-    steps_state = get_steps_state_db(trainingjob.trainingjob_name)
-    response = requests.post(trainingjob.notification_url,
-                            data=json.dumps(steps_state),
-                            headers={
-                                'content-type': MIMETYPE_JSON,
-                                'Accept-Charset': 'UTF-8'
-                            })
-    if response.status_code != 200:
-        raise TMException("Notification failed: "+response.text)
+# def notification_rapp(trainingjob, training_config_obj):
+#     steps_state = get_steps_state_db(trainingjob.trainingjob_name)
+#     response = requests.post(trainingjob.notification_url,
+#                             data=json.dumps(steps_state),
+#                             headers={
+#                                 'content-type': MIMETYPE_JSON,
+#                                 'Accept-Charset': 'UTF-8'
+#                             })
+#     if response.status_code != 200:
+#         raise TMException("Notification failed: "+response.text)

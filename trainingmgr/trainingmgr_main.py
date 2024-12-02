@@ -19,6 +19,7 @@
 """"
 This file contains all rest endpoints exposed by Training manager.
 """
+import ast
 import json
 import re
 from logging import Logger
@@ -36,7 +37,7 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from modelmetricsdk.model_metrics_sdk import ModelMetricsSdk
 from trainingmgr.common.trainingmgr_operations import data_extraction_start, training_start, data_extraction_status, create_dme_filtered_data_job, delete_dme_filtered_data_job, \
-    get_model_info, notification_rapp
+    get_model_info
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.trainingmgr_util import get_one_word_status, check_trainingjob_data, \
     check_key_in_dictionary, get_one_key, \
@@ -62,6 +63,8 @@ from trainingmgr.db.trainingjob_db import add_update_trainingjob, get_trainingjo
 from trainingmgr.controller.trainingjob_controller import training_job_controller
 from trainingmgr.controller.pipeline_controller import pipeline_controller
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig, getField
+from trainingmgr.handler.async_handler import start_async_handler
+from trainingmgr.service.training_job_service import change_status_tj, change_update_field_value, get_training_job, update_artifact_version
 from trainingmgr.service.pipeline_service import start_training_service
 
 APP = Flask(__name__)
@@ -305,93 +308,8 @@ def get_model(trainingjob_name, version):
         return {"Exception": "error while downloading model"}, status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
-@APP.route('/trainingjobs/<trainingjob_name>/training', methods=['POST'])
-def training(trainingjob_name):
-    """
-    Rest end point to start training job.
-    It calls data extraction module for data extraction and other training steps
 
-    Args in function:
-        trainingjob_name: str
-            name of trainingjob.
-
-    Args in json:
-        not required json
-
-    Returns:
-        json:
-            trainingjob_name: str
-                name of trainingjob
-            result: str
-                route of data extraction module for getting data extraction status of
-                given trainingjob_name .
-        status code:
-            HTTP status code 200
-
-    Exceptions:
-        all exception are provided with exception message and HTTP status code.
-    """
-    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    response_data = {}
-    if not check_trainingjob_name_or_featuregroup_name(trainingjob_name):
-        return {"Exception":"The trainingjob_name is not correct"}, status.HTTP_400_BAD_REQUEST
-    LOGGER.debug("Request for training trainingjob  %s ", trainingjob_name)
-    try:
-        isDataAvaible = validate_trainingjob_name(trainingjob_name)
-        if not isDataAvaible:
-            response_code = status.HTTP_404_NOT_FOUND
-            raise TMException("Given trainingjob name is not present in database" + \
-                        "(trainingjob: " + trainingjob_name + ")") from None
-        else:
-
-            trainingjob = get_trainingjob_info_by_name(trainingjob_name) 
-            
-            featuregroup= get_feature_group_by_name_db(getField(trainingjob.training_config, "feature_group_name"))
-            feature_list_string = featuregroup.feature_list
-            influxdb_info_dic={}
-            influxdb_info_dic["host"]=featuregroup.host
-            influxdb_info_dic["port"]=featuregroup.port
-            influxdb_info_dic["bucket"]=featuregroup.bucket
-            influxdb_info_dic["token"]=featuregroup.token
-            influxdb_info_dic["db_org"] = featuregroup.db_org
-            influxdb_info_dic["source_name"]= featuregroup.source_name
-            _measurement = featuregroup.measurement
-            query_filter = getField(trainingjob.training_config, "query_filter")
-            datalake_source = {featuregroup.datalake_source: {}} # Datalake source should be taken from FeatureGroup (not TrainingJob)
-            LOGGER.debug('Starting Data Extraction...')
-            de_response = data_extraction_start(TRAININGMGR_CONFIG_OBJ, trainingjob_name,
-                                         feature_list_string, query_filter, datalake_source,
-                                         _measurement, influxdb_info_dic)
-            if (de_response.status_code == status.HTTP_200_OK ):
-                LOGGER.debug("Response from data extraction for " + \
-                        trainingjob_name + " : " + json.dumps(de_response.json()))
-                change_steps_state_of_latest_version(trainingjob_name,
-                                                    Steps.DATA_EXTRACTION.name,
-                                                    States.IN_PROGRESS.name)
-                with LOCK:
-                    DATAEXTRACTION_JOBS_CACHE[trainingjob_name] = "Scheduled"
-                response_data = de_response.json()
-                response_code = status.HTTP_200_OK
-            elif( de_response.headers['content-type'] == MIMETYPE_JSON ) :
-                errMsg = "Data extraction responded with error code."
-                LOGGER.error(errMsg)
-                json_data = de_response.json()
-                LOGGER.debug(str(json_data))
-                if check_key_in_dictionary(["result"], json_data):
-                    response_data = {"Failed":errMsg + json_data["result"]}
-                else:
-                    raise TMException(errMsg)
-            else:
-                raise TMException("Data extraction doesn't send json type response" + \
-                        "(trainingjob name is " + trainingjob_name + ")") from None
-    except Exception as err:
-        # print(traceback.format_exc())
-        response_data =  {"Exception": str(err)}
-        LOGGER.debug("Error is training, job name:" + trainingjob_name + str(err))         
-    return APP.response_class(response=json.dumps(response_data),status=response_code,
-                            mimetype=MIMETYPE_JSON)
-
-
+# Training-Config Handled
 @APP.route('/trainingjob/dataExtractionNotification', methods=['POST'])
 def data_extraction_notification():
     """
@@ -420,70 +338,80 @@ def data_extraction_notification():
     err_response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     results = None
     try:
-        if not check_key_in_dictionary(["trainingjob_name"], request.json) :
-            err_msg = "Trainingjob_name key not available in request"
+        if not check_key_in_dictionary(["trainingjob_id"], request.json) :
+            err_msg = "featuregroup_name or trainingjob_id key not available in request"
             LOGGER.error(err_msg)
             return {"Exception":err_msg}, status.HTTP_400_BAD_REQUEST
             
-        trainingjob_name = request.json["trainingjob_name"]
-        trainingjob = get_trainingjob_info_by_name(trainingjob_name)
+        trainingjob_id = request.json["trainingjob_id"]
+        trainingjob = get_training_job(trainingjob_id)
+        featuregroup_name = getField(trainingjob.training_config, "feature_group_name")
         arguments = getField(trainingjob.training_config, "arguments")
-        arguments["version"] = trainingjob.version
+
+        argument_dict = ast.literal_eval(arguments)
+
+        argument_dict["trainingjob_id"] = trainingjob_id
+        argument_dict["featuregroup_name"] = featuregroup_name
+        argument_dict["modelName"] = trainingjob.modelId.modelname
+        argument_dict["modelVersion"] = trainingjob.modelId.modelversion
+        argument_dict["artifactVersion"] = trainingjob.modelId.artifactversion
+
         # Arguments values must be of type string
-        for key, val in arguments.items():
+        for key, val in argument_dict.items():
             if not isinstance(val, str):
-                arguments[key] = str(val)
-        LOGGER.debug(arguments)
+                argument_dict[key] = str(val)
+        LOGGER.debug(argument_dict)
         # Experiment name is harded to be Default
         training_details = {
             "pipeline_name": getField(trainingjob.training_config, "pipeline_name"), "experiment_name": 'Default',
-            "arguments": arguments, "pipeline_version": getField(trainingjob.training_config, "pipeline_version")
+            "arguments": argument_dict, "pipeline_version": getField(trainingjob.training_config, "pipeline_name")
         }
-        
-        response = start_training_service(training_details, trainingjob_name)
+        response = training_start(TRAININGMGR_CONFIG_OBJ, training_details, trainingjob_id)
         if ( response.headers['content-type'] != MIMETYPE_JSON 
                 or response.status_code != status.HTTP_200_OK ):
-            err_msg = "Kf adapter invalid content-type or status_code for " + trainingjob_name
+            err_msg = "Kf adapter invalid content-type or status_code for " + trainingjob_id
             raise TMException(err_msg)
-
+        
         LOGGER.debug("response from kf_adapter for " + \
-                    trainingjob_name + " : " + json.dumps(response.json()))
+                    trainingjob_id + " : " + json.dumps(response.json()))
         json_data = response.json()
         
         if not check_key_in_dictionary(["run_status", "run_id"], json_data):
-            err_msg = "Kf adapter invalid response from , key not present ,run_status or  run_id for " + trainingjob_name
+            err_msg = "Kf adapter invalid response from , key not present ,run_status or  run_id for " + trainingjob_id
             Logger.error(err_msg)
             err_response_code = status.HTTP_400_BAD_REQUEST
             raise TMException(err_msg)
 
         if json_data["run_status"] == 'scheduled':
-            change_steps_state_of_latest_version(trainingjob_name,
-                                                Steps.DATA_EXTRACTION_AND_TRAINING.name,
-                                                States.FINISHED.name)
-            change_steps_state_of_latest_version(trainingjob_name,
-                                                Steps.TRAINING.name,
-                                                States.IN_PROGRESS.name)
-            change_field_of_latest_version(trainingjob_name,
+            change_status_tj(trainingjob.id,
+                            Steps.DATA_EXTRACTION_AND_TRAINING.name,
+                            States.FINISHED.name)
+            change_status_tj(trainingjob.id,
+                            Steps.TRAINING.name,
+                            States.IN_PROGRESS.name)
+            change_update_field_value(trainingjob,
                                         "run_id", json_data["run_id"])
             notification_rapp(trainingjob, TRAININGMGR_CONFIG_OBJ)
         else:
             raise TMException("KF Adapter- run_status in not scheduled")
     except requests.exceptions.ConnectionError as err:
-        err_msg = "Failed to connect KF adapter."
-        LOGGER.error(err_msg)
-        if not change_in_progress_to_failed_by_latest_version(trainingjob_name) :
-            LOGGER.error(ERROR_TYPE_DB_STATUS)
-        return response_for_training(err_response_code,
-                                        err_msg + str(err) + "(trainingjob name is " + trainingjob_name + ")",
-                                        LOGGER, False, trainingjob_name, MM_SDK)
+        # err_msg = "Failed to connect KF adapter."
+        # LOGGER.error(err_msg)
+        # if not change_in_progress_to_failed_by_latest_version(trainingjob_name) :
+        #     LOGGER.error(ERROR_TYPE_DB_STATUS)
+        # return response_for_training(err_response_code,
+        #                                 err_msg + str(err) + "(trainingjob name is " + trainingjob_name + ")",
+        #                                 LOGGER, False, trainingjob_name, MM_SDK)
+        pass
 
     except Exception as err:
-        LOGGER.error("Failed to handle dataExtractionNotification. " + str(err))
-        if not change_in_progress_to_failed_by_latest_version(trainingjob_name) :
-            LOGGER.error(ERROR_TYPE_DB_STATUS)
-        return response_for_training(err_response_code,
-                                        str(err) + "(trainingjob name is " + trainingjob_name + ")",
-                                        LOGGER, False, trainingjob_name, MM_SDK)
+        # LOGGER.error("Failed to handle dataExtractionNotification. " + str(err))
+        # if not change_in_progress_to_failed_by_latest_version(trainingjob_name) :
+        #     LOGGER.error(ERROR_TYPE_DB_STATUS)
+        # return response_for_training(err_response_code,
+        #                                 str(err) + "(trainingjob name is " + trainingjob_name + ")",
+        #                                 LOGGER, False, trainingjob_name, MM_SDK)
+        pass
 
     return APP.response_class(response=json.dumps({"result": "pipeline is scheduled"}),
                                     status=status.HTTP_200_OK,
@@ -519,65 +447,74 @@ def pipeline_notification():
 
     LOGGER.debug("Pipeline Notification response from kf_adapter: %s", json.dumps(request.json))
     try:
-        check_key_in_dictionary(["trainingjob_name", "run_status"], request.json)
-        trainingjob_name = request.json["trainingjob_name"]
+        check_key_in_dictionary(["trainingjob_id", "run_status"], request.json)
+        trainingjob_id = request.json["trainingjob_id"]
         run_status = request.json["run_status"]
 
         if run_status == 'SUCCEEDED':
 
-            trainingjob_info=get_trainingjob_info_by_name(trainingjob_name)
-            change_steps_state_of_latest_version(trainingjob_name,
-                                                    Steps.TRAINING.name,
-                                                    States.FINISHED.name)
-            change_steps_state_of_latest_version(trainingjob_name,
-                                                    Steps.TRAINING_AND_TRAINED_MODEL.name,
-                                                    States.IN_PROGRESS.name)
-            notification_rapp(trainingjob_info, TRAININGMGR_CONFIG_OBJ)
+            trainingjob=get_training_job(trainingjob_id)
 
-            version = get_latest_version_trainingjob_name(trainingjob_name)
+            change_status_tj(trainingjob_id,
+                            Steps.TRAINING.name,
+                            States.FINISHED.name)
+            
+            change_status_tj(trainingjob_id,
+                            Steps.TRAINING_AND_TRAINED_MODEL.name,
+                            States.IN_PROGRESS.name)
+            
+            # notification_rapp(trainingjob_info, TRAININGMGR_CONFIG_OBJ)
 
-            change_steps_state_of_latest_version(trainingjob_name,
-                                                    Steps.TRAINING_AND_TRAINED_MODEL.name,
-                                                    States.FINISHED.name)
-            change_steps_state_of_latest_version(trainingjob_name,
-                                                    Steps.TRAINED_MODEL.name,
-                                                    States.IN_PROGRESS.name)
-            notification_rapp(trainingjob_info, TRAININGMGR_CONFIG_OBJ)
+            # version = get_latest_version_trainingjob_name(trainingjob_name)
 
-            if MM_SDK.check_object(trainingjob_name, version, "Model.zip"):
+            change_status_tj(trainingjob_id,
+                            Steps.TRAINING_AND_TRAINED_MODEL.name,
+                            States.FINISHED.name)
+            change_status_tj(trainingjob_id,
+                            Steps.TRAINED_MODEL.name,
+                            States.IN_PROGRESS.name)
+            
+            # notification_rapp(trainingjob_info, TRAININGMGR_CONFIG_OBJ)
+            model_name= trainingjob.modelId.modelname
+            model_version= trainingjob.modelId.modelversion
+            artifact_version= trainingjob.modelId.artifactversion
+            artifact_version= update_artifact_version(trainingjob_id , artifact_version, "major")
+
+            if MM_SDK.check_object(model_name, model_version, artifact_version, "Model.zip"):
                 model_url = "http://" + str(TRAININGMGR_CONFIG_OBJ.my_ip) + ":" + \
                             str(TRAININGMGR_CONFIG_OBJ.my_port) + "/model/" + \
-                            trainingjob_name + "/" + str(version) + "/Model.zip"
+                            model_name + "/" + str(model_version) + "/" + str(artifact_version) + "/Model.zip"
 
-                update_model_download_url(trainingjob_name, version, model_url, PS_DB_OBJ)
-
+                change_update_field_value(trainingjob_id, "model_url" , model_url)
                 
-                change_steps_state_of_latest_version(trainingjob_name,
-                                                        Steps.TRAINED_MODEL.name,
-                                                        States.FINISHED.name)
-                notification_rapp(trainingjob_info, TRAININGMGR_CONFIG_OBJ)
+                change_status_tj(trainingjob_id,
+                                Steps.TRAINED_MODEL.name,
+                                States.FINISHED.name)
+                # notification_rapp(trainingjob_info, TRAININGMGR_CONFIG_OBJ)
             else:
                 errMsg = "Trained model is not available  "
-                LOGGER.error(errMsg + trainingjob_name)
-                raise TMException(errMsg + trainingjob_name)
+                LOGGER.error(errMsg + trainingjob_id)
+                raise TMException(errMsg + trainingjob_id)
         else:
-            LOGGER.error("Pipeline notification -Training failed " + trainingjob_name)    
+            LOGGER.error("Pipeline notification -Training failed " + trainingjob_id)    
             raise TMException("Pipeline not successful for " + \
-                                        trainingjob_name + \
+                                        trainingjob_id + \
                                         ",request json from kf adapter is: " + json.dumps(request.json))      
     except Exception as err:
         #Training failure response
         LOGGER.error("Pipeline notification failed" + str(err))
-        if not change_in_progress_to_failed_by_latest_version(trainingjob_name) :
+        if not change_in_progress_to_failed_by_latest_version(trainingjob_id) :
             LOGGER.error(ERROR_TYPE_DB_STATUS)
         
-        return response_for_training(status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            str(err) + " (trainingjob " + trainingjob_name + ")",
-                            LOGGER, False, trainingjob_name, MM_SDK)
+        # return response_for_training(status.HTTP_500_INTERNAL_SERVER_ERROR,
+        #                     str(err) + " (trainingjob " + trainingjob_id + ")",
+        #                     LOGGER, False, trainingjob_id, MM_SDK)
+        return "", 500
     #Training success response
-    return response_for_training(status.HTTP_200_OK,
-                                            "Pipeline notification success.",
-                                            LOGGER, True, trainingjob_name, MM_SDK)
+    # return response_for_training(status.HTTP_200_OK,
+    #                                         "Pipeline notification success.",
+    #                                         LOGGER, True, trainingjob_id, MM_SDK)
+    return "", 200
 
 
 @APP.route('/trainingjobs/latest', methods=['GET'])
@@ -678,116 +615,6 @@ def get_all_experiment_names():
                                   status=reponse_code,
                                   mimetype=MIMETYPE_JSON)
 
-
-@APP.route('/trainingjobs/<trainingjob_name>', methods=['POST', 'PUT'])
-def trainingjob_operations(trainingjob_name):
-    """
-    Rest endpoint to create or update trainingjob
-    Precondtion for update : trainingjob's overall_status should be failed
-    or finished and deletion processs should not be in progress
-
-    Args in function:
-        trainingjob_name: str
-            name of trainingjob.
-
-    Args in json:
-        if post/put request is called
-            json with below fields are given:
-                modelName: str
-                    Name of model
-                trainingConfig: dict
-                    Training-Configurations, parameter as follows
-                    description: str
-                        description
-                    dataPipeline: dict
-                        Configurations related to dataPipeline, parameter as follows
-                        feature_group_name: str
-                            feature group name
-                        query_filter: str
-                            string indication sql where clause for filtering out features
-                        arguments: dict
-                            key-value pairs related to hyper parameters and
-                            "trainingjob":<trainingjob_name> key-value pair
-                    trainingPipeline: dict
-                        Configurations related to trainingPipeline, parameter as follows
-                        pipeline_name: str
-                            name of pipeline
-                        pipeline_version: str
-                            pipeline version
-                        enable_versioning: bool
-                            flag for trainingjob versioning 
-                
-    Returns:
-        1. For post request
-            json:
-                result : str
-                    result message
-                status code:
-                    HTTP status code 201
-        2. For put request
-            json:
-                result : str
-                    result message
-                status code:
-                    HTTP status code 200
-
-    Exceptions:
-        All exception are provided with exception message and HTTP status code.
-    """
-    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    api_response = {}
-    if not check_trainingjob_name_or_featuregroup_name(trainingjob_name):
-        return {"Exception":"The trainingjob_name is not correct"}, status.HTTP_400_BAD_REQUEST
-    
-    trainingConfig = request.json["training_config"]
-    if(not validateTrainingConfig(trainingConfig)):
-        return {"Exception":"The TrainingConfig is not correct"}, status.HTTP_400_BAD_REQUEST
-    
-    LOGGER.debug("Training job create/update request(trainingjob name  %s) ", trainingjob_name )
-    try:
-        json_data = request.json
-        if (request.method == 'POST'):          
-            LOGGER.debug("Create request json : " + json.dumps(json_data))
-            is_data_available = validate_trainingjob_name(trainingjob_name)
-            if is_data_available:
-                response_code = status.HTTP_409_CONFLICT
-                raise TMException("trainingjob name(" + trainingjob_name + ") is already present in database")
-            else:
-                processed_json_data = request.get_json()
-                processed_json_data['training_config'] = json.dumps(request.get_json()["training_config"])
-                trainingjob = trainingjob_schema.load(processed_json_data)
-                add_update_trainingjob(trainingjob, True)
-                api_response =  {"result": "Information stored in database."}                 
-                response_code = status.HTTP_201_CREATED
-        elif(request.method == 'PUT'):
-            LOGGER.debug("Update request json : " + json.dumps(json_data))
-            is_data_available = validate_trainingjob_name(trainingjob_name)
-            if not is_data_available:
-                response_code = status.HTTP_404_NOT_FOUND
-                raise TMException("Trainingjob name(" + trainingjob_name + ") is not  present in database")
-            else:
-                processed_json_data = request.get_json()
-                processed_json_data['training_config'] = json.dumps(request.get_json()["training_config"])
-                trainingjob = trainingjob_schema.load(processed_json_data)
-                trainingjob_info = get_trainingjob_info_by_name(trainingjob_name)
-                if trainingjob_info:
-                    if trainingjob_info.deletion_in_progress:
-                        raise TMException("Failed to process request for trainingjob(" + trainingjob_name + ") " + \
-                                        " deletion in progress")
-                    if (get_one_word_status(json.loads(trainingjob_info.steps_state.states))
-                            not in [States.FAILED.name, States.FINISHED.name]):
-                        raise TMException("Trainingjob(" + trainingjob_name + ") is not in finished or failed status")
-
-                add_update_trainingjob(trainingjob, False)
-                api_response = {"result": "Information updated in database."}
-                response_code = status.HTTP_200_OK
-    except Exception as err:
-        LOGGER.error("Failed to create/update training job, " + str(err) )
-        api_response =  {"Exception": str(err)}
-
-    return APP.response_class(response= json.dumps(api_response),
-                    status= response_code,
-                    mimetype=MIMETYPE_JSON)
 
 
 @APP.route('/trainingjobs/retraining', methods=['POST'])
@@ -1405,65 +1232,65 @@ def delete_list_of_feature_group():
         mimetype='application/json')
 
 
-def async_feature_engineering_status():
-    """
-    This function takes trainingjobs from DATAEXTRACTION_JOBS_CACHE and checks data extraction status
-    (using data extraction api) for those trainingjobs, if status is Completed then it calls
-    /trainingjob/dataExtractionNotification route for those trainingjobs.
-    """
-    url_pipeline_run = "http://" + str(TRAININGMGR_CONFIG_OBJ.my_ip) + \
-                       ":" + str(TRAININGMGR_CONFIG_OBJ.my_port) + \
-                       "/trainingjob/dataExtractionNotification"
-    while True:
-        with LOCK:
-            fjc = list(DATAEXTRACTION_JOBS_CACHE)
-        for trainingjob_name in fjc:
-            LOGGER.debug("Current DATAEXTRACTION_JOBS_CACHE :" + str(DATAEXTRACTION_JOBS_CACHE))
-            try:
-                response = data_extraction_status(trainingjob_name, TRAININGMGR_CONFIG_OBJ)
-                if (response.headers['content-type'] != MIMETYPE_JSON or 
-                        response.status_code != status.HTTP_200_OK ):
-                    raise TMException("Data extraction responsed with error status code or invalid content type" + \
-                                         "doesn't send json type response (trainingjob " + trainingjob_name + ")")
-                response = response.json()
-                LOGGER.debug("Data extraction status response for " + \
-                            trainingjob_name + " " + json.dumps(response))
+# def async_feature_engineering_status():
+#     """
+#     This function takes trainingjobs from DATAEXTRACTION_JOBS_CACHE and checks data extraction status
+#     (using data extraction api) for those trainingjobs, if status is Completed then it calls
+#     /trainingjob/dataExtractionNotification route for those trainingjobs.
+#     """
+#     url_pipeline_run = "http://" + str(TRAININGMGR_CONFIG_OBJ.my_ip) + \
+#                        ":" + str(TRAININGMGR_CONFIG_OBJ.my_port) + \
+#                        "/trainingjob/dataExtractionNotification"
+#     while True:
+#         with LOCK:
+#             fjc = list(DATAEXTRACTION_JOBS_CACHE)
+#         for trainingjob_name in fjc:
+#             LOGGER.debug("Current DATAEXTRACTION_JOBS_CACHE :" + str(DATAEXTRACTION_JOBS_CACHE))
+#             try:
+#                 response = data_extraction_status(trainingjob_name, TRAININGMGR_CONFIG_OBJ)
+#                 if (response.headers['content-type'] != MIMETYPE_JSON or 
+#                         response.status_code != status.HTTP_200_OK ):
+#                     raise TMException("Data extraction responsed with error status code or invalid content type" + \
+#                                          "doesn't send json type response (trainingjob " + trainingjob_name + ")")
+#                 response = response.json()
+#                 LOGGER.debug("Data extraction status response for " + \
+#                             trainingjob_name + " " + json.dumps(response))
 
-                if response["task_status"] == "Completed":
-                    with APP.app_context():
-                        change_steps_state_of_latest_version(trainingjob_name,
-                                                                Steps.DATA_EXTRACTION.name,
-                                                                States.FINISHED.name)
-                        change_steps_state_of_latest_version(trainingjob_name,
-                                                                Steps.DATA_EXTRACTION_AND_TRAINING.name,
-                                                                States.IN_PROGRESS.name)
-                    kf_response = requests.post(url_pipeline_run,
-                                                data=json.dumps({"trainingjob_name": trainingjob_name}),
-                                                headers={
-                                                    'content-type': MIMETYPE_JSON,
-                                                    'Accept-Charset': 'UTF-8'
-                                                })
-                    if (kf_response.headers['content-type'] != MIMETYPE_JSON or 
-                            kf_response.status_code != status.HTTP_200_OK ):
-                        raise TMException("KF adapter responsed with error status code or invalid content type" + \
-                                         "doesn't send json type response (trainingjob " + trainingjob_name + ")")
-                    with LOCK:
-                        DATAEXTRACTION_JOBS_CACHE.pop(trainingjob_name)        
-                elif response["task_status"] == "Error":
-                    raise TMException("Data extraction has failed for " + trainingjob_name)
-            except Exception as err:
-                LOGGER.error("Failure during procesing of DATAEXTRACTION_JOBS_CACHE," + str(err))
-                """ Job will be removed from DATAEXTRACTION_JOBS_CACHE in  handle_async
-                    There might be some further error during handling of exception
-                """
-                handle_async_feature_engineering_status_exception_case(LOCK,
-                                                    DATAEXTRACTION_JOBS_CACHE,
-                                                    status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                                    str(err) + "(trainingjob name is " + trainingjob_name + ")",
-                                                    LOGGER, False, trainingjob_name, MM_SDK)
+#                 if response["task_status"] == "Completed":
+#                     with APP.app_context():
+#                         change_steps_state_of_latest_version(trainingjob_name,
+#                                                                 Steps.DATA_EXTRACTION.name,
+#                                                                 States.FINISHED.name)
+#                         change_steps_state_of_latest_version(trainingjob_name,
+#                                                                 Steps.DATA_EXTRACTION_AND_TRAINING.name,
+#                                                                 States.IN_PROGRESS.name)
+#                     kf_response = requests.post(url_pipeline_run,
+#                                                 data=json.dumps({"trainingjob_name": trainingjob_name}),
+#                                                 headers={
+#                                                     'content-type': MIMETYPE_JSON,
+#                                                     'Accept-Charset': 'UTF-8'
+#                                                 })
+#                     if (kf_response.headers['content-type'] != MIMETYPE_JSON or 
+#                             kf_response.status_code != status.HTTP_200_OK ):
+#                         raise TMException("KF adapter responsed with error status code or invalid content type" + \
+#                                          "doesn't send json type response (trainingjob " + trainingjob_name + ")")
+#                     with LOCK:
+#                         DATAEXTRACTION_JOBS_CACHE.pop(trainingjob_name)        
+#                 elif response["task_status"] == "Error":
+#                     raise TMException("Data extraction has failed for " + trainingjob_name)
+#             except Exception as err:
+#                 LOGGER.error("Failure during procesing of DATAEXTRACTION_JOBS_CACHE," + str(err))
+#                 """ Job will be removed from DATAEXTRACTION_JOBS_CACHE in  handle_async
+#                     There might be some further error during handling of exception
+#                 """
+#                 handle_async_feature_engineering_status_exception_case(LOCK,
+#                                                     DATAEXTRACTION_JOBS_CACHE,
+#                                                     status.HTTP_500_INTERNAL_SERVER_ERROR,
+#                                                     str(err) + "(trainingjob name is " + trainingjob_name + ")",
+#                                                     LOGGER, False, trainingjob_name, MM_SDK)
 
-        #Wait and fetch latest list of trainingjobs
-        time.sleep(10)
+#         #Wait and fetch latest list of trainingjobs
+#         time.sleep(10)
 
 if __name__ == "__main__":
     try:
@@ -1477,9 +1304,10 @@ if __name__ == "__main__":
         migrate = Migrate(APP, db) 
         with APP.app_context():
             db.create_all()
-        LOCK = Lock()
-        DATAEXTRACTION_JOBS_CACHE = get_data_extraction_in_progress_trainingjobs(PS_DB_OBJ)
-        threading.Thread(target=async_feature_engineering_status, daemon=True).start()
+        start_async_handler(APP,db)
+        # LOCK = Lock()
+        # DATAEXTRACTION_JOBS_CACHE = get_data_extraction_in_progress_trainingjobs(PS_DB_OBJ)
+        # threading.Thread(target=try2, daemon=True).start()
         MM_SDK = ModelMetricsSdk()
         list_allow_control_access_origin = TRAININGMGR_CONFIG_OBJ.allow_control_access_origin.split(',')
         CORS(APP, resources={r"/*": {"origins": list_allow_control_access_origin}})

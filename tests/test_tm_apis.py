@@ -486,267 +486,267 @@ class Test_get_steps_state:
         assert "Exception" in data
         assert "Database error" in data["Exception"]
           
-class Test_training_main:
-    def setup_method(self):
-        self.client = trainingmgr_main.APP.test_client(self)
-        self.logger = trainingmgr_main.LOGGER
+# class Test_training_main:
+#     def setup_method(self):
+#         self.client = trainingmgr_main.APP.test_client(self)
+#         self.logger = trainingmgr_main.LOGGER
 
-    @pytest.fixture
-    def mock_trainingjob(self):
-        """Create a mock TrainingJob object."""
-        mock_steps_state = MagicMock()
-        mock_steps_state.states = json.dumps({'step1':'completed'})
-        return TrainingJob(
-            trainingjob_name="test_job",
-            deletion_in_progress=False,
-            steps_state=mock_steps_state,
-        )
+#     @pytest.fixture
+#     def mock_trainingjob(self):
+#         """Create a mock TrainingJob object."""
+#         mock_steps_state = MagicMock()
+#         mock_steps_state.states = json.dumps({'step1':'completed'})
+#         return TrainingJob(
+#             trainingjob_name="test_job",
+#             deletion_in_progress=False,
+#             steps_state=mock_steps_state,
+#         )
     
-    @patch('trainingmgr.trainingmgr_main.trainingjob_schema.load')
-    @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = False)
-    @patch('trainingmgr.trainingmgr_main.add_update_trainingjob')
-    @patch('trainingmgr.trainingmgr_main.get_model_info')
-    def test_trainingjob_operations(self,mock1,mock2, mock3, mock_trainingjob_schema_load, mock_trainingjob):
-        trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
-        mock_trainingjob_schema_load.return_value = mock_trainingjob
-        trainingjob_req = {
-                    "modelName":"usecase1",
-                    "training_config":{
-                        "description":"description",
-                        "dataPipeline":{
-                            "feature_group_name":"group",
-                            "query_filter":"",
-                            "arguments":{
-                                "epochs":"1",
-                                "trainingjob_name":"usecase1"
-                            }
-                        },
-                        "trainingPipeline":{
-                            "pipeline_name":"qoe Pipeline lat v2",
-                            "pipeline_version":"",
-                            "enable_versioning":False
-                        }
-                    }
-                }
-        expected_data = b'{"result": "Information stored in database."}'
-        response = self.client.post("/trainingjobs/{}".format("usecase1"),
-                                    data=json.dumps(trainingjob_req),
-                                    content_type="application/json")
-        trainingmgr_main.LOGGER.debug(response.data)    
-        assert response.data == expected_data
-        assert response.status_code == status.HTTP_201_CREATED, "Return status code NOT equal" 
+#     @patch('trainingmgr.trainingmgr_main.trainingjob_schema.load')
+#     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = False)
+#     @patch('trainingmgr.trainingmgr_main.add_update_trainingjob')
+#     @patch('trainingmgr.trainingmgr_main.get_model_info')
+#     def test_trainingjob_operations(self,mock1,mock2, mock3, mock_trainingjob_schema_load, mock_trainingjob):
+#         trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
+#         mock_trainingjob_schema_load.return_value = mock_trainingjob
+#         trainingjob_req = {
+#                     "modelName":"usecase1",
+#                     "training_config":{
+#                         "description":"description",
+#                         "dataPipeline":{
+#                             "feature_group_name":"group",
+#                             "query_filter":"",
+#                             "arguments":{
+#                                 "epochs":"1",
+#                                 "trainingjob_name":"usecase1"
+#                             }
+#                         },
+#                         "trainingPipeline":{
+#                             "pipeline_name":"qoe Pipeline lat v2",
+#                             "pipeline_version":"",
+#                             "enable_versioning":False
+#                         }
+#                     }
+#                 }
+#         expected_data = b'{"result": "Information stored in database."}'
+#         response = self.client.post("/trainingjobs/{}".format("usecase1"),
+#                                     data=json.dumps(trainingjob_req),
+#                                     content_type="application/json")
+#         trainingmgr_main.LOGGER.debug(response.data)    
+#         assert response.data == expected_data
+#         assert response.status_code == status.HTTP_201_CREATED, "Return status code NOT equal" 
     
-    @patch('trainingmgr.trainingmgr_main.trainingjob_schema.load')
-    @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = False)
-    @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db',True, ""))
-    @patch('trainingmgr.trainingmgr_main.add_update_trainingjob')
-    def test_trainingjob_operations2(self,mock1,mock2, mock3, mock_trainingjob_schema_load, mock_trainingjob):
-        trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
-        mock_trainingjob_schema_load, mock_trainingjob
-        trainingjob_req = {
-                    "modelName":"usecase1",
-                    "training_config":{
-                        "description":"description",
-                        "dataPipeline":{
-                            "feature_group_name":"group",
-                            "query_filter":"",
-                            "arguments":{
-                                "epochs":"1",
-                                "trainingjob_name":"usecase1"
-                            }
-                        },
-                        "trainingPipeline":{
-                            "pipeline_name":"qoe Pipeline lat v2",
-                            "pipeline_version":"",
-                            "enable_versioning":False
-                        }
-                    }
-                }
-        expected_data = b'{"result": "Information stored in database."}'
-        response = self.client.post("/trainingjobs/{}".format("usecase1"),
-                                    data=json.dumps(trainingjob_req),
-                                    content_type="application/json")
-        assert response.data == expected_data
-        assert response.status_code == status.HTTP_201_CREATED, "Return status code NOT equal"
+#     @patch('trainingmgr.trainingmgr_main.trainingjob_schema.load')
+#     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = False)
+#     @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = ("group1", 'unittest', 'qoe', 'experiment1', 'arguments1', 'query1', True, 1, 'cassandra db',True, ""))
+#     @patch('trainingmgr.trainingmgr_main.add_update_trainingjob')
+#     def test_trainingjob_operations2(self,mock1,mock2, mock3, mock_trainingjob_schema_load, mock_trainingjob):
+#         trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
+#         mock_trainingjob_schema_load, mock_trainingjob
+#         trainingjob_req = {
+#                     "modelName":"usecase1",
+#                     "training_config":{
+#                         "description":"description",
+#                         "dataPipeline":{
+#                             "feature_group_name":"group",
+#                             "query_filter":"",
+#                             "arguments":{
+#                                 "epochs":"1",
+#                                 "trainingjob_name":"usecase1"
+#                             }
+#                         },
+#                         "trainingPipeline":{
+#                             "pipeline_name":"qoe Pipeline lat v2",
+#                             "pipeline_version":"",
+#                             "enable_versioning":False
+#                         }
+#                     }
+#                 }
+#         expected_data = b'{"result": "Information stored in database."}'
+#         response = self.client.post("/trainingjobs/{}".format("usecase1"),
+#                                     data=json.dumps(trainingjob_req),
+#                                     content_type="application/json")
+#         assert response.data == expected_data
+#         assert response.status_code == status.HTTP_201_CREATED, "Return status code NOT equal"
 
 
-    training_data = ('','','','','','','','','',False,'')
-    @patch('trainingmgr.trainingmgr_main.get_one_word_status', return_value = States.FINISHED.name)
-    @patch('trainingmgr.trainingmgr_main.trainingjob_schema.load')
-    @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
-    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name')
-    @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = training_data)
-    @patch('trainingmgr.trainingmgr_main.add_update_trainingjob')
-    def test_trainingjob_operations_put(self, mock1, mock2, mock_info_by_name, mock4, mock_trainingjob_schema_load, mock5, mock_trainingjob):
-        trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations_put *******")
-        mock_trainingjob_schema_load.return_value = mock_trainingjob
-        mock_info_by_name.return_value = mock_trainingjob
-        trainingjob_req = {
-                    "modelName":"qoe_121",
-                    "training_config":{
-                        "description":"uc1",
-                        "dataPipeline":{
-                            "feature_group_name":"group",
-                            "query_filter":"",
-                            "arguments":{
-                                "epochs":"1",
-                                "trainingjob_name":"my_testing_new_7"
-                            }
-                        },
-                        "trainingPipeline":{
-                            "pipeline_name":"qoe Pipeline lat v2",
-                            "pipeline_version":"3",
-                            "enable_versioning":False
-                        }
-                    }
-                }              
-        expected_data = 'Information updated in database'
-        response = self.client.put("/trainingjobs/{}".format("my_testing_new_7"),
-                                    data=json.dumps(trainingjob_req),
-                                    content_type="application/json")
-        print(response.data)
-        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal" 
-        assert expected_data in str(response.data)
+#     training_data = ('','','','','','','','','',False,'')
+#     @patch('trainingmgr.trainingmgr_main.get_one_word_status', return_value = States.FINISHED.name)
+#     @patch('trainingmgr.trainingmgr_main.trainingjob_schema.load')
+#     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
+#     @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name')
+#     @patch('trainingmgr.trainingmgr_main.check_trainingjob_data', return_value = training_data)
+#     @patch('trainingmgr.trainingmgr_main.add_update_trainingjob')
+#     def test_trainingjob_operations_put(self, mock1, mock2, mock_info_by_name, mock4, mock_trainingjob_schema_load, mock5, mock_trainingjob):
+#         trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations_put *******")
+#         mock_trainingjob_schema_load.return_value = mock_trainingjob
+#         mock_info_by_name.return_value = mock_trainingjob
+#         trainingjob_req = {
+#                     "modelName":"qoe_121",
+#                     "training_config":{
+#                         "description":"uc1",
+#                         "dataPipeline":{
+#                             "feature_group_name":"group",
+#                             "query_filter":"",
+#                             "arguments":{
+#                                 "epochs":"1",
+#                                 "trainingjob_name":"my_testing_new_7"
+#                             }
+#                         },
+#                         "trainingPipeline":{
+#                             "pipeline_name":"qoe Pipeline lat v2",
+#                             "pipeline_version":"3",
+#                             "enable_versioning":False
+#                         }
+#                     }
+#                 }              
+#         expected_data = 'Information updated in database'
+#         response = self.client.put("/trainingjobs/{}".format("my_testing_new_7"),
+#                                     data=json.dumps(trainingjob_req),
+#                                     content_type="application/json")
+#         print(response.data)
+#         assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal" 
+#         assert expected_data in str(response.data)
 
-    @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
-    def test_negative_trainingjob_operations_post_conflit(self,mock1):
-        trainingmgr_main.LOGGER.debug("******* test_negative_trainingjob_operations_post_conflit *******")
-        trainingjob_req = {
-                    "modelName":"usecase1",
-                    "training_config":{
-                        "description":"description",
-                        "dataPipeline":{
-                            "feature_group_name":"group",
-                            "query_filter":"",
-                            "arguments":{
-                                "epochs":"1",
-                                "trainingjob_name":"usecase1"
-                            }
-                        },
-                        "trainingPipeline":{
-                            "pipeline_name":"qoe Pipeline lat v2",
-                            "pipeline_version":"",
-                            "enable_versioning":False
-                        }
-                    }
-                }
-        expected_data = 'is already present in database'
-        response = self.client.post("/trainingjobs/{}".format("usecase1"),
-                                    data=json.dumps(trainingjob_req),
-                                    content_type="application/json")
-        trainingmgr_main.LOGGER.debug(response.data)           
-        assert response.status_code == status.HTTP_409_CONFLICT, "Return status code NOT equal"
-        assert expected_data in str(response.data)
+#     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
+#     def test_negative_trainingjob_operations_post_conflit(self,mock1):
+#         trainingmgr_main.LOGGER.debug("******* test_negative_trainingjob_operations_post_conflit *******")
+#         trainingjob_req = {
+#                     "modelName":"usecase1",
+#                     "training_config":{
+#                         "description":"description",
+#                         "dataPipeline":{
+#                             "feature_group_name":"group",
+#                             "query_filter":"",
+#                             "arguments":{
+#                                 "epochs":"1",
+#                                 "trainingjob_name":"usecase1"
+#                             }
+#                         },
+#                         "trainingPipeline":{
+#                             "pipeline_name":"qoe Pipeline lat v2",
+#                             "pipeline_version":"",
+#                             "enable_versioning":False
+#                         }
+#                     }
+#                 }
+#         expected_data = 'is already present in database'
+#         response = self.client.post("/trainingjobs/{}".format("usecase1"),
+#                                     data=json.dumps(trainingjob_req),
+#                                     content_type="application/json")
+#         trainingmgr_main.LOGGER.debug(response.data)           
+#         assert response.status_code == status.HTTP_409_CONFLICT, "Return status code NOT equal"
+#         assert expected_data in str(response.data)
 
 
-    @pytest.fixture
-    def mock_test_training_training_job(self):
-        """Create a mock TrainingJob object."""
-        creation_time = datetime.datetime.now()
-        updation_time = datetime.datetime.now()        
-        training_config = {
-                        "description":"uc1",
-                        "dataPipeline":{
-                            "feature_group_name":"*",
-                            "query_filter":"",
-                            "arguments":{
-                                "epochs":"1",
-                                "trainingjob_name":"usecase1"
-                            }
-                        },
-                        "trainingPipeline":{
-                            "pipeline_name":"qoe Pipeline lat v2",
-                            "pipeline_version":"3",
-                            "enable_versioning":False
-                        }
-                    }
-        mock_steps_state = MagicMock()
-        mock_steps_state.states = json.dumps('{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FAILED"}')     
-        return TrainingJob(
-            trainingjob_name="usecase1",
-            training_config = json.dumps(training_config),
-            creation_time=creation_time,
-            run_id="51948a12-aee9-42e5-93a0-b8f4a15bca33",
-            steps_state = mock_steps_state,
-            updation_time=updation_time,
-            version=1,
-            model_url="http://test.model.url",
-            notification_url="http://test.notification.url",
-            deletion_in_progress=False,
-        )
+#     @pytest.fixture
+#     def mock_test_training_training_job(self):
+#         """Create a mock TrainingJob object."""
+#         creation_time = datetime.datetime.now()
+#         updation_time = datetime.datetime.now()        
+#         training_config = {
+#                         "description":"uc1",
+#                         "dataPipeline":{
+#                             "feature_group_name":"*",
+#                             "query_filter":"",
+#                             "arguments":{
+#                                 "epochs":"1",
+#                                 "trainingjob_name":"usecase1"
+#                             }
+#                         },
+#                         "trainingPipeline":{
+#                             "pipeline_name":"qoe Pipeline lat v2",
+#                             "pipeline_version":"3",
+#                             "enable_versioning":False
+#                         }
+#                     }
+#         mock_steps_state = MagicMock()
+#         mock_steps_state.states = json.dumps('{"DATA_EXTRACTION": "FINISHED", "DATA_EXTRACTION_AND_TRAINING": "FINISHED", "TRAINING": "FINISHED", "TRAINING_AND_TRAINED_MODEL": "FINISHED", "TRAINED_MODEL": "FAILED"}')     
+#         return TrainingJob(
+#             trainingjob_name="usecase1",
+#             training_config = json.dumps(training_config),
+#             creation_time=creation_time,
+#             run_id="51948a12-aee9-42e5-93a0-b8f4a15bca33",
+#             steps_state = mock_steps_state,
+#             updation_time=updation_time,
+#             version=1,
+#             model_url="http://test.model.url",
+#             notification_url="http://test.notification.url",
+#             deletion_in_progress=False,
+#         )
 
-    @pytest.fixture
-    def mock_test_training_feature_group(self):
-        """Create a mock FeatureGroup object."""
-        return FeatureGroup(
-            featuregroup_name="testing_hash",
-            feature_list = "",
-            datalake_source="InfluxSource",
-            host="127.0.0.21",
-            port = "8080",
-            bucket="",
-            token="",
-            db_org="",
-            measurement="",
-            enable_dme=False,
-            measured_obj_class="",
-            dme_port="",
-            source_name=""
-        )
+#     @pytest.fixture
+#     def mock_test_training_feature_group(self):
+#         """Create a mock FeatureGroup object."""
+#         return FeatureGroup(
+#             featuregroup_name="testing_hash",
+#             feature_list = "",
+#             datalake_source="InfluxSource",
+#             host="127.0.0.21",
+#             port = "8080",
+#             bucket="",
+#             token="",
+#             db_org="",
+#             measurement="",
+#             enable_dme=False,
+#             measured_obj_class="",
+#             dme_port="",
+#             source_name=""
+#         )
     
-    de_response = Response()
-    de_response = Response()
-    de_response.code = "expired"
-    de_response.error_type = "expired"
-    de_response.status_code = status.HTTP_200_OK
-    de_response.headers={"content-type": "application/json"}
-    de_response._content = b'{"task_status": "Completed", "result": "Data Pipeline Execution Completed"}'
-    @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
-    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name')
-    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db')
-    @patch('trainingmgr.trainingmgr_main.data_extraction_start', return_value = de_response)
-    @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')
-    def test_training(self, mock1, mock2, mock_feature_group_by_name_db, mock_get_info_by_name, mock5, mock_test_training_feature_group, mock_test_training_training_job):
-        trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
-        mock_get_info_by_name.return_value = mock_test_training_training_job
-        mock_feature_group_by_name_db.return_value = mock_test_training_feature_group
-        expected_data = 'Data Pipeline Execution Completed"'
-        response = self.client.post("/trainingjobs/{}/training".format("usecase1"),
-                                    content_type="application/json")
-        assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
-        assert expected_data in str(response.data) 
+#     de_response = Response()
+#     de_response = Response()
+#     de_response.code = "expired"
+#     de_response.error_type = "expired"
+#     de_response.status_code = status.HTTP_200_OK
+#     de_response.headers={"content-type": "application/json"}
+#     de_response._content = b'{"task_status": "Completed", "result": "Data Pipeline Execution Completed"}'
+#     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
+#     @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name')
+#     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db')
+#     @patch('trainingmgr.trainingmgr_main.data_extraction_start', return_value = de_response)
+#     @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')
+#     def test_training(self, mock1, mock2, mock_feature_group_by_name_db, mock_get_info_by_name, mock5, mock_test_training_feature_group, mock_test_training_training_job):
+#         trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
+#         mock_get_info_by_name.return_value = mock_test_training_training_job
+#         mock_feature_group_by_name_db.return_value = mock_test_training_feature_group
+#         expected_data = 'Data Pipeline Execution Completed"'
+#         response = self.client.post("/trainingjobs/{}/training".format("usecase1"),
+#                                     content_type="application/json")
+#         assert response.status_code == status.HTTP_200_OK, "Return status code NOT equal"
+#         assert expected_data in str(response.data) 
 
-    de_response1 = Response()
-    de_response1.code = "expired"
-    de_response1.error_type = "expired"
-    de_response1.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    de_response1.headers={"content-type": "application/json"}
-    de_response1._content = b'{"task_status": "Failed", "result": "Data Pipeline Execution Failed"}'
+#     de_response1 = Response()
+#     de_response1.code = "expired"
+#     de_response1.error_type = "expired"
+#     de_response1.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+#     de_response1.headers={"content-type": "application/json"}
+#     de_response1._content = b'{"task_status": "Failed", "result": "Data Pipeline Execution Failed"}'
 
-    @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
-    @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name')
-    @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db')
-    @patch('trainingmgr.trainingmgr_main.data_extraction_start', return_value = de_response1)
-    @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')
-    def test_training_negative_de_failed(self, mock1, mock2, mock_feature_group_by_name_db, mock_get_info_by_name, mock5, mock_test_training_feature_group, mock_test_training_training_job):
-        trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
-        mock_get_info_by_name.return_value = mock_test_training_training_job
-        mock_feature_group_by_name_db.return_value = mock_test_training_feature_group
-        expected_data = 'Data Pipeline Execution Failed'
-        response = self.client.post("/trainingjobs/{}/training".format("usecase1"),
-                                    content_type="application/json")
-        trainingmgr_main.LOGGER.debug(response.data)
-        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR, "Return status code NOT equal" 
-        assert expected_data in str(response.data) 
+#     @patch('trainingmgr.trainingmgr_main.validate_trainingjob_name', return_value = True)
+#     @patch('trainingmgr.trainingmgr_main.get_trainingjob_info_by_name')
+#     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db')
+#     @patch('trainingmgr.trainingmgr_main.data_extraction_start', return_value = de_response1)
+#     @patch('trainingmgr.trainingmgr_main.change_steps_state_of_latest_version')
+#     def test_training_negative_de_failed(self, mock1, mock2, mock_feature_group_by_name_db, mock_get_info_by_name, mock5, mock_test_training_feature_group, mock_test_training_training_job):
+#         trainingmgr_main.LOGGER.debug("******* test_trainingjob_operations post *******")
+#         mock_get_info_by_name.return_value = mock_test_training_training_job
+#         mock_feature_group_by_name_db.return_value = mock_test_training_feature_group
+#         expected_data = 'Data Pipeline Execution Failed'
+#         response = self.client.post("/trainingjobs/{}/training".format("usecase1"),
+#                                     content_type="application/json")
+#         trainingmgr_main.LOGGER.debug(response.data)
+#         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR, "Return status code NOT equal" 
+#         assert expected_data in str(response.data) 
     
-    def test_negative_training_by_trainingjob_name(self):
-        trainingjob_name="usecase*"
-        response=self.client.post('/trainingjobs/{}'.format(trainingjob_name), content_type="application/json")
-        assert response.status_code==status.HTTP_400_BAD_REQUEST
-        assert response.data == b'{"Exception":"The trainingjob_name is not correct"}\n'
-        response=self.client.post('/trainingjobs/{}/training'.format(trainingjob_name), content_type="application/json")
-        assert response.status_code==status.HTTP_400_BAD_REQUEST
-        assert response.data == b'{"Exception":"The trainingjob_name is not correct"}\n'
+#     def test_negative_training_by_trainingjob_name(self):
+#         trainingjob_name="usecase*"
+#         response=self.client.post('/trainingjobs/{}'.format(trainingjob_name), content_type="application/json")
+#         assert response.status_code==status.HTTP_400_BAD_REQUEST
+#         assert response.data == b'{"Exception":"The trainingjob_name is not correct"}\n'
+#         response=self.client.post('/trainingjobs/{}/training'.format(trainingjob_name), content_type="application/json")
+#         assert response.status_code==status.HTTP_400_BAD_REQUEST
+#         assert response.data == b'{"Exception":"The trainingjob_name is not correct"}\n'
 
 @pytest.mark.skip("")
 class Test_get_versions_for_pipeline:
