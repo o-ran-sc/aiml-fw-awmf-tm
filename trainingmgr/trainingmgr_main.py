@@ -95,7 +95,7 @@ def error(err):
                               status=err.code,
                               mimetype=MIMETYPE_JSON)
 
-# Training-Config Handled
+
 @APP.route('/trainingjobs/<trainingjob_name>/<version>', methods=['GET'])
 def get_trainingjob_by_name_version(trainingjob_name, version):
     """
@@ -175,21 +175,17 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
         if trainingjob:
             dict_data = {
                 "trainingjob_name": trainingjob.trainingjob_name,
+                "model_location": trainingjob.model_location,
+                "training_dataset": trainingjob.training_dataset,
+                "validation_dataset": trainingjob.validation_dataset,
                 "training_config": json.loads(trainingjob.training_config),
-                # "description": trainingjob.description,
-                # "feature_list": trainingjob.feature_group_name,
-                # "pipeline_name": trainingjob.pipeline_name,
-                # "experiment_name": trainingjob.experiment_name,
-                # "arguments": trainingjob.arguments,
-                # "query_filter": trainingjob.query_filter,
+                "consumer_rapp_id": trainingjob.consumer_rapp_id,
+                "producer_rapp_id": trainingjob.producer_rapp_id,
                 "creation_time": str(trainingjob.creation_time),
                 "run_id": trainingjob.run_id,
                 "steps_state": trainingjob.steps_state.states ,
                 "updation_time": str(trainingjob.updation_time),
                 "version": trainingjob.version,
-                # "enable_versioning": trainingjob.enable_versioning,
-                # "pipeline_version": trainingjob.pipeline_version,
-                # "datalake_source": get_one_key(json.loads(trainingjob.datalake_source)['datalake_source']),
                 "model_url": trainingjob.model_url,
                 "notification_url": trainingjob.notification_url,
                 "accuracy": data
@@ -209,7 +205,7 @@ def get_trainingjob_by_name_version(trainingjob_name, version):
                                         status=response_code,
                                         mimetype=MIMETYPE_JSON)
 
-# Training-Config Handled (No Change)
+
 @APP.route('/trainingjobs/<trainingjob_name>/<version>/steps_state', methods=['GET']) 
 def get_steps_state(trainingjob_name, version):
     """
@@ -278,7 +274,7 @@ def get_steps_state(trainingjob_name, version):
                                       status=response_code,
                                       mimetype=MIMETYPE_JSON)
 
-# Training-Config Handled (No Change)
+
 @APP.route('/model/<trainingjob_name>/<version>/Model.zip', methods=['GET'])
 def get_model(trainingjob_name, version):
     """
@@ -307,7 +303,7 @@ def get_model(trainingjob_name, version):
     except Exception:
         return {"Exception": "error while downloading model"}, status.HTTP_500_INTERNAL_SERVER_ERROR
 
-# Training-Config Handled
+
 @APP.route('/trainingjobs/<trainingjob_name>/training', methods=['POST'])
 def training(trainingjob_name):
     """
@@ -394,7 +390,7 @@ def training(trainingjob_name):
     return APP.response_class(response=json.dumps(response_data),status=response_code,
                             mimetype=MIMETYPE_JSON)
 
-# Training-Config Handled
+
 @APP.route('/trainingjob/dataExtractionNotification', methods=['POST'])
 def data_extraction_notification():
     """
@@ -492,7 +488,7 @@ def data_extraction_notification():
                                     status=status.HTTP_200_OK,
                                     mimetype=MIMETYPE_JSON)
 
-# Training-Config Handled (No Change)
+
 @APP.route('/pipelines/<pipe_name>', methods=['GET'])
 def get_pipeline_info_by_name(pipe_name):
     """
@@ -536,7 +532,7 @@ def get_pipeline_info_by_name(pipe_name):
                               status=response_code,
                               mimetype=MIMETYPE_JSON)
 
-# Training-Config Handled ..
+
 @APP.route('/trainingjob/pipelineNotification', methods=['POST'])
 def pipeline_notification():
     """
@@ -625,7 +621,7 @@ def pipeline_notification():
                                             "Pipeline notification success.",
                                             LOGGER, True, trainingjob_name, MM_SDK)
 
-# Training-Config Handled (No Change)
+
 @APP.route('/trainingjobs/latest', methods=['GET'])
 def trainingjobs_operations():
     """
@@ -674,7 +670,7 @@ def trainingjobs_operations():
                         status=response_code,
                         mimetype=MIMETYPE_JSON)
 
-# Training-Config Handled (No Change) ..
+
 @APP.route("/pipelines/<pipe_name>/upload", methods=['POST'])
 def upload_pipeline(pipe_name):
     """
@@ -773,7 +769,6 @@ def upload_pipeline(pipe_name):
                                   mimetype=MIMETYPE_JSON)
 
 
-# Training-Config Handled (No Change)
 @APP.route("/pipelines/<pipeline_name>/versions", methods=['GET'])
 def get_versions_for_pipeline(pipeline_name):
     """
@@ -827,7 +822,7 @@ def get_versions_for_pipeline(pipeline_name):
             status=response_code,
             mimetype=MIMETYPE_JSON)
  
-# Training-Config Handled (No Change)
+
 @APP.route('/pipelines', methods=['GET'])
 def get_pipelines():
     """
@@ -861,7 +856,7 @@ def get_pipelines():
         api_response =  {"Exception": str(err)}
     return APP.response_class(response=json.dumps(api_response),status=response_code,mimetype=MIMETYPE_JSON)
 
-# Training-Config Handled (No Change)
+
 @APP.route('/experiments', methods=['GET'])
 def get_all_experiment_names():
     """
@@ -910,7 +905,7 @@ def get_all_experiment_names():
                                   status=reponse_code,
                                   mimetype=MIMETYPE_JSON)
 
-# Training-Config handled
+
 @APP.route('/trainingjobs/<trainingjob_name>', methods=['POST', 'PUT'])
 def trainingjob_operations(trainingjob_name):
     """
@@ -1021,7 +1016,7 @@ def trainingjob_operations(trainingjob_name):
                     status= response_code,
                     mimetype=MIMETYPE_JSON)
 
-# Training-Config Handled (No Change) ..
+
 @APP.route('/trainingjobs/retraining', methods=['POST'])
 def retraining():
     """
@@ -1125,7 +1120,7 @@ def retraining():
         status=status.HTTP_200_OK,
         mimetype='application/json')
 
-# Training-Config Handled (No Change) ..
+
 @APP.route('/trainingjobs', methods=['DELETE'])
 def delete_list_of_trainingjob_version():
     """
@@ -1253,7 +1248,7 @@ def delete_list_of_trainingjob_version():
         status=status.HTTP_200_OK,
         mimetype='application/json')
 
-# Training-Config Handled (No Change)
+
 @APP.route('/trainingjobs/metadata/<trainingjob_name>')
 def get_metadata(trainingjob_name):
     """
@@ -1636,7 +1631,7 @@ def delete_list_of_feature_group():
         status=status.HTTP_200_OK,
         mimetype='application/json')
 
-# Training-Config Handled (No Change)
+
 def async_feature_engineering_status():
     """
     This function takes trainingjobs from DATAEXTRACTION_JOBS_CACHE and checks data extraction status
