@@ -61,6 +61,7 @@ from trainingmgr.db.trainingjob_db import add_update_trainingjob, get_trainingjo
         update_model_download_url, get_all_versions_info_by_name
 from trainingmgr.controller.trainingjob_controller import training_job_controller
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig, getField
+from trainingmgr.handler.async_handler import start_async_handler
 
 APP = Flask(__name__)
 TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
@@ -1635,65 +1636,65 @@ def delete_list_of_feature_group():
         mimetype='application/json')
 
 # Training-Config Handled (No Change)
-def async_feature_engineering_status():
-    """
-    This function takes trainingjobs from DATAEXTRACTION_JOBS_CACHE and checks data extraction status
-    (using data extraction api) for those trainingjobs, if status is Completed then it calls
-    /trainingjob/dataExtractionNotification route for those trainingjobs.
-    """
-    url_pipeline_run = "http://" + str(TRAININGMGR_CONFIG_OBJ.my_ip) + \
-                       ":" + str(TRAININGMGR_CONFIG_OBJ.my_port) + \
-                       "/trainingjob/dataExtractionNotification"
-    while True:
-        with LOCK:
-            fjc = list(DATAEXTRACTION_JOBS_CACHE)
-        for trainingjob_name in fjc:
-            LOGGER.debug("Current DATAEXTRACTION_JOBS_CACHE :" + str(DATAEXTRACTION_JOBS_CACHE))
-            try:
-                response = data_extraction_status(trainingjob_name, TRAININGMGR_CONFIG_OBJ)
-                if (response.headers['content-type'] != MIMETYPE_JSON or 
-                        response.status_code != status.HTTP_200_OK ):
-                    raise TMException("Data extraction responsed with error status code or invalid content type" + \
-                                         "doesn't send json type response (trainingjob " + trainingjob_name + ")")
-                response = response.json()
-                LOGGER.debug("Data extraction status response for " + \
-                            trainingjob_name + " " + json.dumps(response))
+# def async_feature_engineering_status():
+#     """
+#     This function takes trainingjobs from DATAEXTRACTION_JOBS_CACHE and checks data extraction status
+#     (using data extraction api) for those trainingjobs, if status is Completed then it calls
+#     /trainingjob/dataExtractionNotification route for those trainingjobs.
+#     """
+#     url_pipeline_run = "http://" + str(TRAININGMGR_CONFIG_OBJ.my_ip) + \
+#                        ":" + str(TRAININGMGR_CONFIG_OBJ.my_port) + \
+#                        "/trainingjob/dataExtractionNotification"
+#     while True:
+#         with LOCK:
+#             fjc = list(DATAEXTRACTION_JOBS_CACHE)
+#         for trainingjob_name in fjc:
+#             LOGGER.debug("Current DATAEXTRACTION_JOBS_CACHE :" + str(DATAEXTRACTION_JOBS_CACHE))
+#             try:
+#                 response = data_extraction_status(trainingjob_name, TRAININGMGR_CONFIG_OBJ)
+#                 if (response.headers['content-type'] != MIMETYPE_JSON or 
+#                         response.status_code != status.HTTP_200_OK ):
+#                     raise TMException("Data extraction responsed with error status code or invalid content type" + \
+#                                          "doesn't send json type response (trainingjob " + trainingjob_name + ")")
+#                 response = response.json()
+#                 LOGGER.debug("Data extraction status response for " + \
+#                             trainingjob_name + " " + json.dumps(response))
 
-                if response["task_status"] == "Completed":
-                    with APP.app_context():
-                        change_steps_state_of_latest_version(trainingjob_name,
-                                                                Steps.DATA_EXTRACTION.name,
-                                                                States.FINISHED.name)
-                        change_steps_state_of_latest_version(trainingjob_name,
-                                                                Steps.DATA_EXTRACTION_AND_TRAINING.name,
-                                                                States.IN_PROGRESS.name)
-                    kf_response = requests.post(url_pipeline_run,
-                                                data=json.dumps({"trainingjob_name": trainingjob_name}),
-                                                headers={
-                                                    'content-type': MIMETYPE_JSON,
-                                                    'Accept-Charset': 'UTF-8'
-                                                })
-                    if (kf_response.headers['content-type'] != MIMETYPE_JSON or 
-                            kf_response.status_code != status.HTTP_200_OK ):
-                        raise TMException("KF adapter responsed with error status code or invalid content type" + \
-                                         "doesn't send json type response (trainingjob " + trainingjob_name + ")")
-                    with LOCK:
-                        DATAEXTRACTION_JOBS_CACHE.pop(trainingjob_name)        
-                elif response["task_status"] == "Error":
-                    raise TMException("Data extraction has failed for " + trainingjob_name)
-            except Exception as err:
-                LOGGER.error("Failure during procesing of DATAEXTRACTION_JOBS_CACHE," + str(err))
-                """ Job will be removed from DATAEXTRACTION_JOBS_CACHE in  handle_async
-                    There might be some further error during handling of exception
-                """
-                handle_async_feature_engineering_status_exception_case(LOCK,
-                                                    DATAEXTRACTION_JOBS_CACHE,
-                                                    status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                                    str(err) + "(trainingjob name is " + trainingjob_name + ")",
-                                                    LOGGER, False, trainingjob_name, MM_SDK)
+#                 if response["task_status"] == "Completed":
+#                     with APP.app_context():
+#                         change_steps_state_of_latest_version(trainingjob_name,
+#                                                                 Steps.DATA_EXTRACTION.name,
+#                                                                 States.FINISHED.name)
+#                         change_steps_state_of_latest_version(trainingjob_name,
+#                                                                 Steps.DATA_EXTRACTION_AND_TRAINING.name,
+#                                                                 States.IN_PROGRESS.name)
+#                     kf_response = requests.post(url_pipeline_run,
+#                                                 data=json.dumps({"trainingjob_name": trainingjob_name}),
+#                                                 headers={
+#                                                     'content-type': MIMETYPE_JSON,
+#                                                     'Accept-Charset': 'UTF-8'
+#                                                 })
+#                     if (kf_response.headers['content-type'] != MIMETYPE_JSON or 
+#                             kf_response.status_code != status.HTTP_200_OK ):
+#                         raise TMException("KF adapter responsed with error status code or invalid content type" + \
+#                                          "doesn't send json type response (trainingjob " + trainingjob_name + ")")
+#                     with LOCK:
+#                         DATAEXTRACTION_JOBS_CACHE.pop(trainingjob_name)        
+#                 elif response["task_status"] == "Error":
+#                     raise TMException("Data extraction has failed for " + trainingjob_name)
+#             except Exception as err:
+#                 LOGGER.error("Failure during procesing of DATAEXTRACTION_JOBS_CACHE," + str(err))
+#                 """ Job will be removed from DATAEXTRACTION_JOBS_CACHE in  handle_async
+#                     There might be some further error during handling of exception
+#                 """
+#                 handle_async_feature_engineering_status_exception_case(LOCK,
+#                                                     DATAEXTRACTION_JOBS_CACHE,
+#                                                     status.HTTP_500_INTERNAL_SERVER_ERROR,
+#                                                     str(err) + "(trainingjob name is " + trainingjob_name + ")",
+#                                                     LOGGER, False, trainingjob_name, MM_SDK)
 
-        #Wait and fetch latest list of trainingjobs
-        time.sleep(10)
+#         #Wait and fetch latest list of trainingjobs
+#         time.sleep(10)
 
 if __name__ == "__main__":
     try:
@@ -1707,10 +1708,11 @@ if __name__ == "__main__":
         migrate = Migrate(APP, db) 
         with APP.app_context():
             db.create_all()
-        LOCK = Lock()
-        DATAEXTRACTION_JOBS_CACHE = get_data_extraction_in_progress_trainingjobs(PS_DB_OBJ)
-        threading.Thread(target=async_feature_engineering_status, daemon=True).start()
-        MM_SDK = ModelMetricsSdk()
+        start_async_handler(APP)
+        # LOCK = Lock()
+        # DATAEXTRACTION_JOBS_CACHE = get_data_extraction_in_progress_trainingjobs(PS_DB_OBJ)
+        # threading.Thread(target=async_feature_engineering_status, daemon=True).start()
+        # MM_SDK = ModelMetricsSdk()
         list_allow_control_access_origin = TRAININGMGR_CONFIG_OBJ.allow_control_access_origin.split(',')
         CORS(APP, resources={r"/*": {"origins": list_allow_control_access_origin}})
         LOGGER.debug("Starting AIML-WF training manager .....")

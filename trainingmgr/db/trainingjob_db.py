@@ -380,3 +380,13 @@ def change_steps_state(trainingjob, step: Steps, state:States):
         db.session.commit()
     except Exception as e:
         raise DBException(f'{DB_QUERY_EXEC_ERROR} in the change_steps_state : {str(e)}')
+    
+def change_state_to_failed(trainingjob):
+    try:
+        steps_state = json.loads(trainingjob.steps_state.states)
+        steps_state = {step: States.FAILED.name for step in steps_state if steps_state[step] == States.IN_PROGRESS.name}
+        trainingjob.steps_state.states=json.dumps(steps_state)
+        db.session.add(trainingjob)
+        db.session.commit()
+    except Exception as e:
+        raise DBException(f'{DB_QUERY_EXEC_ERROR} the change_steps_state to failed : {str(e)}')
