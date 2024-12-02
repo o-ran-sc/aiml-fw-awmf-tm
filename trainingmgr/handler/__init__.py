@@ -15,7 +15,3 @@
 #   limitations under the License.
 #
 # ==================================================================================
-from trainingmgr.constants.states import States
-from trainingmgr.constants.steps import Steps
-
-__all__ = ['States', 'Steps']

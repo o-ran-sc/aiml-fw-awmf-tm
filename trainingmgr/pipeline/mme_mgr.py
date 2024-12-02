@@ -62,7 +62,7 @@ class MmeMgr:
             elif response.status_code == 404:
                 # The modelinfo is NOT FOUND i.e. model is not registered
                 LOGGER.debug(f"ModelName = {modelName}, ModelVersion = {modelVersion} is not registered on MME")
-                return None                
+                raise None                
             else:
                 err_msg = f"Unexpected response from KFAdapter: {response.status_code}"
                 LOGGER.error(err_msg)
