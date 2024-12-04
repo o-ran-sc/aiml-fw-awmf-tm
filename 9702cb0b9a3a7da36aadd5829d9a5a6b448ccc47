@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0c0f2583_b222b058",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 447,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2024-12-04T08:19:56Z",
+      "side": 1,
+      "message": "Needs to be removed from here",
+      "range": {
+        "startLine": 444,
+        "startChar": 8,
+        "endLine": 447,
+        "endChar": 38
+      },
+      "revId": "9702cb0b9a3a7da36aadd5829d9a5a6b448ccc47",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
