@@ -35,6 +35,7 @@ from trainingmgr.common.exceptions_utls import APIException,TMException,DBExcept
 from trainingmgr.common.trainingmgr_operations import create_dme_filtered_data_job
 from trainingmgr.schemas import ma, TrainingJobSchema , FeatureGroupSchema
 from trainingmgr.db.trainingjob_db import get_all_versions_info_by_name
+from trainingmgr.constants.steps import Steps
 
 ERROR_TYPE_KF_ADAPTER_JSON = "Kf adapter doesn't sends json type response"
 MIMETYPE_JSON = "application/json"
@@ -125,6 +126,16 @@ def get_one_word_status(steps_state):
    
     return States.IN_PROGRESS.name
 
+
+def get_step_in_progress_state(steps_state):
+    '''
+        This function return the first step which is currently In-Progress state.
+    '''
+    for step in sorted(Steps, key=lambda x: x.value):
+        if steps_state[step.name] == States.IN_PROGRESS.name:
+            return step
+    
+    return None
 
 def check_trainingjob_data(trainingjob_name, json_data):
     """
@@ -347,23 +358,6 @@ def validate_trainingjob_name(trainingjob_name):
         isavailable = True
     return isavailable     
 
-# Handled by Pipeline_Manager (to be deleted in future)
-def get_pipelines_details(training_config_obj):
-    logger=training_config_obj.logger
-    try:
-        kf_adapter_ip = training_config_obj.kf_adapter_ip
-        kf_adapter_port = training_config_obj.kf_adapter_port
-        if kf_adapter_ip!=None and kf_adapter_port!=None:
-            url = 'http://' + str(kf_adapter_ip) + ':' + str(kf_adapter_port) + '/pipelines'
-        logger.debug(url)
-        response = requests.get(url)
-        if response.headers['content-type'] != MIMETYPE_JSON:
-            err_smg = ERROR_TYPE_KF_ADAPTER_JSON
-            logger.error(err_smg)
-            raise TMException(err_smg)
-    except Exception as err:
-        logger.error(str(err))
-    return response.json()
 
 def check_trainingjob_name_and_version(trainingjob_name, version):
     if (re.fullmatch(PATTERN, trainingjob_name) and version.isnumeric()):
@@ -375,71 +369,3 @@ def check_trainingjob_name_or_featuregroup_name(name):
         return True
     return False
 
-# Handled by PipelineMgr (To be removed in future)
-def fetch_pipeline_info_by_name(training_config_obj, pipe_name):
-    """
-    This function returns the information for a specific pipeline
-    """
-    logger = training_config_obj.logger
-    try:
-        kf_adapter_ip = training_config_obj.kf_adapter_ip
-        kf_adapter_port = training_config_obj.kf_adapter_port
-        if kf_adapter_ip is not None and kf_adapter_port is not None:
-            url = f'http://{kf_adapter_ip}:{kf_adapter_port}/pipelines'
-
-        logger.debug(f"Requesting pipelines from: {url}")
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            if response.headers['content-type'] != MIMETYPE_JSON:
-                err_msg = ERROR_TYPE_KF_ADAPTER_JSON
-                logger.error(err_msg)
-                raise TMException(err_msg)
-
-            pipelines_data = response.json()
-
-            for pipeline_info in pipelines_data.get('pipelines', []):
-                if pipeline_info['display_name'] == pipe_name:
-                    return PipelineInfo(
-                        pipeline_id=pipeline_info['pipeline_id'],
-                        display_name=pipeline_info['display_name'],
-                        description=pipeline_info['description'],
-                        created_at=pipeline_info['created_at']
-                    ).to_dict()
-
-            logger.warning(f"Pipeline '{pipe_name}' not found")
-            return None
-        else:
-            err_msg = f"Unexpected response from KFAdapter: {response.status_code}"
-            logger.error(err_msg)
-            return TMException(err_msg)
-
-    except requests.RequestException as err:
-        err_msg = f"Error communicating with KFAdapter : {str(err)}"
-        logger.error(err_msg)
-        raise TMException(err_msg)
-    except Exception as err:
-        err_msg = f"Unexpected error in get_pipeline_info_by_name: {str(err)}"
-        logger.error(err_msg)
-        raise TMException(err_msg)
-
-# Moved to pipelineMgr, To be removed in future 
-class PipelineInfo:
-    def __init__(self, pipeline_id, display_name, description, created_at):
-        self.pipeline_id = pipeline_id
-        self.display_name = display_name
-        self.description = description
-        self.created_at = created_at
-
-    def __repr__(self):
-        return (f"PipelineInfo(pipeline_id={self.pipeline_id}, display_name={self.display_name}, "
-                f"description={self.description}, created_at={self.created_at})")
-    
-    def to_dict(self):
-        return {
-            "pipeline_id":self.pipeline_id,
-            "display_name": self.display_name,
-            "description": self.description,
-            "created_at": self.created_at
-        }
-        

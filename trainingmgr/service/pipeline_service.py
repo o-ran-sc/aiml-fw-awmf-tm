@@ -16,7 +16,7 @@
 #
 # ==================================================================================
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
-from trainingmgr.db.pipeline_mgr import PipelineMgr
+from trainingmgr.pipeline.pipeline_mgr import PipelineMgr
 from trainingmgr.models.pipeline_info import PipelineInfo
 from werkzeug.utils import secure_filename
 import os
@@ -67,3 +67,14 @@ def upload_pipeline_service(pipeline_name, uploaded_file, description):
             LOGGER.debug("Deleting %s", uploaded_file_path)
             if uploaded_file_path != None:
                 os.remove(uploaded_file_path)
+
+
+def start_training_service(training_details, trainingjob_name):
+    return pipelineMgrObj.start_training(training_details, trainingjob_name)
+
+def terminate_training_service(run_id):
+    return pipelineMgrObj.terminate_training(run_id)
+
+def list_experiments_service():
+    experiment_dict = pipelineMgrObj.get_experiments()
+    return list(experiment_dict.keys())

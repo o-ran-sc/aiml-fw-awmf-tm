@@ -37,7 +37,7 @@ from trainingmgr.common.tmgr_logger import TMLogger
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.trainingmgr_util import response_for_training, check_key_in_dictionary,check_trainingjob_data, \
     get_one_key, get_metrics, handle_async_feature_engineering_status_exception_case, get_one_word_status, check_trainingjob_data, \
-    validate_trainingjob_name, get_pipelines_details, check_feature_group_data, get_feature_group_by_name, edit_feature_group_by_name
+    validate_trainingjob_name, check_feature_group_data, get_feature_group_by_name, edit_feature_group_by_name
 from requests.models import Response   
 from trainingmgr import trainingmgr_main
 from trainingmgr.common.tmgr_logger import TMLogger
@@ -524,6 +524,7 @@ class Test_validate_trainingjob_name:
         except TMException as err:
             assert str(err) == "The name of training job is invalid."
 
+@pytest.mark.skip("") #Following fxn has been migrated to PipelineMgr
 class Test_get_pipelines_details:
     # testing the get_all_pipeline service
     def setup_method(self):

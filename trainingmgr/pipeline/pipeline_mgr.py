@@ -21,7 +21,7 @@ import requests
 from trainingmgr.common.exceptions_utls import TMException
 from flask_api import status
 import requests
-
+import json
 
 LOGGER = TrainingMgrConfig().logger
 
@@ -78,7 +78,6 @@ class PipelineMgr:
             LOGGER.error(err_msg)
             raise TMException(err_msg)
         
-        
     def get_all_pipeline_versions(self, pipeline_name):
         """
             This function returns the version-list for input pipeline
@@ -127,5 +126,53 @@ class PipelineMgr:
                 raise TMException("Error while uploading pipeline | " + resp.json()["message"])
         except Exception as err:
             err_msg = f"Unexpected error in upload_pipeline_file: {str(err)}"
+            LOGGER.error(err_msg)
+            raise TMException(err_msg)
+    
+    # To check: trainingjob_name needs to be changed to trainingjobId or not
+    def start_training(self, training_details, trainingjob_name):
+        """
+        This function calls kf_adapter module to start pipeline of trainingjob_name training and returns
+        response which is gotten by calling kf adapter module.
+        """
+        try:
+            LOGGER.debug('Calling kf_adapter for pipeline run for '+trainingjob_name)
+            LOGGER.debug('Will send to kf_adapter: '+json.dumps(training_details))
+            url = f'http://{self.kf_adapter_ip}:{self.kf_adapter_port}/trainingjobs/{trainingjob_name}/execution'#NOSONAR
+            LOGGER.debug(url)
+            response = requests.post(url,
+                                    data=json.dumps(training_details),
+                                    headers={'content-type': MIMETYPE_JSON,
+                                            'Accept-Charset': 'UTF-8'})
+
+            return response
+        except Exception as err:
+            err_msg = f"Unexpected error in start_training: {str(err)}"
+            LOGGER.error(err_msg)
+            raise TMException(err_msg)
+    
+    def terminate_training(self, run_id):
+        try:
+            LOGGER.debug('terminate training for run_id : ' + str(run_id))
+            url = f'http://{self.kf_adapter_ip}:{self.kf_adapter_port}/runs/{run_id}'
+            LOGGER.debug("Terminate Training API : " + url)
+            response = requests.delete(url)
+            print("Deletion-Response : ", response)
+            return response
+        except Exception as err:
+            err_msg = f"Unexpected error in terminate_training: {str(err)}"
+            LOGGER.error(err_msg)
+            raise TMException(err_msg)
+        
+    def get_experiments(self):
+        try:
+            url = f'http://{self.kf_adapter_ip}:{self.kf_adapter_port}/experiments'
+            LOGGER.debug("Get Experiments API : " + url)
+            response = requests.get(url)
+            if response.headers['content-type'] != MIMETYPE_JSON:
+                raise TMException(ERROR_TYPE_KF_ADAPTER_JSON)
+            return response.json()
+        except Exception as err:
+            err_msg = f"Unexpected error in get_experiments: {str(err)}"
             LOGGER.error(err_msg)
             raise TMException(err_msg)

@@ -42,8 +42,8 @@ from trainingmgr.common.trainingmgr_util import get_one_word_status, check_train
     check_key_in_dictionary, get_one_key, \
     response_for_training, get_metrics, \
     handle_async_feature_engineering_status_exception_case, \
-    validate_trainingjob_name, get_pipelines_details, check_feature_group_data, check_trainingjob_name_and_version, check_trainingjob_name_or_featuregroup_name, \
-    get_feature_group_by_name, edit_feature_group_by_name, fetch_pipeline_info_by_name
+    validate_trainingjob_name, check_feature_group_data, check_trainingjob_name_and_version, check_trainingjob_name_or_featuregroup_name, \
+    get_feature_group_by_name, edit_feature_group_by_name
 from trainingmgr.common.exceptions_utls import APIException,TMException
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
@@ -62,6 +62,7 @@ from trainingmgr.db.trainingjob_db import add_update_trainingjob, get_trainingjo
 from trainingmgr.controller.trainingjob_controller import training_job_controller
 from trainingmgr.controller.pipeline_controller import pipeline_controller
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig, getField
+from trainingmgr.service.pipeline_service import start_training_service
 
 APP = Flask(__name__)
 TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
@@ -434,12 +435,12 @@ def data_extraction_notification():
                 arguments[key] = str(val)
         LOGGER.debug(arguments)
         # Experiment name is harded to be Default
-        dict_data = {
+        training_details = {
             "pipeline_name": getField(trainingjob.training_config, "pipeline_name"), "experiment_name": 'Default',
             "arguments": arguments, "pipeline_version": getField(trainingjob.training_config, "pipeline_version")
         }
-
-        response = training_start(TRAININGMGR_CONFIG_OBJ, dict_data, trainingjob_name)
+        
+        response = start_training_service(training_details, trainingjob_name)
         if ( response.headers['content-type'] != MIMETYPE_JSON 
                 or response.status_code != status.HTTP_200_OK ):
             err_msg = "Kf adapter invalid content-type or status_code for " + trainingjob_name
@@ -488,51 +489,8 @@ def data_extraction_notification():
                                     status=status.HTTP_200_OK,
                                     mimetype=MIMETYPE_JSON)
 
-# Moved to Pipeline_controller (To be deleted in future)
-@APP.route('/pipelines/<pipe_name>', methods=['GET'])
-def get_pipeline_info_by_name(pipe_name):
-    """
-    Function handling rest endpoint to get information about a specific pipeline.
-    Args in function:
-        pipe_name : str
-            name of pipeline.
-    Args in json:
-        no json required
-    Returns:
-        json:
-            pipeline_info : dict
-                            Dictionary containing detailed information about the specified pipeline.
-        status code:
-            HTTP status code 200 if successful, 404 if pipeline not found, or 500 for server errors.
-    Exceptions:
-        all exceptions are provided with exception message and HTTP status code.
-    """
-    api_response = {}
-    LOGGER.debug(f"Request to get information for pipeline: {pipe_name}")
-    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
 
-    try:
-        pipeline_info = fetch_pipeline_info_by_name(TRAININGMGR_CONFIG_OBJ, pipe_name)
-        if pipeline_info:
-            api_response = {"pipeline_info":pipeline_info}
-            response_code = status.HTTP_200_OK
-        else:
-            api_response = {"error": f"Pipeline '{pipe_name}' not found"}
-            response_code = status.HTTP_404_NOT_FOUND
-
-    except TMException as err:
-        api_response = {"error": str(err)}
-        response_code = status.HTTP_404_NOT_FOUND
-        LOGGER.error(f"TrainingManager exception: {str(err)}")
-    except Exception as err:
-        api_response = {"error": "An unexpected error occurred"}
-        LOGGER.error(f"Unexpected error in get_pipeline_info: {str(err)}")
-
-    return APP.response_class(response=json.dumps(api_response),
-                              status=response_code,
-                              mimetype=MIMETYPE_JSON)
-
-
+# Will be migrated to pipline Mgr in next iteration
 @APP.route('/trainingjob/pipelineNotification', methods=['POST'])
 def pipeline_notification():
     """
@@ -670,194 +628,8 @@ def trainingjobs_operations():
                         status=response_code,
                         mimetype=MIMETYPE_JSON)
 
-# Moved to Pipeline_controller (To be deleted in future)
-@APP.route("/pipelines/<pipe_name>/upload", methods=['POST'])
-def upload_pipeline(pipe_name):
-    """
-    Function handling rest endpoint to upload pipeline.
 
-    Args in function:
-        pipe_name: str
-            name of pipeline
-
-    Args in json:
-        no json required
-
-    but file is required
-
-    Returns:
-        json:
-            result: str
-                result message
-        status code:
-            HTTP status code 200
-
-    Exceptions:
-        all exception are provided with exception message and HTTP status code.
-    """
-    LOGGER.debug("Request to upload pipeline.")
-    result_string = None
-    result_code = None
-    uploaded_file_path = None
-    try:
-        LOGGER.debug(str(request))
-        LOGGER.debug(str(request.files))
-        if 'file' in request.files:
-            uploaded_file = request.files['file']
-        else:
-            result_string = "Didn't get file"
-            raise ValueError("file not found in request.files")
-
-        if not check_trainingjob_name_or_featuregroup_name(pipe_name):
-            err_msg="the pipeline name is not valid"
-            raise TMException(err_msg)
-        LOGGER.debug("Uploading received for %s", uploaded_file.filename)
-        if uploaded_file.filename != '':
-            uploaded_file_path = "/tmp/" + secure_filename(uploaded_file.filename)
-            uploaded_file.save(uploaded_file_path)
-            LOGGER.debug("File uploaded :%s", uploaded_file_path)
-            kf_adapter_ip = TRAININGMGR_CONFIG_OBJ.kf_adapter_ip
-            kf_adapter_port = TRAININGMGR_CONFIG_OBJ.kf_adapter_port
-            if kf_adapter_ip!=None and kf_adapter_port!=None:
-               url = 'http://' + str(kf_adapter_ip) + ':' + str(kf_adapter_port) + \
-                  '/pipelineIds/' + pipe_name
-
-            description = ''
-            if 'description' in request.form:
-                description = request.form['description']
-            if uploaded_file_path != None:     
-                with open(uploaded_file_path, 'rb') as file:
-                    files = {'file': file.read()}
-
-            resp = requests.post(url, files=files, data={"description": description})
-            LOGGER.debug(resp.text)
-            if resp.status_code == status.HTTP_200_OK:
-                LOGGER.debug("Pipeline uploaded :%s", pipe_name)
-                result_string = "Pipeline uploaded " + pipe_name
-                result_code = status.HTTP_200_OK
-            else:
-                LOGGER.error(resp.json()["message"])
-                result_string = resp.json()["message"]
-                result_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        else:
-            result_string = "File name not found"
-            raise ValueError("filename is not found in request.files")
-    except ValueError:
-        tbk = traceback.format_exc()
-        LOGGER.error(tbk)
-        result_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        result_string = "Error while uploading pipeline"
-    except TMException:
-        tbk = traceback.format_exc()
-        LOGGER.error(tbk)
-        result_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        result_string = "Pipeline name is not of valid format"
-    except Exception:
-        tbk = traceback.format_exc()
-        LOGGER.error(tbk)
-        result_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        result_string = "Error while uploading pipeline cause"
-
-    if uploaded_file_path and os.path.isfile(uploaded_file_path):
-        LOGGER.debug("Deleting %s", uploaded_file_path)
-        if uploaded_file_path != None:
-            os.remove(uploaded_file_path)
-
-    LOGGER.debug("Responding to Client with %d %s", result_code, result_string)
-    return APP.response_class(response=json.dumps({'result': result_string}),
-                                  status=result_code,
-                                  mimetype=MIMETYPE_JSON)
-
-
-# Moved to Pipeline_controller (To be deleted in future)
-@APP.route("/pipelines/<pipeline_name>/versions", methods=['GET'])
-def get_versions_for_pipeline(pipeline_name):
-    """
-    Function handling rest endpoint to get versions of given pipeline name.
-
-    Args in function:
-        pipeline_name : str
-            name of pipeline.
-
-    Args in json:
-        no json required
-
-    Returns:
-        json:
-            versions_list : list
-                            list containing all versions(as str)
-        status code:
-            HTTP status code 200
-
-    Exceptions:
-        all exception are provided with exception message and HTTP status code.
-    """
-    valid_pipeline=""
-    api_response = {}            
-    LOGGER.debug("Request to get all version for given pipeline(" + pipeline_name + ").")
-    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    try:
-        pipelines = get_pipelines_details(TRAININGMGR_CONFIG_OBJ)
-        for pipeline in pipelines['pipelines']:
-            if pipeline['display_name'] == pipeline_name:
-                valid_pipeline = pipeline['display_name']
-                break
-        if valid_pipeline == "":
-            raise TMException("Pipeline name not present")
-        kf_adapter_ip = TRAININGMGR_CONFIG_OBJ.kf_adapter_ip
-        kf_adapter_port = TRAININGMGR_CONFIG_OBJ.kf_adapter_port
-        if kf_adapter_ip!=None and kf_adapter_port!=None :
-          url = 'http://' + str(kf_adapter_ip) + ':' + str(
-            kf_adapter_port) + '/pipelines/' + valid_pipeline + \
-            '/versions'
-        LOGGER.debug("URL:" + url)
-        response = requests.get(url)
-        if response.headers['content-type'] != MIMETYPE_JSON:
-            raise TMException(ERROR_TYPE_KF_ADAPTER_JSON)
-        api_response = {"versions_list": response.json()['versions_list']}
-        response_code = status.HTTP_200_OK
-    except Exception as err:
-        api_response =  {"Exception": str(err)}
-        LOGGER.error(str(err))
-    return APP.response_class(response=json.dumps(api_response),
-            status=response_code,
-            mimetype=MIMETYPE_JSON)
- 
-# Moved to Pipeline_controller (To be deleted in future)
-@APP.route('/pipelines', methods=['GET'])
-def get_pipelines():
-    """
-    Function handling rest endpoint to get all pipeline names.
-
-    Args in function:
-        none
-
-    Args in json:
-        no json required
-
-    Returns:
-        json:
-            pipeline_names : list
-                             list containing all pipeline names(as str).
-        status code:
-            HTTP status code 200
-
-    Exceptions:
-        all exception are provided with exception message and HTTP status code.
-    """
-    LOGGER.debug("Request to get all getting all pipeline names.")
-    api_response = {}
-    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    try:
-        pipelines = get_pipelines_details(TRAININGMGR_CONFIG_OBJ)
-        api_response = pipelines
-        response_code = status.HTTP_200_OK
-    except Exception as err:
-        LOGGER.error(str(err))
-        api_response =  {"Exception": str(err)}
-    return APP.response_class(response=json.dumps(api_response),status=response_code,mimetype=MIMETYPE_JSON)
-
-
+# Moved to pipelineMgr (to be deleted in future)
 @APP.route('/experiments', methods=['GET'])
 def get_all_experiment_names():
     """

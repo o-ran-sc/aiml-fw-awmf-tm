@@ -20,7 +20,7 @@ from flask import Blueprint, jsonify, request
 from flask_api import status
 from trainingmgr.common.exceptions_utls import TMException
 from trainingmgr.service.pipeline_service import get_single_pipeline, get_all_pipeline_versions, get_all_pipelines, \
-    upload_pipeline_service
+    upload_pipeline_service, list_experiments_service
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 import traceback
 import re
@@ -169,3 +169,33 @@ def upload_pipeline(pipeline_name):
         return jsonify({'result': err.message}), status.HTTP_500_INTERNAL_SERVER_ERROR
     except Exception as err:
         return jsonify({'result': "Error in uploading Pipeline| Error : " + str(err)}), status.HTTP_500_INTERNAL_SERVER_ERROR
+
+
+@pipeline_controller.route("/pipelines/experiments", methods=['GET'])
+def get_all_experiment_names():
+    """
+    Function handling rest endpoint to get all experiment names.
+
+    Args in function:
+        none
+
+    Args in json:
+        no json required
+
+    Returns:
+        json:
+            experiment_names : list
+                               list containing all experiment names(as str).
+        status code:
+            HTTP status code 200
+
+    Exceptions:
+        all exception are provided with exception message and HTTP status code.
+    """
+    LOGGER.debug("request for getting all experiment names is come.")
+    try:
+        experiment_names = list_experiments_service()
+        return jsonify(experiment_names), status.HTTP_200_OK
+    except Exception as err:
+        LOGGER.error(str(err))
+        return jsonify({"Exception": str(err)}), status.HTTP_500_INTERNAL_SERVER_ERROR
