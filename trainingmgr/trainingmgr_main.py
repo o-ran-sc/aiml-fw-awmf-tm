@@ -1472,7 +1472,7 @@ def create_feature_group():
         else:
             # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
             add_featuregroup(featuregroup)
-            api_response={"result": "Feature Group Created"}
+            api_response = FeatureGroupSchema().dump(featuregroup)
             response_code =status.HTTP_200_OK
             if featuregroup.enable_dme == True :
                 response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, featuregroup)
