@@ -72,8 +72,7 @@ def create_trainingjob():
         trainingConfig = trainingjob.training_config
         if(not validateTrainingConfig(trainingConfig)):
             return jsonify({'Exception': 'The TrainingConfig is not correct'}), status.HTTP_400_BAD_REQUEST
-        
-        #check if trainingjob is already present with name
+    
         trainingjob_db = get_trainingjob_by_modelId(model_id)
 
         if trainingjob_db != None:
@@ -83,6 +82,42 @@ def create_trainingjob():
 
         return jsonify({"Trainingjob": trainingjob_schema.dump(trainingjob)}), 201
         
+    except ValidationError as error:
+        return jsonify(error.messages), status.HTTP_400_BAD_REQUEST
+    except Exception as e:
+        return jsonify({
+            'message': str(e)
+        }), 500
+
+@training_job_controller.route('/retraining-jobs', methods=['POST'])
+def create_retrainingjob():
+    try:
+        request_json = request.get_json()
+
+        # Check if 'modelLocation' field is present in the request
+        model_location = request_json.get('modelLocation', None)
+
+        if model_location:
+            #check if the field modelLocation was populated the in POST request 
+            return jsonify({"Message": f"Retraining job initiated for model at {model_location}"}), 200
+
+        if check_key_in_dictionary(["training_config"], request_json):
+            request_json['training_config'] = json.dumps(request_json["training_config"])
+        else:
+            return jsonify({'Exception': 'The training_config is missing'}), status.HTTP_400_BAD_REQUEST
+ 
+        trainingjob = trainingjob_schema.load(request_json)
+        model_id = trainingjob.modelId
+        trainingConfig = trainingjob.training_config
+
+        if not validateTrainingConfig(trainingConfig):
+            return jsonify({'Exception': 'The TrainingConfig is not correct'}), status.HTTP_400_BAD_REQUEST
+
+        trainingjob_db = get_trainingjob_by_modelId(model_id)
+
+        create_training_job(trainingjob)
+        return jsonify({"Retrainingjob": trainingjob_schema.dump(trainingjob)}), 201
+
     except ValidationError as error:
         return jsonify(error.messages), status.HTTP_400_BAD_REQUEST
     except Exception as e:
