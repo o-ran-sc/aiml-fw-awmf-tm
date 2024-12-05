@@ -16,6 +16,29 @@
       "message": "retraining api",
       "revId": "aba5972e831fc2afdc9ac2d55f8031654514557d",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "65904689_a0bc1e3b",
+        "filename": "trainingmgr/controller/trainingjob_controller.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-12-05T14:21:21Z",
+      "side": 1,
+      "message": "we also need to configure the retraining pipeline within create training job\n\n1. if Training request with model_location\n2. Create Traininig JOB instance with the pipelinename \u0027retraining\u0027\n3. pass trainingjob and training config to kubeflow-adapter.",
+      "range": {
+        "startLine": 118,
+        "startChar": 8,
+        "endLine": 118,
+        "endChar": 40
+      },
+      "revId": "aba5972e831fc2afdc9ac2d55f8031654514557d",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
