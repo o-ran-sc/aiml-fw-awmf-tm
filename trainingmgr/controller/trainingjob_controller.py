@@ -27,7 +27,7 @@ from trainingmgr.service.training_job_service import delete_training_job, create
 get_steps_state
 from trainingmgr.common.trainingmgr_util import check_key_in_dictionary
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig
-
+from trainingmgr.service.mme_service import get_modelinfo_by_modelId_service
 training_job_controller = Blueprint('training_job_controller', __name__)
 LOGGER = TrainingMgrConfig().logger
 
@@ -73,13 +73,18 @@ def create_trainingjob():
         if(not validateTrainingConfig(trainingConfig)):
             return jsonify({'Exception': 'The TrainingConfig is not correct'}), status.HTTP_400_BAD_REQUEST
         
-        #check if trainingjob is already present with name
+        # check if trainingjob is already present with name
         trainingjob_db = get_trainingjob_by_modelId(model_id)
 
         if trainingjob_db != None:
             return jsonify({"Exception":f"modelId {model_id.modelname} and {model_id.modelversion} is already present in database"}), status.HTTP_409_CONFLICT
 
-        create_training_job(trainingjob)
+        # Verify if the modelId is registered over mme or not
+        
+        registered_model_dict = get_modelinfo_by_modelId_service(model_id.modelname, model_id.modelversion)
+        if registered_model_dict is None:
+            return jsonify({"Exception":f"modelId {model_id.modelname} and {model_id.modelversion} is not registered at MME, Please first register at MME and then continue"}), status.HTTP_400_BAD_REQUEST
+        create_training_job(trainingjob, registered_model_dict)
 
         return jsonify({"Trainingjob": trainingjob_schema.dump(trainingjob)}), 201
         

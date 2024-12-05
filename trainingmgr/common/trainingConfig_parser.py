@@ -87,4 +87,25 @@ def getField(trainingConfig, fieldname):
     trainingConfig = prepocessTrainingConfig(trainingConfig)
     fieldPath = __getLeafPaths()[fieldname]
     return parse_dict_by_fields(trainingConfig, fieldPath)
+
+def setField(trainingConfig, fieldname, value):
+    """
+    Set the value of a specific field in the training configuration.
+    """
+    trainingConfig = prepocessTrainingConfig(trainingConfig)
+    fieldPath = __getLeafPaths()[fieldname]
+    if not fieldPath:
+        raise KeyError(f"Field '{fieldname}' is not defined in the schema.")
     
+    # Traverse the path and set the value
+    current_node = trainingConfig
+    for i, key in enumerate(fieldPath):
+        if i == len(fieldPath) - 1:
+            # Last key in the path, set the value
+            current_node[key] = value
+        else:
+            # Traverse or create intermediate dictionaries
+            if key not in current_node or not isinstance(current_node[key], dict):
+                current_node[key] = {}
+            current_node = current_node[key]
+    return trainingConfig

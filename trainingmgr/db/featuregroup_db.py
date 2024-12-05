@@ -67,6 +67,16 @@ def get_feature_group_by_name_db(featuregroup_name):
     """
     return FeatureGroup.query.filter_by(featuregroup_name=featuregroup_name).first()
 
+def get_feature_groups_from_inputDataType_db(inputDataType):
+    """
+        This Function return all feature group with feature_list as "inputDataType"
+        Return type is a list of tuples
+    """
+    try:
+        return FeatureGroup.query.with_entities(FeatureGroup.featuregroup_name).filter_by(feature_list=inputDataType).all()
+    except Exception as err:
+        raise DBException("Unable to query in get_feature_groups_from_inputDataType_db with error : ", err)
+
 def delete_feature_group_by_name(featuregroup_name):
     """
     This function is used to delete the feature group from db
@@ -76,4 +86,6 @@ def delete_feature_group_by_name(featuregroup_name):
         db.session.delete(featuregroup)
         db.session.commit()
     return
+
+
 

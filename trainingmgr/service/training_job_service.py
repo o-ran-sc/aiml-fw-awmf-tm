@@ -19,13 +19,19 @@ import json
 from trainingmgr.db.trainingjob_db import delete_trainingjob_by_id, create_trainingjob, get_trainingjob, get_trainingjob_by_modelId_db, \
 change_steps_state, change_field_value
 from trainingmgr.common.exceptions_utls import DBException, TMException
+from trainingmgr.common.trainingConfig_parser import getField, setField
 from trainingmgr.schemas import TrainingJobSchema
 from trainingmgr.common.trainingmgr_util import get_one_word_status, get_step_in_progress_state
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
 from trainingmgr.service.pipeline_service import terminate_training_service
+from trainingmgr.service.featuregroup_service import get_featuregroup_from_inputDataType
+from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
+
 trainingJobSchema = TrainingJobSchema()
 trainingJobsSchema = TrainingJobSchema(many=True)
+
+LOGGER = TrainingMgrConfig().logger
 
 def get_training_job(training_job_id: int):
     try:
@@ -41,8 +47,17 @@ def get_trainining_jobs():
     except DBException as err:
         raise TMException(f"get_training_jobs failed with exception : {str(err)}")
 
-def create_training_job(trainingjob):
+def create_training_job(trainingjob, registered_model_dict):
     try:
+        # First-of all we need to resolve featureGroupname from inputDatatype
+        training_config = trainingjob.training_config
+        feature_group_name = getField(training_config, "feature_group_name")
+        if feature_group_name == "":
+            # User has not provided feature_group_name, then it MUST be deduced from Registered InputDataType
+            feature_group_name = get_featuregroup_from_inputDataType(registered_model_dict['modelinfo']['modelInformation']['inputDataType'])
+            trainingjob.training_config = json.dumps(setField(training_config, "feature_group_name", feature_group_name))
+            LOGGER.debug("Training Config after FeatureGroup deduction --> " + trainingjob.training_config)
+            
         create_trainingjob(trainingjob)
     except DBException as err:
         raise TMException(f"create_training_job failed with exception : {str(err)}")

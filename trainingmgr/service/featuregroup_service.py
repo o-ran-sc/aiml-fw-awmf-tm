@@ -16,7 +16,7 @@
 #
 # ==================================================================================
 
-from trainingmgr.db.featuregroup_db import get_feature_group_by_name_db
+from trainingmgr.db.featuregroup_db import get_feature_group_by_name_db, get_feature_groups_from_inputDataType_db
 from trainingmgr.common.exceptions_utls import TMException, DBException
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 
@@ -28,4 +28,25 @@ def get_featuregroup_by_name(featuregroup_name:str):
         featuregroup = get_feature_group_by_name_db(featuregroup_name)
         return featuregroup
     except DBException as err:
-        raise TMException(f"get featuregroup by name service failed with exception : {str(err)}") 
+        raise TMException(f"get featuregroup by name service failed with exception : {str(err)}")
+    
+def get_featuregroup_from_inputDataType(inputDataType):
+    LOGGER.debug(f'Deducing featuregroupName from InputDataType : {inputDataType}')
+    try:
+        candidate_list = get_feature_groups_from_inputDataType_db(inputDataType)
+        LOGGER.debug(f'Candidates for inputDataType {inputDataType} are f{candidate_list}')
+        if(len(candidate_list) == 0):
+            raise TMException(f'No featureGroup is available for inputDataType {inputDataType}')
+        elif(len(candidate_list) == 1):
+            selected_featuregroup = candidate_list[0][0]
+            LOGGER.debug(f'FeatureGroup Selected for InputDataType {inputDataType} is {selected_featuregroup}')
+            return selected_featuregroup
+        else:
+            raise TMException(f'2 or more featureGroup are available for inputDataType : {inputDataType}\n Available featuregroups are {candidate_list}\n Please specify one featuregroup_name in trainingConfig to resolve conflict')
+    except DBException as err:
+        raise TMException(f"get get_featuregroup_from_inputDataType service failed with exception : {str(err)}")
+    except Exception as err:
+        raise err
+            
+        
+    
