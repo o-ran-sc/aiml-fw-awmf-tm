@@ -43,18 +43,18 @@ class MmeMgr:
         if self.__initialized:
             return
 
-        self.mme_ip = TrainingMgrConfig().model_management_service_ip
-        self.mme_port = TrainingMgrConfig().model_management_service_port
+        self.mme_ip = '192.168.180.96'
+        self.mme_port = "32006"
         
         self.__initialized = True
-    
-        
+
+
     def get_modelInfo_by_modelId(self, modelName, modelVersion):
         """
             This function returns the model information for given modelName and ModelVersion from MME
         """
         try:
-            url = f'http://{self.mme_ip}:{self.mme_port}/getModelInfo/?modelName={modelName}&modelVersion={modelVersion}'
+            url = f'http://{self.mme_ip}:{self.mme_port}/models?model-name={modelName}&model-version={modelVersion}'
             LOGGER.debug(f"Requesting modelInfo from: {url}")
             response = requests.get(url)
             if response.status_code == 200:
@@ -76,5 +76,38 @@ class MmeMgr:
             err_msg = f"Unexpected error in get_modelInfo_by_modelId: {str(err)}"
             LOGGER.error(err_msg)
             raise TMException(err_msg)
+
+    def update_artifact_version(self, modelName, modelVersion, updated_artifact_version):
+        """
+        Updates the artifact version for the given modelName and modelVersion in MME.
+        """
+        try:
+            model_info = self.get_modelInfo_by_modelId(modelName, modelVersion)[0]
+            
+            if model_info is None:
+                raise TMException(f"Model {modelName} with version {modelVersion} is not registered on MME.")
+            
+            model_info['modelId']['artifactVersion'] = updated_artifact_version
+            
+            url = f'http://{self.mme_ip}:{self.mme_port}/model-registrations/{model_info["id"]}'
+            
+            headers = {'Content-Type': 'application/json'}
+            payload = json.dumps(model_info)
+            
+            response = requests.put(url, headers=headers, data=payload)
+            
+            if response.status_code == 200:
+                return response.json()
+            else:
+                err_msg = f"Unexpected response from MME while updating artifact version: {response.status_code}"
+                LOGGER.error(err_msg)
+                raise TMException(err_msg)
         
-    
+        except requests.RequestException as err:
+            err_msg = f"Error communicating with MME : {str(err)}"
+            LOGGER.error(err_msg)
+            raise TMException(err_msg)
+        except Exception as err:
+            err_msg = f"Unexpected error in update_artifact_version: {str(err)}"
+            LOGGER.error(err_msg)
+            raise TMException(err_msg)
