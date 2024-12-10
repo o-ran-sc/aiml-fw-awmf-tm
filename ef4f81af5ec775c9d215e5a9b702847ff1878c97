@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "43c8e66e_e9a44503",
+        "filename": "tests/test_tm_apis.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-12-10T08:35:26Z",
+      "side": 1,
+      "message": "Could you use skip instead of commenting all the test cases.",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 29
+      },
+      "revId": "ef4f81af5ec775c9d215e5a9b702847ff1878c97",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
