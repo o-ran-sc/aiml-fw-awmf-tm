@@ -54,7 +54,7 @@ class MmeMgr:
             This function returns the model information for given modelName and ModelVersion from MME
         """
         try:
-            url = f'http://{self.mme_ip}:{self.mme_port}/getModelInfo/?modelName={modelName}&modelVersion={modelVersion}'
+            url = f'http://{self.mme_ip}:{self.mme_port}/models/?model-name={modelName}&model-version={int(modelVersion)}'
             LOGGER.debug(f"Requesting modelInfo from: {url}")
             response = requests.get(url)
             if response.status_code == 200:
@@ -64,7 +64,7 @@ class MmeMgr:
                 LOGGER.debug(f"ModelName = {modelName}, ModelVersion = {modelVersion} is not registered on MME")
                 return None                
             else:
-                err_msg = f"Unexpected response from KFAdapter: {response.status_code}"
+                err_msg = f"Unexpected response from mme: {response.status_code}"
                 LOGGER.error(err_msg)
                 raise TMException(err_msg)
 

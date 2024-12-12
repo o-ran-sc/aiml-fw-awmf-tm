@@ -22,6 +22,7 @@
 @trainingjob_name = testing_influxdb_101
 # @trainingjob_name = test_influx_1
 @trainingjob_version = 1
+
 ### TM: API for training
 POST http://{{base}}/trainingjobs/{{trainingjob_name}}/training
 content-type: application/json
@@ -41,6 +42,7 @@ content-type: application/json
 ### TM: Get all the training job
 GET http://{{base}}/trainingjobs/latest
 Content-Type: application/json
+
 ### TM: get status
 GET http://{{base}}/task_status/{{trainingjob_name}}
 Content-Type: application/json
@@ -53,53 +55,61 @@ POST http://{{base}}/featureGroup
 Content-Type: application/json
 
 {
-    "featureGroupName":"sample_fg_02",
-    "feature_list":"pdcpBytesDl,pdcpBytesUl",
-    "datalake_source":"InfluxSource",
-    "enable_Dme":false,
-    "Host":"my-release-influxdb.traininghost",
-    "Port":"8086",
-    "dmePort":"",
-    "bucket":"UEData",
-    "token":"########",
-    "source_name":"",
-    "measured_obj_class":"",
-    "_measurement":"liveCell",
-    "dbOrg":"primary"
+    "featuregroup_name": "testing_influxdb_01",
+    "feature_list": "pdcpBytesDl,pdcpBytesUl",
+    "datalake_source": "InfluxSource",
+    "enable_dme": false,
+    "host": "my-release-influxdb.default",
+    "port": "8086",
+    "dme_port": "",
+    "bucket": "UEData",
+    "token": "G4xTett9YjSD9m8ShuAF",
+    "source_name": "",
+    "measured_obj_class": "",
+    "measurement": "liveCell",
+    "db_org": "primary"
 }
-### TM: Get feature group
+
+### TM: Get all feature groups
 GET http://{{base}}/featureGroup
 Content-Type: application/json
 
 ### TM: Get training jobs
-GET http://{{base}}/trainingjobs/latest
+GET http://{{base}}/training-jobs/latest
 Content-Type: application/json
 
 ### TM: Get training jobs
 GET http://{{base}}/trainingjobs/{{trainingjob_name}}/{{trainingjob_version}}
 Content-Type: application/json
 
-
 ### TM: Create training job
-POST http://{{base}}/trainingjobs/test_influx_2
+POST http://{{base}}/training-jobs
 Content-Type: application/json
 
 {
-    "trainingjob_name":"{{trainingjob_name}}",
-    "is_mme":false,
-    "model_name":"",
-    "pipeline_name":"qoe_Pipeline",
-    "experiment_name":"Default",
-    "featureGroup_name":"sample_fg_01",
-    "query_filter":"",
-    "arguments":{
-        "epochs":"1",
-        "trainingjob_name":"{{trainingjob_name}}"
+    "modelId":{
+        "modelname": "model7",
+        "modelversion": "1"
+    },
+    "model_location": "",
+    "training_config": {
+        "description": "trainingjob for testing",
+        "dataPipeline": {
+            "feature_group_name": "testing_influxdb_01",
+            "query_filter": "",
+            "arguments": "{'epochs': 1, 'trainingjob_name': 'trainingjob1'}"
         },
-    "enable_versioning":false,
-    "description":"test",
-    "pipeline_version":"qoe_Pipeline",
-    "datalake_source":"InfluxSource"
+        "trainingPipeline": {
+                "pipeline_name": "qoe_Pipeline11",
+                "pipeline_version": "qoe_Pipeline11",
+                "enable_versioning": false
+        }
+    },
+    "training_dataset": "",
+    "validation_dataset": "",
+    "notification_url": "",
+    "consumer_rapp_id": "",
+    "producer_rapp_id": ""
 }
 
 ### tm: get pipelines
@@ -137,3 +147,12 @@ Content-Type: application/json
         "source_name": ""
     }
 }
+
+### Start training by training job ID
+POST http://{{base}}/training-jobs/12/training
+Content-Type: application/json
+
+
+### Get training job status by ID
+GET http://{{base}}/training-jobs/12/status
+Content-Type: application/json
