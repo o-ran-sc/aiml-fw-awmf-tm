@@ -34,19 +34,10 @@ class TrainingJobSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = TrainingJob
         load_instance = True
-        exclude = ("creation_time", "deletion_in_progress", "version", "updation_time","run_id")
+        exclude = ("creation_time", "deletion_in_progress", "updation_time","run_id")
     
     modelId = ma.Nested(ModelSchema)
 
-    @validates("trainingjob_name")
-    def validate_trainingjob_name(self, value):
-
-        if not (3<= len(value) <=50):
-            raise ValidationError("Training job name length must be between 3 and 50 characters")
-        
-        if not PATTERN.fullmatch(value):
-            raise ValidationError("Training job name must be alphanumeric and underscore only.")
-    
     @pre_load
     def processModelId(self, data, **kwargs):
         modelname = data['modelId']['modelname']
