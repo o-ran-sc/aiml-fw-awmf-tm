@@ -55,7 +55,6 @@ def check_and_notify_feature_engineering_status(APP,db):
                         
                         change_status_tj(trainingjob.id, Steps.DATA_EXTRACTION.name, States.FINISHED.name)
                         change_status_tj(trainingjob.id, Steps.DATA_EXTRACTION_AND_TRAINING.name, States.IN_PROGRESS.name)
-
                     kf_response = requests.post(
                         url_pipeline_run,
                         data=json.dumps({"trainingjob_id": trainingjob.id}),
@@ -72,7 +71,7 @@ def check_and_notify_feature_engineering_status(APP,db):
             except Exception as err:
                 LOGGER.error(f"Error processing DATAEXTRACTION_JOBS_CACHE: {str(err)}")
                 with APP.app_context():
-                    change_state_to_failed(trainingjob.id)
+                    change_state_to_failed(trainingjob)
                     # notification_rapp(trainingjob.id)
                     with LOCK:
                         try:

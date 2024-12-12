@@ -177,10 +177,7 @@ def training(training_job_id):
     LOGGER.debug("Request for training trainingjob  %s ", training_job_id)
     try:
         trainingjob = get_training_job(training_job_id)
-        print(trainingjob)
-        trainingjob_name = trainingjob.trainingjob_name
         featuregroup= get_featuregroup_by_name(getField(trainingjob.training_config, "feature_group_name"))
-        print("featuregroup name is: ",featuregroup.featuregroup_name)
         feature_list_string = featuregroup.feature_list
         influxdb_info_dic={}
         influxdb_info_dic["host"]=featuregroup.host
@@ -198,7 +195,7 @@ def training(training_job_id):
                                         _measurement, influxdb_info_dic, featuregroup.featuregroup_name)
         if (de_response.status_code == status.HTTP_200_OK ):
             LOGGER.debug("Response from data extraction for " + \
-                    trainingjob_name + " : " + json.dumps(de_response.json()))
+                    str(trainingjob.id) + " : " + json.dumps(de_response.json()))
             change_status_tj(trainingjob.id,
                                 Steps.DATA_EXTRACTION.name,
                                 States.IN_PROGRESS.name)

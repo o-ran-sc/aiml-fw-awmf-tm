@@ -185,15 +185,15 @@ def data_extraction_notification():
         response = training_start(TRAININGMGR_CONFIG_OBJ, training_details, trainingjob_id)
         if ( response.headers['content-type'] != MIMETYPE_JSON 
                 or response.status_code != status.HTTP_200_OK ):
-            err_msg = "Kf adapter invalid content-type or status_code for " + trainingjob_id
+            err_msg = "Kf adapter invalid content-type or status_code for " + str(trainingjob_id)
             raise TMException(err_msg)
         
         LOGGER.debug("response from kf_adapter for " + \
-                    trainingjob_id + " : " + json.dumps(response.json()))
+                    str(trainingjob_id) + " : " + json.dumps(response.json()))
         json_data = response.json()
         
         if not check_key_in_dictionary(["run_status", "run_id"], json_data):
-            err_msg = "Kf adapter invalid response from , key not present ,run_status or  run_id for " + trainingjob_id
+            err_msg = "Kf adapter invalid response from , key not present ,run_status or  run_id for " + str(trainingjob_id)
             Logger.error(err_msg)
             err_response_code = status.HTTP_400_BAD_REQUEST
             raise TMException(err_msg)
