@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4fec153a_ebd47d7c",
+        "filename": "trainingmgr/common/trainingmgr_operations.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2024-12-12T09:05:29Z",
+      "side": 1,
+      "message": "should be enabled",
+      "revId": "67b5db4e7e9097c1b672d1bbc2bbdea4b5e255f0",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
