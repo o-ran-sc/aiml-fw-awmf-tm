@@ -15,3 +15,8 @@
 #   limitations under the License.
 #
 # ==================================================================================
+
+from .trainingjob_controller import training_job_controller
+from .featuregroup_controller import featuregroup_controller
+
+__all__ = ['training_job_controller', 'featuregroup_controller']

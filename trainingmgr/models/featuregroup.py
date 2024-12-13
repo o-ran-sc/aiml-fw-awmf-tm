@@ -16,6 +16,7 @@
 #
 # ==================================================================================
 from . import db
+from sqlalchemy import UniqueConstraint
 
 class FeatureGroup(db.Model):
     __tablename__ = "featuregroup_info_table"
@@ -33,6 +34,10 @@ class FeatureGroup(db.Model):
     measured_obj_class = db.Column(db.String(20000), nullable=True)
     dme_port = db.Column(db.String(128), nullable=True)
     source_name = db.Column(db.String(20000), nullable=True)
+
+    __table_args__ = (
+        UniqueConstraint("featuregroup_name", name="unique featuregroup"),
+    )
 
     def __repr__(self):
         return f'<featuregroup {self.featuregroup_name}>'

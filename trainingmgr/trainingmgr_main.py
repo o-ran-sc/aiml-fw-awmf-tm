@@ -54,7 +54,7 @@ from trainingmgr.models import db, TrainingJob, FeatureGroup
 from trainingmgr.schemas import ma, TrainingJobSchema , FeatureGroupSchema
 from trainingmgr.db.featuregroup_db import add_featuregroup, edit_featuregroup, get_feature_groups_db, \
     get_feature_group_by_name_db, delete_feature_group_by_name
-from trainingmgr.controller.trainingjob_controller import training_job_controller
+from trainingmgr.controller import featuregroup_controller, training_job_controller
 from trainingmgr.controller.pipeline_controller import pipeline_controller
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig, getField
 from trainingmgr.handler.async_handler import start_async_handler
@@ -65,6 +65,7 @@ APP = Flask(__name__)
 TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
 from middleware.loggingMiddleware import LoggingMiddleware
 APP.wsgi_app = LoggingMiddleware(APP.wsgi_app)
+APP.register_blueprint(featuregroup_controller)
 APP.register_blueprint(training_job_controller)
 APP.register_blueprint(pipeline_controller)
 
@@ -648,6 +649,7 @@ def feature_group_by_name(featuregroup_name):
     return APP.response_class(response= json.dumps(api_response),
                     status= response_code,
                     mimetype=MIMETYPE_JSON)
+
 
 @APP.route('/featureGroup', methods=['POST'])
 def create_feature_group():
