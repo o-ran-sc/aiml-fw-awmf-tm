@@ -54,7 +54,7 @@ from trainingmgr.models import db, TrainingJob, FeatureGroup
 from trainingmgr.schemas import ma, TrainingJobSchema , FeatureGroupSchema
 from trainingmgr.db.featuregroup_db import add_featuregroup, edit_featuregroup, get_feature_groups_db, \
     get_feature_group_by_name_db, delete_feature_group_by_name
-from trainingmgr.controller.trainingjob_controller import training_job_controller
+from trainingmgr.controller import featuregroup_controller, training_job_controller
 from trainingmgr.controller.pipeline_controller import pipeline_controller
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig, getField
 from trainingmgr.handler.async_handler import start_async_handler
@@ -65,6 +65,7 @@ APP = Flask(__name__)
 TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
 from middleware.loggingMiddleware import LoggingMiddleware
 APP.wsgi_app = LoggingMiddleware(APP.wsgi_app)
+APP.register_blueprint(featuregroup_controller)
 APP.register_blueprint(training_job_controller)
 APP.register_blueprint(pipeline_controller)
 
@@ -651,98 +652,6 @@ def feature_group_by_name(featuregroup_name):
                     status= response_code,
                     mimetype=MIMETYPE_JSON)
 
-@APP.route('/featureGroup', methods=['POST'])
-def create_feature_group():
-    """
-    Rest endpoint to create feature group
-
-    Args in function:
-                NONE
-
-    Args in json:
-            json with below fields are given:
-                featureGroupName: str
-                    description
-                feature_list: str
-                    feature names
-                datalake: str
-                    name of datalake
-                bucket: str
-                    bucket name
-                host: str
-                    db host
-                port: str
-                    db port
-                token: str
-                    token for the bucket
-                db org: str
-                    db org name
-                measurement: str
-                    measurement of the influxdb
-                enable_Dme: boolean
-                    whether to enable dme
-                source_name: str
-                    name of source
-                DmePort: str
-                    DME port
-                measured_obj_class: str
-                    obj class for dme.
-                datalake_source: str
-                    string indicating datalake source
-
-    Returns:
-        1. For post request
-            json:
-                result : str
-                    result message
-                status code:
-                    HTTP status code 201
-        2. For put request
-            json:
-                result : str
-                    result message
-                status code:
-                    HTTP status code 200
-
-    Exceptions:
-        All exception are provided with exception message and HTTP status code."""
-    
-    api_response = {}
-    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    LOGGER.debug('feature Group Create request, ' + json.dumps(request.json))
-
-    try:
-        featuregroup = FeatureGroupSchema().load(request.get_json())
-        feature_group_name = featuregroup.featuregroup_name
-        # check the data conformance
-        # LOGGER.debug("the db info is : ", get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name))
-        if (not check_trainingjob_name_or_featuregroup_name(feature_group_name) or
-            len(feature_group_name) < 3 or len(feature_group_name) > 63):
-            api_response = {"Exception": "Failed to create the feature group since feature group not valid"}
-            response_code = status.HTTP_400_BAD_REQUEST
-        else:
-            # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
-            add_featuregroup(featuregroup)
-            api_response={"result": "Feature Group Created"}
-            response_code =status.HTTP_200_OK
-            if featuregroup.enable_dme == True :
-                response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, featuregroup)
-                if response.status_code != 201:
-                    api_response={"Exception": "Cannot create dme job"}
-                    delete_feature_group_by_name(featuregroup)
-                    response_code=status.HTTP_400_BAD_REQUEST
-    except ValidationError as err:
-        return {"Exception": str(err)}, 400
-    except DBException as err:
-        return {"Exception": str(err)}, 400
-    except Exception as e:
-        err_msg = "Failed to create the feature Group "
-        api_response = {"Exception":str(e)}
-        LOGGER.error(str(e))
-    
-    return APP.response_class(response=json.dumps(api_response),
-                                        status=response_code,
-                                        mimetype=MIMETYPE_JSON)
 
 @APP.route('/featureGroup', methods=['GET'])
 def get_feature_group():
