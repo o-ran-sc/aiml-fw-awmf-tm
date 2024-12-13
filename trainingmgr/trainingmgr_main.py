@@ -95,32 +95,36 @@ def error(err):
 
 
 
-@APP.route('/model/<trainingjob_name>/<version>/Model.zip', methods=['GET'])
-def get_model(trainingjob_name, version):
+@APP.route('/model/<modelname>/<modelversion>/<artifactversion>/Model.zip', methods=['GET'])
+def get_model(modelname, modelversion, artifactversion):
     """
     Function handling rest endpoint to download model zip file of <trainingjob_name, version> trainingjob.
 
     Args in function:
-        trainingjob_name: str
-            name of trainingjob.
-        version: int
-            version of trainingjob.
+        trainingjob_id: str
+            id of trainingjob.
 
     Args in json:
         not required json
 
     Returns:
-        zip file of model of <trainingjob_name, version> trainingjob.
+        zip file of model of <trainingjob id> trainingjob.
 
     Exceptions:
         all exception are provided with exception message and HTTP status code.
     """
-    if not check_trainingjob_name_and_version(trainingjob_name, version):
-        return {"Exception":"The trainingjob_name or version is not correct"}, status.HTTP_400_BAD_REQUEST
 
     try:
-        return send_file(MM_SDK.get_model_zip(trainingjob_name, version), mimetype='application/zip')
-    except Exception:
+        
+        return send_file(MM_SDK.get_model_zip(modelname, modelversion, artifactversion), mimetype='application/zip')
+    except Exception as err:
+        LOGGER.error(f"error while downloading model as {str(err)}")
+        # for no trainingjob with trainingjob_id
+        
+        # for no model present in leofs
+        if "An error occurred (404) when calling the HeadObject operation: Not Found" in str(err):
+            return {"Exception": f"error while downloading model as no model with modelId {modelname} {modelversion} {artifactversion} was found"}, status.HTTP_404_NOT_FOUND
+        
         return {"Exception": "error while downloading model"}, status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
