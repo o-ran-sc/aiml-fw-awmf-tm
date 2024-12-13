@@ -82,29 +82,31 @@ def delete_training_job(training_job_id : int):
     try:
         # Signal Deletion in Progress
         tj = get_trainingjob(training_job_id)
-        # print("Run Id = ", tj.run_id, "   --  ", tj.run_id is None)
         change_field_value(training_job_id, "deletion_in_progress", True)
-        # isDeleted = True
+        steps_state =  json.loads(tj.steps_state.states)
+        overall_status = get_one_word_status(steps_state)
+        
+        if overall_status == States.IN_PROGRESS.name:
+            step_in_progress_state = get_step_in_progress_state(steps_state)
+            if step_in_progress_state == Steps.DATA_EXTRACTION:
+                pass
+                # TODO: Remove the job from DATAEXTRACTION_JOBS_CACHE to signal not to check its status
+                # with LOCK:
+                #     DATAEXTRACTION_JOBS_CACHE.pop(trainingjob_name)
+            elif (step_in_progress_state == Steps.TRAINING or (step_in_progress_state == Steps.DATA_EXTRACTION_AND_TRAINING and tj.run_id is not None)):
+                # Signal the Kf-Adapter to terminate the 
+                response = terminate_training_service(tj.run_id)
+                LOGGER.debug("Deletion-Response : " + response)
+
         isDeleted = delete_trainingjob_by_id(id=training_job_id)
         if isDeleted:
-            steps_state =  json.loads(tj.steps_state.states)
-            overall_status = get_one_word_status(steps_state)
-            if overall_status == States.IN_PROGRESS.name:
-                step_in_progress_state = get_step_in_progress_state(steps_state)
-                if step_in_progress_state == Steps.DATA_EXTRACTION:
-                    pass
-                    # TODO: Remove the job from DATAEXTRACTION_JOBS_CACHE to signal not to check its status
-                    # with LOCK:
-                    #     DATAEXTRACTION_JOBS_CACHE.pop(trainingjob_name)
-                elif (step_in_progress_state == Steps.TRAINING or (step_in_progress_state == Steps.DATA_EXTRACTION_AND_TRAINING and tj.run_id is not None)):
-                    # Signal the Kf-Adapter to terminate the training
-                    response = terminate_training_service(tj.run_id)
-                    print("Deletion-Response : ", response)  
             return True
         else:
             return False
     except Exception as err :
         raise DBException(f"delete_trainining_job failed with exception : {str(err)}")
+
+
 def get_trainingjob_by_modelId(model_id):
     try:
         trainingjob = get_trainingjob_by_modelId_db(model_id)
