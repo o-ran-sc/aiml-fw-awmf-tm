@@ -88,7 +88,7 @@ Content-Type: application/json
 
 {
     "modelId":{
-        "modelname": "model7",
+        "modelname": "modeltest15",
         "modelversion": "1"
     },
     "model_location": "",
@@ -100,8 +100,8 @@ Content-Type: application/json
             "arguments": "{'epochs': 1, 'trainingjob_name': 'trainingjob1'}"
         },
         "trainingPipeline": {
-                "pipeline_name": "qoe_Pipeline11",
-                "pipeline_version": "qoe_Pipeline11",
+                "pipeline_name": "qoe_Pipeline14",
+                "pipeline_version": "qoe_Pipeline14",
                 "enable_versioning": false
         }
     },
@@ -149,10 +149,17 @@ Content-Type: application/json
 }
 
 ### Start training by training job ID
-POST http://{{base}}/training-jobs/12/training
+POST http://{{base}}/training-jobs/26/training
 Content-Type: application/json
 
-
 ### Get training job status by ID
-GET http://{{base}}/training-jobs/12/status
+GET http://{{base}}/training-jobs/18/status
+Content-Type: application/json
+
+### Get training job details by training job ID
+GET http://{{base}}/training-jobs/18
+Content-Type: application/json
+
+### Delete training job by training job ID
+DELETE http://{{base}}/training-jobs/41
 Content-Type: application/json

@@ -205,8 +205,9 @@ def data_extraction_notification():
             change_status_tj(trainingjob.id,
                             Steps.TRAINING.name,
                             States.IN_PROGRESS.name)
-            change_update_field_value(trainingjob,
-                                        "run_id", json_data["run_id"])
+            change_update_field_value(trainingjob.id,
+                                     "run_id", 
+                                     json_data["run_id"])
             # notification_rapp(trainingjob, TRAININGMGR_CONFIG_OBJ)
         else:
             raise TMException("KF Adapter- run_status in not scheduled")
