@@ -16,6 +16,24 @@
       "message": "Why don\u0027t you use `LOGGER.debug` instead of print?",
       "revId": "88dcfe6d8cb017342a1f2e7ba60a35b24c9e913f",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c5736ba4_a39df25a",
+        "filename": "trainingmgr/service/training_job_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-12-16T10:43:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "859817c8_af8ff9d4",
+      "revId": "88dcfe6d8cb017342a1f2e7ba60a35b24c9e913f",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
