@@ -48,8 +48,7 @@ def __getLeafPaths():
             },
             "trainingPipeline": {
                     "pipeline_name": "qoe_Pipeline",
-                    "pipeline_version": "2",
-                    "enable_versioning": true
+                    "pipeline_version": "2"
         }
     '''
     paths = {
@@ -59,7 +58,6 @@ def __getLeafPaths():
         "arguments" : ["dataPipeline", "arguments"],
         "pipeline_name": ["trainingPipeline", "pipeline_name"],
         "pipeline_version": ["trainingPipeline", "pipeline_version"],
-        "enable_versioning": ["trainingPipeline", "enable_versioning"]
     }
     return paths
 
