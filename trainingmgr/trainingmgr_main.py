@@ -28,7 +28,7 @@ import traceback
 import threading
 from threading import Lock
 import time
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, jsonify
 from flask_api import status
 from flask_migrate import Migrate
 from marshmallow import ValidationError
@@ -58,6 +58,7 @@ from trainingmgr.controller import featuregroup_controller, training_job_control
 from trainingmgr.controller.pipeline_controller import pipeline_controller
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig, getField
 from trainingmgr.handler.async_handler import start_async_handler
+from trainingmgr.service.mme_service import get_modelinfo_by_modelId_service
 from trainingmgr.service.training_job_service import change_status_tj, change_update_field_value, get_training_job, update_artifact_version
 from trainingmgr.service.pipeline_service import start_training_service
 
@@ -167,15 +168,15 @@ def data_extraction_notification():
         trainingjob_id = request.json["trainingjob_id"]
         trainingjob = get_training_job(trainingjob_id)
         featuregroup_name = getField(trainingjob.training_config, "feature_group_name")
-        arguments = getField(trainingjob.training_config, "arguments")
+        argument_dict = getField(trainingjob.training_config, "arguments")
 
-        argument_dict = ast.literal_eval(arguments)
+        # argument_dict = ast.literal_eval(arguments)
 
         argument_dict["trainingjob_id"] = trainingjob_id
         argument_dict["featuregroup_name"] = featuregroup_name
         argument_dict["modelName"] = trainingjob.modelId.modelname
         argument_dict["modelVersion"] = trainingjob.modelId.modelversion
-        argument_dict["artifactVersion"] = trainingjob.modelId.artifactversion
+        argument_dict["modellocation"] = trainingjob.model_location
 
         # Arguments values must be of type string
         for key, val in argument_dict.items():
@@ -185,8 +186,9 @@ def data_extraction_notification():
         # Experiment name is harded to be Default
         training_details = {
             "pipeline_name": getField(trainingjob.training_config, "pipeline_name"), "experiment_name": 'Default',
-            "arguments": argument_dict, "pipeline_version": getField(trainingjob.training_config, "pipeline_name")
+            "arguments": argument_dict, "pipeline_version": getField(trainingjob.training_config, "pipeline_version")
         }
+        LOGGER.debug("training detail for kf adapter is: "+ str(training_details))
         response = training_start(TRAININGMGR_CONFIG_OBJ, training_details, trainingjob_id)
         if ( response.headers['content-type'] != MIMETYPE_JSON 
                 or response.status_code != status.HTTP_200_OK ):
@@ -207,11 +209,11 @@ def data_extraction_notification():
             change_status_tj(trainingjob.id,
                             Steps.DATA_EXTRACTION_AND_TRAINING.name,
                             States.FINISHED.name)
-            LOGGER.debug("DATA_EXTRACTION_AND_TRAINING step set to FINISHED for training job " + trainingjob.id)
+            LOGGER.debug("DATA_EXTRACTION_AND_TRAINING step set to FINISHED for training job " + str(trainingjob.id))
             change_status_tj(trainingjob.id,
                             Steps.TRAINING.name,
                             States.IN_PROGRESS.name)
-            LOGGER.debug("TRAINING step set to IN_PROGRESS for training job " + trainingjob.id)
+            LOGGER.debug("TRAINING step set to IN_PROGRESS for training job " + str(trainingjob.id))
             change_update_field_value(trainingjob.id,
                                      "run_id", 
                                      json_data["run_id"])
@@ -229,13 +231,14 @@ def data_extraction_notification():
         pass
 
     except Exception as err:
+        LOGGER.error("error is : "+ str(err))
+        return jsonify({"failed":"error"}), 500
         # LOGGER.error("Failed to handle dataExtractionNotification. " + str(err))
         # if not change_in_progress_to_failed_by_latest_version(trainingjob_name) :
         #     LOGGER.error(ERROR_TYPE_DB_STATUS)
         # return response_for_training(err_response_code,
         #                                 str(err) + "(trainingjob name is " + trainingjob_name + ")",
         #                                 LOGGER, False, trainingjob_name, MM_SDK)
-        pass
 
     return APP.response_class(response=json.dumps({"result": "pipeline is scheduled"}),
                                     status=status.HTTP_200_OK,
@@ -301,13 +304,13 @@ def pipeline_notification():
             # notification_rapp(trainingjob_info, TRAININGMGR_CONFIG_OBJ)
             model_name= trainingjob.modelId.modelname
             model_version= trainingjob.modelId.modelversion
-            artifact_version= trainingjob.modelId.artifactversion
-            artifact_version= update_artifact_version(trainingjob_id , artifact_version, "major")
 
-            if MM_SDK.check_object(model_name, model_version, artifact_version, "Model.zip"):
+            modelinfo = get_modelinfo_by_modelId_service(model_name, model_version)[0]
+            artifactversion = modelinfo["modelId"]["artifactVersion"]
+            if MM_SDK.check_object(model_name, model_version, artifactversion, "Model.zip"):
                 model_url = "http://" + str(TRAININGMGR_CONFIG_OBJ.my_ip) + ":" + \
                             str(TRAININGMGR_CONFIG_OBJ.my_port) + "/model/" + \
-                            model_name + "/" + str(model_version) + "/" + str(artifact_version) + "/Model.zip"
+                            model_name + "/" + str(model_version) + "/" + str(artifactversion) + "/Model.zip"
 
                 change_update_field_value(trainingjob_id, "model_url" , model_url)
                 
@@ -317,12 +320,12 @@ def pipeline_notification():
                 # notification_rapp(trainingjob_info, TRAININGMGR_CONFIG_OBJ)
             else:
                 errMsg = "Trained model is not available  "
-                LOGGER.error(errMsg + trainingjob_id)
-                raise TMException(errMsg + trainingjob_id)
+                LOGGER.error(errMsg + str(trainingjob_id))
+                raise TMException(errMsg + str(trainingjob_id))
         else:
-            LOGGER.error("Pipeline notification -Training failed " + trainingjob_id)    
+            LOGGER.error("Pipeline notification -Training failed " + str(trainingjob_id)) 
             raise TMException("Pipeline not successful for " + \
-                                        trainingjob_id + \
+                                        str(trainingjob_id) + \
                                         ",request json from kf adapter is: " + json.dumps(request.json))      
     except Exception as err:
         #Training failure response
@@ -339,7 +342,6 @@ def pipeline_notification():
     #                                         "Pipeline notification success.",
     #                                         LOGGER, True, trainingjob_id, MM_SDK)
     return "", 200
-
 
 
 

@@ -25,7 +25,7 @@ from trainingmgr.common.exceptions_utls import TMException
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.schemas.trainingjob_schema import TrainingJobSchema
 from trainingmgr.service.training_job_service import delete_training_job, create_training_job, get_training_job, get_trainingjob_by_modelId, get_trainining_jobs, \
-get_steps_state, change_status_tj, get_data_extraction_in_progress_trainingjobs
+get_steps_state, change_status_tj, get_data_extraction_in_progress_trainingjobs, update_trainingPipeline
 from trainingmgr.common.trainingmgr_util import check_key_in_dictionary
 from trainingmgr.common.trainingmgr_operations import data_extraction_start
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig, getField
@@ -76,30 +76,28 @@ def create_trainingjob():
         
         trainingjob = trainingjob_schema.load(request_json)
 
-        model_id = trainingjob.modelId
-        
-        # the artifact version will be "0.0.0" for now, it will be updated once we have the model is trained.
-        model_id.artifactversion="0.0.0"
-
         trainingConfig = trainingjob.training_config
         if(not validateTrainingConfig(trainingConfig)):
             return jsonify({'Exception': 'The TrainingConfig is not correct'}), status.HTTP_400_BAD_REQUEST
         
-        # check if trainingjob is already present with name
-        trainingjob_db = get_trainingjob_by_modelId(model_id)
-
-        if trainingjob_db != None:
-            return jsonify({"Exception":f"modelId {model_id.modelname} and {model_id.modelversion} is already present in database"}), status.HTTP_409_CONFLICT
-
+        model_id = trainingjob.modelId
+        registered_model_dict = get_modelinfo_by_modelId_service(model_id.modelname, model_id.modelversion)[0]
         # Verify if the modelId is registered over mme or not
-        
-        registered_model_list = get_modelinfo_by_modelId_service(model_id.modelname, model_id.modelversion)
-        if registered_model_list is None:
+        if registered_model_dict is None:
             return jsonify({"Exception":f"modelId {model_id.modelname} and {model_id.modelversion} is not registered at MME, Please first register at MME and then continue"}), status.HTTP_400_BAD_REQUEST
-        registered_model_dict = registered_model_list[0]
-        create_training_job(trainingjob, registered_model_dict)
 
-        return jsonify({"Trainingjob": trainingjob_schema.dump(trainingjob)}), 201
+        if registered_model_dict["modelLocation"] != trainingjob.model_location:
+            return jsonify({"Exception":f"modelId {model_id.modelname} and {model_id.modelversion} and trainingjob created does not have same modelLocation, Please first register at MME properly and then continue"}), status.HTTP_400_BAD_REQUEST
+        
+        if registered_model_dict["modelId"]["artifactVersion"] == "0.0.0":
+            if registered_model_dict["modelLocation"] == "":
+                return create_training_job(trainingjob=trainingjob, registered_model_dict=registered_model_dict)
+            else:
+                trainingjob = update_trainingPipeline(trainingjob)
+                return create_training_job(trainingjob=trainingjob, registered_model_dict=registered_model_dict)
+        else:
+            trainingjob = update_trainingPipeline(trainingjob)
+            return create_training_job(trainingjob=trainingjob, registered_model_dict=registered_model_dict)
         
     except ValidationError as error:
         return jsonify(error.messages), status.HTTP_400_BAD_REQUEST
