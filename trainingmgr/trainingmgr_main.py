@@ -202,11 +202,14 @@ def data_extraction_notification():
             change_status_tj(trainingjob.id,
                             Steps.DATA_EXTRACTION_AND_TRAINING.name,
                             States.FINISHED.name)
+            LOGGER.debug("DATA_EXTRACTION_AND_TRAINING step set to FINISHED for training job " + trainingjob.id)
             change_status_tj(trainingjob.id,
                             Steps.TRAINING.name,
                             States.IN_PROGRESS.name)
-            change_update_field_value(trainingjob,
-                                        "run_id", json_data["run_id"])
+            LOGGER.debug("TRAINING step set to IN_PROGRESS for training job " + trainingjob.id)
+            change_update_field_value(trainingjob.id,
+                                     "run_id", 
+                                     json_data["run_id"])
             # notification_rapp(trainingjob, TRAININGMGR_CONFIG_OBJ)
         else:
             raise TMException("KF Adapter- run_status in not scheduled")

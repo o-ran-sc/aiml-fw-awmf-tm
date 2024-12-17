@@ -88,7 +88,7 @@ Content-Type: application/json
 
 {
     "modelId":{
-        "modelname": "model7",
+        "modelname": "modeltest7",
         "modelversion": "1"
     },
     "model_location": "",
@@ -152,7 +152,15 @@ Content-Type: application/json
 POST http://{{base}}/training-jobs/12/training
 Content-Type: application/json
 
-
 ### Get training job status by ID
 GET http://{{base}}/training-jobs/12/status
 Content-Type: application/json
+
+### Get training job details by training job ID
+GET http://{{base}}/training-jobs/18
+Content-Type: application/json
+
+### Delete training job by training job ID
+DELETE http://{{base}}/training-jobs/41
+Content-Type: application/json
+
