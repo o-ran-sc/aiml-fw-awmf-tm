@@ -28,7 +28,7 @@ from trainingmgr.service.training_job_service import delete_training_job, create
 get_steps_state, change_status_tj, get_data_extraction_in_progress_trainingjobs
 from trainingmgr.common.trainingmgr_util import check_key_in_dictionary
 from trainingmgr.common.trainingmgr_operations import data_extraction_start
-from trainingmgr.common.trainingConfig_parser import validateTrainingConfig, getField
+from trainingmgr.common.trainingConfig_parser import setField, validateTrainingConfig, getField
 from trainingmgr.service.featuregroup_service import get_featuregroup_by_name
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
@@ -85,20 +85,37 @@ def create_trainingjob():
         if(not validateTrainingConfig(trainingConfig)):
             return jsonify({'Exception': 'The TrainingConfig is not correct'}), status.HTTP_400_BAD_REQUEST
         
-        # check if trainingjob is already present with name
-        trainingjob_db = get_trainingjob_by_modelId(model_id)
-
-        if trainingjob_db != None:
-            return jsonify({"Exception":f"modelId {model_id.modelname} and {model_id.modelversion} is already present in database"}), status.HTTP_409_CONFLICT
-
-        # Verify if the modelId is registered over mme or not
-        
         registered_model_dict = get_modelinfo_by_modelId_service(model_id.modelname, model_id.modelversion)
+        # Verify if the modelId is registered over mme or not
         if registered_model_dict is None:
             return jsonify({"Exception":f"modelId {model_id.modelname} and {model_id.modelversion} is not registered at MME, Please first register at MME and then continue"}), status.HTTP_400_BAD_REQUEST
-        create_training_job(trainingjob, registered_model_dict)
+        
+        pipeline_info = {
+            "pipeline_name": "qoe_retraining_pipeline",
+            "pipeline_version": "qoe_retraining_pipeline"
+        }  
 
-        return jsonify({"Trainingjob": trainingjob_schema.dump(trainingjob)}), 201
+        if trainingjob.modelId.artifactversion == "0.0.0":
+
+            # check if trainingjob is already present with name
+            trainingjob_db = get_trainingjob_by_modelId(model_id)
+
+            if trainingjob_db != None:
+                return jsonify({"Exception":f"modelId {model_id.modelname} and {model_id.modelversion} is already present in database"}), status.HTTP_409_CONFLICT
+            
+            if trainingjob.model_location == "":
+                
+                return create_training_job(trainingjob, registered_model_dict, True)
+            else:
+                training_config = json.dumps(setField(training_config, "pipeline_name", "qoe_retraining_pipeline"))
+                training_config = json.dumps(setField(training_config, "pipeline_version", "qoe_retraining_pipeline"))
+                trainingjob.training_config = trainingConfig
+                return create_training_job(trainingjob, registered_model_dict, pipeline_info, True)
+        else:
+            training_config = json.dumps(setField(training_config, "pipeline_name", "qoe_retraining_pipeline"))
+            training_config = json.dumps(setField(training_config, "pipeline_version", "qoe_retraining_pipeline"))
+            trainingjob.training_config = trainingConfig
+            return create_training_job(trainingjob, registered_model_dict, pipeline_info)
         
     except ValidationError as error:
         return jsonify(error.messages), status.HTTP_400_BAD_REQUEST
@@ -146,88 +163,3 @@ def get_trainingjob_status(training_job_id):
         return jsonify({
             'message': str(err)
         }), 500
-
-@training_job_controller.route('/training-jobs/<int:training_job_id>/training', methods=['POST'])
-def training(training_job_id):
-    """
-    Rest end point to start training job.
-    It calls data extraction module for data extraction and other training steps
-
-    Args in function:
-        training_job_id: str
-            id of trainingjob.
-
-    Args in json:
-        not required json
-
-    Returns:
-        json:
-            training_job_id: str
-                name of trainingjob
-            result: str
-                route of data extraction module for getting data extraction status of
-                given training_job_id .
-        status code:
-            HTTP status code 200
-
-    Exceptions:
-        all exception are provided with exception message and HTTP status code.
-    """
-
-    LOGGER.debug("Request for training trainingjob  %s ", training_job_id)
-    try:
-        trainingjob = get_training_job(training_job_id)
-        featuregroup= get_featuregroup_by_name(getField(trainingjob.training_config, "feature_group_name"))
-        feature_list_string = featuregroup.feature_list
-        influxdb_info_dic={}
-        influxdb_info_dic["host"]=featuregroup.host
-        influxdb_info_dic["port"]=featuregroup.port
-        influxdb_info_dic["bucket"]=featuregroup.bucket
-        influxdb_info_dic["token"]=featuregroup.token
-        influxdb_info_dic["db_org"] = featuregroup.db_org
-        influxdb_info_dic["source_name"]= featuregroup.source_name
-        _measurement = featuregroup.measurement
-        query_filter = getField(trainingjob.training_config, "query_filter")
-        datalake_source = {featuregroup.datalake_source: {}} # Datalake source should be taken from FeatureGroup (not TrainingJob)
-        LOGGER.debug('Starting Data Extraction...')
-        de_response = data_extraction_start(TRAININGMGR_CONFIG_OBJ, training_job_id,
-                                        feature_list_string, query_filter, datalake_source,
-                                        _measurement, influxdb_info_dic, featuregroup.featuregroup_name)
-        if (de_response.status_code == status.HTTP_200_OK ):
-            LOGGER.debug("Response from data extraction for " + \
-                    str(trainingjob.id) + " : " + json.dumps(de_response.json()))
-            change_status_tj(trainingjob.id,
-                                Steps.DATA_EXTRACTION.name,
-                                States.IN_PROGRESS.name)
-            with LOCK:
-                DATAEXTRACTION_JOBS_CACHE[trainingjob.id] = "Scheduled"
-        elif( de_response.headers['content-type'] == MIMETYPE_JSON ) :
-            errMsg = "Data extraction responded with error code."
-            LOGGER.error(errMsg)
-            json_data = de_response.json()
-            LOGGER.debug(str(json_data))
-            if check_key_in_dictionary(["result"], json_data):
-                return jsonify({
-                    "message": json.dumps({"Failed":errMsg + json_data["result"]})
-                }), 500
-            else:
-                return jsonify({
-                    "message": errMsg
-                }), 500
-        else:
-                return jsonify({
-                    "message": "failed data extraction"
-                }), 500
-    except TMException as err:
-        if "No row was found when one was required" in str(err):
-            return jsonify({
-                    'message': str(err)
-                }), 404 
-    except Exception as e:
-        # print(traceback.format_exc())
-        # response_data =  {"Exception": str(err)}
-        LOGGER.debug("Error is training, job id: " + str(training_job_id)+" " + str(e))   
-        return jsonify({
-            'message': str(e)
-        }), 500      
-    return jsonify({"result": "training started"}), 200
