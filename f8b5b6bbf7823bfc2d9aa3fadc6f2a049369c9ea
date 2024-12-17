@@ -22,6 +22,30 @@
       },
       "revId": "f8b5b6bbf7823bfc2d9aa3fadc6f2a049369c9ea",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b7984bca_0ebec6c1",
+        "filename": "trainingmgr/service/training_job_service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2024-12-17T07:48:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c050306a_7bd278ad",
+      "range": {
+        "startLine": 98,
+        "startChar": 27,
+        "endLine": 98,
+        "endChar": 68
+      },
+      "revId": "f8b5b6bbf7823bfc2d9aa3fadc6f2a049369c9ea",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
