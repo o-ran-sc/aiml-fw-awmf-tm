@@ -6,12 +6,11 @@ import requests
 from trainingmgr.common.trainingConfig_parser import getField
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.trainingmgr_operations import data_extraction_status
-from trainingmgr.service.training_job_service import get_data_extraction_in_progress_trainingjobs, get_training_job, change_status_tj
 # from trainingmgr.common.trainingmgr_util import handle_async_feature_engineering_status_exception_case
-from trainingmgr.common.exceptions_utls import TMException
+from trainingmgr.common.exceptions_utls import DBException, TMException
 from trainingmgr.constants import Steps, States
 from modelmetricsdk.model_metrics_sdk import ModelMetricsSdk
-from trainingmgr.db.trainingjob_db import change_state_to_failed
+from trainingmgr.db.trainingjob_db import change_state_to_failed, get_trainingjob, change_steps_state
 
 
 
@@ -23,7 +22,17 @@ LOGGER = TrainingMgrConfig().logger
 TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
 Model_Metrics_Sdk = ModelMetricsSdk()
 
-
+def get_data_extraction_in_progress_trainingjobs():
+    result = {}
+    try:
+        trainingjobs = get_trainingjob()
+        for trainingjob in trainingjobs:
+            status = json.loads(trainingjob.steps_state.states)
+            if status[Steps.DATA_EXTRACTION.name] == States.IN_PROGRESS.name:
+                result[trainingjob.id] = "Scheduled"
+    except Exception as err:
+        raise DBException("get_data_extraction_in_progress_trainingjobs," + str(err))
+    return result
 
 def check_and_notify_feature_engineering_status(APP,db):
     """Asynchronous function to check and notify feature engineering status."""
@@ -40,7 +49,7 @@ def check_and_notify_feature_engineering_status(APP,db):
             try:
                 # trainingjob_name = trainingjob.trainingjob_name
                 with APP.app_context():
-                    trainingjob = get_training_job(trainingjob_id)
+                    trainingjob = get_trainingjob(trainingjob_id)
                 featuregroup_name = getField(trainingjob.training_config, "feature_group_name")
                 response = data_extraction_status(featuregroup_name, trainingjob_id, TRAININGMGR_CONFIG_OBJ)
                 if (response.headers.get('content-type') != "application/json" or
@@ -53,8 +62,8 @@ def check_and_notify_feature_engineering_status(APP,db):
                 if response_data["task_status"] == "Completed":
                     with APP.app_context():
                         
-                        change_status_tj(trainingjob.id, Steps.DATA_EXTRACTION.name, States.FINISHED.name)
-                        change_status_tj(trainingjob.id, Steps.DATA_EXTRACTION_AND_TRAINING.name, States.IN_PROGRESS.name)
+                        change_steps_state(trainingjob.id, Steps.DATA_EXTRACTION.name, States.FINISHED.name)
+                        change_steps_state(trainingjob.id, Steps.DATA_EXTRACTION_AND_TRAINING.name, States.IN_PROGRESS.name)
                     kf_response = requests.post(
                         url_pipeline_run,
                         data=json.dumps({"trainingjob_id": trainingjob.id}),
