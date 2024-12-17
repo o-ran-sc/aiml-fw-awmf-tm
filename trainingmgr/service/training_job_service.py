@@ -16,23 +16,29 @@
 #
 # ==================================================================================
 import json
+from flask_api import status
+from flask import jsonify
+from threading import Lock
+from trainingmgr.common.trainingmgr_operations import data_extraction_start
 from trainingmgr.db.trainingjob_db import delete_trainingjob_by_id, create_trainingjob, get_trainingjob, get_trainingjob_by_modelId_db, \
 change_steps_state, change_field_value, change_field_value, change_steps_state_df, changeartifact
 from trainingmgr.common.exceptions_utls import DBException, TMException
 from trainingmgr.common.trainingConfig_parser import getField, setField
 from trainingmgr.schemas import TrainingJobSchema
-from trainingmgr.common.trainingmgr_util import get_one_word_status, get_step_in_progress_state
+from trainingmgr.common.trainingmgr_util import get_one_word_status, get_step_in_progress_state, check_key_in_dictionary
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
 from trainingmgr.service.pipeline_service import terminate_training_service
-from trainingmgr.service.featuregroup_service import get_featuregroup_from_inputDataType
+from trainingmgr.service.featuregroup_service import get_featuregroup_by_name, get_featuregroup_from_inputDataType
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
-from trainingmgr.constants.steps import Steps
-from trainingmgr.constants.states import States
+from trainingmgr.constants import Steps, States
+from trainingmgr.handler.async_handler import DATAEXTRACTION_JOBS_CACHE
 
 trainingJobSchema = TrainingJobSchema()
 trainingJobsSchema = TrainingJobSchema(many=True)
-
+TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
+LOCK = Lock()
+MIMETYPE_JSON = "application/json"
 LOGGER = TrainingMgrConfig().logger
 
 def get_training_job(training_job_id: int):
@@ -49,7 +55,7 @@ def get_trainining_jobs():
     except DBException as err:
         raise TMException(f"get_training_jobs failed with exception : {str(err)}")
 
-def create_training_job(trainingjob, registered_model_dict):
+def create_training_job(trainingjob, registered_model_dict, save_to_db=True):
     try:
         # First-of all we need to resolve featureGroupname from inputDatatype
         training_config = trainingjob.training_config
@@ -60,7 +66,12 @@ def create_training_job(trainingjob, registered_model_dict):
             trainingjob.training_config = json.dumps(setField(training_config, "feature_group_name", feature_group_name))
             LOGGER.debug("Training Config after FeatureGroup deduction --> " + trainingjob.training_config)
             
-        create_trainingjob(trainingjob)
+        if save_to_db:
+            create_trainingjob(trainingjob)
+        
+        LOGGER.debug("trainingjob id is: "+trainingjob.id)
+        
+        training(trainingjob)
     except DBException as err:
         raise TMException(f"create_training_job failed with exception : {str(err)}")
     
@@ -109,8 +120,9 @@ def get_trainingjob_by_modelId(model_id):
     try:
         trainingjob = get_trainingjob_by_modelId_db(model_id)
         return trainingjob
-
     except Exception as err:
+        if "No row was found when one was required" in str(err):
+            return None
         raise DBException(f"get_trainingjob_by_name failed with exception : {str(err)}")
 
 def get_steps_state(trainingjob_id):
@@ -168,3 +180,91 @@ def update_artifact_version(trainingjob_id, artifact_version : str, level : str)
         return f'{major}.{minor}.{patch}'
     except Exception as err:
         raise TMException(f"failed to update_artifact_version with exception : {str(err)}")
+    
+def training(trainingjob):
+    """
+    Rest end point to start training job.
+    It calls data extraction module for data extraction and other training steps
+
+    Args in function:
+        training_job_id: str
+            id of trainingjob.
+
+    Args in json:
+        not required json
+
+    Returns:
+        json:
+            training_job_id: str
+                name of trainingjob
+            result: str
+                route of data extraction module for getting data extraction status of
+                given training_job_id .
+        status code:
+            HTTP status code 200
+
+    Exceptions:
+        all exception are provided with exception message and HTTP status code.
+    """
+
+    LOGGER.debug("Request for training trainingjob  %s ", trainingjob.id)
+    try:
+        # trainingjob = get_training_job(trainingjob_id)
+        # print(trainingjob)
+        # trainingjob_name = trainingjob.trainingjob_name
+        training_job_id = trainingjob.id
+        featuregroup= get_featuregroup_by_name(getField(trainingjob.training_config, "feature_group_name"))
+        LOGGER.debug("featuregroup name is: "+featuregroup.featuregroup_name)
+        feature_list_string = featuregroup.feature_list
+        influxdb_info_dic={}
+        influxdb_info_dic["host"]=featuregroup.host
+        influxdb_info_dic["port"]=featuregroup.port
+        influxdb_info_dic["bucket"]=featuregroup.bucket
+        influxdb_info_dic["token"]=featuregroup.token
+        influxdb_info_dic["db_org"] = featuregroup.db_org
+        influxdb_info_dic["source_name"]= featuregroup.source_name
+        _measurement = featuregroup.measurement
+        query_filter = getField(trainingjob.training_config, "query_filter")
+        datalake_source = {featuregroup.datalake_source: {}} # Datalake source should be taken from FeatureGroup (not TrainingJob)
+        LOGGER.debug('Starting Data Extraction...')
+        de_response = data_extraction_start(TRAININGMGR_CONFIG_OBJ, training_job_id,
+                                        feature_list_string, query_filter, datalake_source,
+                                        _measurement, influxdb_info_dic, featuregroup.featuregroup_name)
+        if (de_response.status_code == status.HTTP_200_OK ):
+            LOGGER.debug("Response from data extraction for " + \
+                    training_job_id + " : " + json.dumps(de_response.json()))
+            change_status_tj(trainingjob.id,
+                                Steps.DATA_EXTRACTION.name,
+                                States.IN_PROGRESS.name)
+            with LOCK:
+                DATAEXTRACTION_JOBS_CACHE[trainingjob.id] = "Scheduled"
+        elif( de_response.headers['content-type'] == MIMETYPE_JSON ) :
+            errMsg = "Data extraction responded with error code."
+            LOGGER.error(errMsg)
+            json_data = de_response.json()
+            LOGGER.debug(str(json_data))
+            if check_key_in_dictionary(["result"], json_data):
+                return jsonify({
+                    "message": json.dumps({"Failed":errMsg + json_data["result"]})
+                }), 500
+            else:
+                return jsonify({
+                    "message": errMsg
+                }), 500
+        else:
+                return jsonify({
+                    "message": "failed data extraction"
+                }), 500
+    except TMException as err:
+        if "No row was found when one was required" in str(err):
+            return jsonify({
+                    'message': str(err)
+                }), 404 
+    except Exception as e:
+        # print(traceback.format_exc())
+        # response_data =  {"Exception": str(err)}
+        LOGGER.debug("Error is training, job id: " + str(training_job_id)+" " + str(e))   
+        return jsonify({
+            'message': str(e)
+        }), 500      
+    return jsonify({"Trainingjob": trainingJobSchema.dump(trainingjob)}), 201
