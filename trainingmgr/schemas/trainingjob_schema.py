@@ -20,8 +20,8 @@ import re
 from trainingmgr.schemas import ma
 from trainingmgr.models import TrainingJob
 from trainingmgr.models.trainingjob import ModelID
-
-from marshmallow import pre_load, validates, ValidationError
+import json
+from marshmallow import pre_load, post_dump, validates, ValidationError
 
 PATTERN = re.compile(r"\w+")
 
@@ -46,5 +46,14 @@ class TrainingJobSchema(ma.SQLAlchemyAutoSchema):
         modeldict = dict(modelname=modelname, modelversion=modelversion)
         data['modelId'] = modeldict
         return data
-         
+    
+    @post_dump(pass_many=True)
+    def trainingConfigtoDict(self, data, many, **kwargs):
+        if many:
+            for index in range(len(data)):
+                data[index]["training_config"] = json.loads(data[index]["training_config"])
+        else:
+            data["training_config"] = json.loads(data["training_config"])   
+        
+        return data
         

@@ -56,7 +56,7 @@ def create_training_job(trainingjob, registered_model_dict):
         feature_group_name = getField(training_config, "feature_group_name")
         if feature_group_name == "":
             # User has not provided feature_group_name, then it MUST be deduced from Registered InputDataType
-            feature_group_name = get_featuregroup_from_inputDataType(registered_model_dict['modelinfo']['modelInformation']['inputDataType'])
+            feature_group_name = get_featuregroup_from_inputDataType(registered_model_dict['modelInformation']['inputDataType'])
             trainingjob.training_config = json.dumps(setField(training_config, "feature_group_name", feature_group_name))
             LOGGER.debug("Training Config after FeatureGroup deduction --> " + trainingjob.training_config)
             

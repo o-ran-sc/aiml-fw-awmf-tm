@@ -93,9 +93,10 @@ def create_trainingjob():
 
         # Verify if the modelId is registered over mme or not
         
-        registered_model_dict = get_modelinfo_by_modelId_service(model_id.modelname, model_id.modelversion)
-        if registered_model_dict is None:
+        registered_model_list = get_modelinfo_by_modelId_service(model_id.modelname, model_id.modelversion)
+        if registered_model_list is None:
             return jsonify({"Exception":f"modelId {model_id.modelname} and {model_id.modelversion} is not registered at MME, Please first register at MME and then continue"}), status.HTTP_400_BAD_REQUEST
+        registered_model_dict = registered_model_list[0]
         create_training_job(trainingjob, registered_model_dict)
 
         return jsonify({"Trainingjob": trainingjob_schema.dump(trainingjob)}), 201
@@ -111,7 +112,7 @@ def create_trainingjob():
 def get_trainingjobs():
     LOGGER.debug(f'get the trainingjobs')
     try:
-        resp = trainingjob_schema.dump(get_trainining_jobs())
+        resp = trainingjobs_schema.dump(get_trainining_jobs())
         return jsonify(resp), 200
     except TMException as err:
         return jsonify({
