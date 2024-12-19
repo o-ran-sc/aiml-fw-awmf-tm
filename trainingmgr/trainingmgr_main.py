@@ -81,7 +81,7 @@ NOT_LIST="not given as list"
 
 trainingjob_schema = TrainingJobSchema()
 trainingjobs_schema = TrainingJobSchema(many=True)
-
+featuregroups_schema = FeatureGroupSchema(many=True)
 
 @APP.errorhandler(APIException)
 def error(err):
@@ -766,19 +766,8 @@ def get_feature_group():
     api_response={}
     response_code=status.HTTP_500_INTERNAL_SERVER_ERROR
     try:
-        result= get_feature_groups_db()
-        feature_groups=[]
-        for res in result:
-            dict_data={
-                "featuregroup_name": res.featuregroup_name,
-                "features": res.feature_list,
-                "datalake": res.datalake_source,
-                "dme": res.enable_dme
-                }
-            feature_groups.append(dict_data)
-        api_response={"featuregroups":feature_groups}
-        response_code=status.HTTP_200_OK
-
+        api_response={"featuregroups": featuregroups_schema.dump(get_feature_groups_db())}
+        response_code=status.HTTP_200_OK    
     except Exception as err:
         api_response =   {"Exception": str(err)}
         LOGGER.error(str(err))

@@ -82,5 +82,5 @@ class TrainingJob(db.Model):
     #     self.training_config = json.dumps(value)
 
     def __repr__(self):
-        return f'<Trainingjob {self.trainingjob_name}>'
+        return f'<Trainingjob {self.id}>'
 
