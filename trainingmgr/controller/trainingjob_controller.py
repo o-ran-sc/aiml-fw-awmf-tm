@@ -24,8 +24,8 @@ from marshmallow import ValidationError
 from trainingmgr.common.exceptions_utls import TMException
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.schemas.trainingjob_schema import TrainingJobSchema
-from trainingmgr.service.training_job_service import delete_training_job, create_training_job, get_training_job, get_trainingjob_by_modelId, get_trainining_jobs, \
-get_steps_state, change_status_tj, get_data_extraction_in_progress_trainingjobs, update_trainingPipeline
+from trainingmgr.service.training_job_service import delete_training_job, create_training_job, get_training_job, get_trainining_jobs, \
+get_steps_state, change_status_tj, update_trainingPipeline
 from trainingmgr.common.trainingmgr_util import check_key_in_dictionary
 from trainingmgr.common.trainingmgr_operations import data_extraction_start
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig, getField
