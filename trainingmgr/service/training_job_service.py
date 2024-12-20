@@ -104,7 +104,11 @@ def delete_training_job(training_job_id : int):
         else:
             return False
     except Exception as err :
-        raise DBException(f"delete_trainining_job failed with exception : {str(err)}")
+        if "No row was found when one was required" in str(err):
+            return False
+        else:
+            raise DBException(f"delete_trainining_job failed with exception : {str(err)}")
+
 def get_trainingjob_by_modelId(model_id):
     try:
         trainingjob = get_trainingjob_by_modelId_db(model_id)
