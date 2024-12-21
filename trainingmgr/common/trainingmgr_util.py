@@ -43,51 +43,6 @@ PATTERN = re.compile(r"\w+")
 featuregroup_schema = FeatureGroupSchema()
 featuregroups_schema = FeatureGroupSchema(many = True)
 
-def response_for_training(code, message, logger, is_success, trainingjob_name, mm_sdk):
-    """
-    Post training job completion,this function provides notifications to the subscribers, 
-    who subscribed for the result of training job and provided a notification url during 
-    training job creation.
-    returns tuple containing result dictionary and status code.
-    """
-    logger.debug("Training job result: " + str(code) + " " + message + " " + str(is_success))
-    
-    try :
-        #TODO DB query optimization, all data to fetch in one call
-        notif_url = get_field_by_latest_version(trainingjob_name, "notification_url")
-        if notif_url :
-
-            model_url = get_field_by_latest_version(trainingjob_name, "model_url")
-            version = get_latest_version_trainingjob_name(trainingjob_name)
-            metrics = get_metrics(trainingjob_name, version, mm_sdk)
-
-            req_json = None
-            if is_success:
-                req_json = {
-                    "result": "success", "model_url": model_url,
-                    "trainingjob_name": trainingjob_name, "metrics": metrics
-                }
-            else:
-                req_json = {"result": "failed", "trainingjob_name": trainingjob_name}
-        
-            response = requests.post(notif_url,
-                    data=json.dumps(req_json),
-                    headers={
-                        'content-type': MIMETYPE_JSON,
-                        'Accept-Charset': 'UTF-8'
-                    })
-            if ( response.headers['content-type'] != MIMETYPE_JSON
-                    or response.status_code != status.HTTP_200_OK ):
-                err_msg = "Failed to notify the subscribed url " + trainingjob_name
-                raise TMException(err_msg)
-    except Exception as err:
-        change_in_progress_to_failed_by_latest_version(trainingjob_name)
-        raise APIException(status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            str(err) + "(trainingjob name is " + trainingjob_name + ")") from None
-    if is_success:
-        return {"result": message}, code
-    return {"Exception": message}, code
-
 
 def check_key_in_dictionary(fields, dictionary):
     '''
@@ -336,27 +291,7 @@ def handle_async_feature_engineering_status_exception_case(lock, dataextraction_
                 dataextraction_job_cache.pop(trainingjob_name)
             except KeyError as key_err:
                 logger.error("The training job key doesn't exist in DATAEXTRACTION_JOBS_CACHE: " + str(key_err))
-
-# def validate_trainingjob_name(trainingjob_name):
-#     """
-#     This function returns True if given trainingjob_name exists in db otherwise
-#     it returns False.
-#     """
-#     results = None
-#     isavailable = False
-#     if (not re.fullmatch(PATTERN, trainingjob_name) or
-#         len(trainingjob_name) < 3 or len(trainingjob_name) > 63):
-#         raise TMException("The name of training job is invalid.")
-
-#     try:
-#         results = get_all_versions_info_by_name(trainingjob_name)
-#     except Exception as err:
-#         errmsg = str(err)
-#         raise DBException("Could not get info from db for " + trainingjob_name + "," + errmsg)
-#     if results:
-#         isavailable = True
-#     return isavailable     
-
+    
 
 def check_trainingjob_name_and_version(trainingjob_name, version):
     if (re.fullmatch(PATTERN, trainingjob_name) and version.isnumeric()):
