@@ -19,17 +19,16 @@ import json
 from threading import Lock
 from flask_api import status
 from flask import jsonify
-from trainingmgr.common.trainingmgr_operations import data_extraction_start
+from trainingmgr.common.trainingmgr_operations import data_extraction_start, notification_rapp
 from trainingmgr.db.model_db import get_model_by_modelId
-from trainingmgr.db.trainingjob_db import delete_trainingjob_by_id, create_trainingjob, get_trainingjob, get_trainingjob_by_modelId_db, \
+from trainingmgr.db.trainingjob_db import change_state_to_failed, delete_trainingjob_by_id, create_trainingjob, get_trainingjob, get_trainingjob_by_modelId_db, \
 change_steps_state, change_field_value, change_field_value, change_steps_state_df, changeartifact
 from trainingmgr.common.exceptions_utls import DBException, TMException
 from trainingmgr.common.trainingConfig_parser import getField, setField
 from trainingmgr.handler.async_handler import DATAEXTRACTION_JOBS_CACHE
 from trainingmgr.schemas import TrainingJobSchema
 from trainingmgr.common.trainingmgr_util import check_key_in_dictionary, get_one_word_status, get_step_in_progress_state
-from trainingmgr.constants.steps import Steps
-from trainingmgr.constants.states import States
+from trainingmgr.constants import Steps, States
 from trainingmgr.service.pipeline_service import terminate_training_service
 from trainingmgr.service.featuregroup_service import  get_featuregroup_by_name, get_featuregroup_from_inputDataType
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
@@ -205,7 +204,7 @@ def training(trainingjob):
         all exception are provided with exception message and HTTP status code.
     """
 
-    LOGGER.debug("Request for training trainingjob  %s ", trainingjob.id)
+    LOGGER.debug("Request for training trainingjob id %s ", trainingjob.id)
     try:
         # trainingjob = get_training_job(trainingjob_id)
         # print(trainingjob)
@@ -230,10 +229,11 @@ def training(trainingjob):
                                         _measurement, influxdb_info_dic, featuregroup.featuregroup_name)
         if (de_response.status_code == status.HTTP_200_OK ):
             LOGGER.debug("Response from data extraction for " + \
-                    training_job_id + " : " + json.dumps(de_response.json()))
+                    str(training_job_id) + " : " + json.dumps(de_response.json()))
             change_status_tj(trainingjob.id,
                                 Steps.DATA_EXTRACTION.name,
                                 States.IN_PROGRESS.name)
+            notification_rapp(trainingjob.id)
             with LOCK:
                 DATAEXTRACTION_JOBS_CACHE[trainingjob.id] = "Scheduled"
         elif( de_response.headers['content-type'] == MIMETYPE_JSON ) :
@@ -241,6 +241,7 @@ def training(trainingjob):
             LOGGER.error(errMsg)
             json_data = de_response.json()
             LOGGER.debug(str(json_data))
+            change_state_to_failed(training_job_id)
             if check_key_in_dictionary(["result"], json_data):
                 return jsonify({
                     "message": json.dumps({"Failed":errMsg + json_data["result"]})
@@ -254,6 +255,7 @@ def training(trainingjob):
                     "message": "failed data extraction"
                 }), 500
     except TMException as err:
+        change_state_to_failed(training_job_id)
         if "No row was found when one was required" in str(err):
             return jsonify({
                     'message': str(err)
@@ -261,11 +263,15 @@ def training(trainingjob):
     except Exception as e:
         # print(traceback.format_exc())
         # response_data =  {"Exception": str(err)}
-        LOGGER.debug("Error is training, job id: " + str(training_job_id)+" " + str(e))   
+        LOGGER.debug("Error is training, job id: " + str(training_job_id)+" " + str(e)) 
+        change_state_to_failed(training_job_id)
         return jsonify({
             'message': str(e)
-        }), 500      
-    return jsonify({"Trainingjob": trainingJobSchema.dump(trainingjob)}), 201
+        }), 500  
+        
+    response =  jsonify(trainingJobSchema.dump(trainingjob))
+    response.headers['Location'] = "training-jobs/" + str(training_job_id)
+    return response, 201
 
 def update_trainingPipeline(trainingjob):
     try:

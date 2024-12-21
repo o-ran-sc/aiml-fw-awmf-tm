@@ -105,7 +105,6 @@ def get_trainingjob(id: int=None):
     else:
         tjs = TrainingJob.query.all()
         return tjs
-    return tj
 
 def change_field_value_by_version(trainingjob_name, version, field, field_value):
     """
@@ -151,11 +150,14 @@ def change_steps_state(trainingjob_id, step: Steps, state:States):
         raise DBException(f'{DB_QUERY_EXEC_ERROR} the change_steps_state : {str(e)}')
 
 
-def change_state_to_failed(trainingjob):
+def change_state_to_failed(trainingjob_id):
 
     try:
+        trainingjob = TrainingJob.query.filter(TrainingJob.id==trainingjob_id).one()
         steps_state = json.loads(trainingjob.steps_state.states)
-        steps_state = {step: States.FAILED.name for step in steps_state if steps_state[step] == States.IN_PROGRESS.name}
+        for step in steps_state:
+            if steps_state[step] == States.IN_PROGRESS.name:
+                steps_state[step] = States.FAILED.name
         trainingjob.steps_state.states=json.dumps(steps_state)
         db.session.add(trainingjob)
         db.session.commit()

@@ -23,6 +23,7 @@ Training manager main operations
 
 import json
 import requests
+from trainingmgr.db.trainingjob_db import get_trainingjob
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 import validators
 from trainingmgr.common.exceptions_utls import TMException
@@ -193,13 +194,18 @@ def get_model_info(training_config_obj, model_name):
         logger.error(errMsg)
         raise TMException(errMsg)
 
-# def notification_rapp(trainingjob, training_config_obj):
-#     steps_state = get_steps_state_db(trainingjob.trainingjob_name)
-#     response = requests.post(trainingjob.notification_url,
-#                             data=json.dumps(steps_state),
-#                             headers={
-#                                 'content-type': MIMETYPE_JSON,
-#                                 'Accept-Charset': 'UTF-8'
-#                             })
-#     if response.status_code != 200:
-#         raise TMException("Notification failed: "+response.text)
+def notification_rapp(trainingjob_id):
+    try:
+        trainingjob = get_trainingjob(trainingjob_id)
+        steps_state = trainingjob.steps_state.states
+        if trainingjob.notification_url != "":
+            response = requests.post(trainingjob.notification_url,
+                                    data=json.dumps(steps_state),
+                                    headers={
+                                        'content-type': MIMETYPE_JSON,
+                                        'Accept-Charset': 'UTF-8'
+                                    })
+            if response.status_code != 200:
+                raise TMException("Notification failed: "+response.text)
+    except Exception as err:
+        LOGGER.error(f"failed to notify rapp due to {str(err)}")

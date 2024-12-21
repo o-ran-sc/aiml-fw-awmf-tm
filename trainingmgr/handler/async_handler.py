@@ -5,14 +5,12 @@ import time
 import requests
 from trainingmgr.common.trainingConfig_parser import getField
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
-from trainingmgr.common.trainingmgr_operations import data_extraction_status
+from trainingmgr.common.trainingmgr_operations import data_extraction_status, notification_rapp
 # from trainingmgr.common.trainingmgr_util import handle_async_feature_engineering_status_exception_case
 from trainingmgr.common.exceptions_utls import DBException, TMException
 from trainingmgr.constants import Steps, States
 from modelmetricsdk.model_metrics_sdk import ModelMetricsSdk
 from trainingmgr.db.trainingjob_db import change_state_to_failed, get_trainingjob, change_steps_state
-
-
 
 
 # Global variables
@@ -84,8 +82,8 @@ def check_and_notify_feature_engineering_status(APP,db):
             except Exception as err:
                 LOGGER.error(f"Error processing DATAEXTRACTION_JOBS_CACHE: {str(err)}")
                 with APP.app_context():
-                    change_state_to_failed(trainingjob)
-                    # notification_rapp(trainingjob.id)
+                    change_state_to_failed(trainingjob.id)
+                    notification_rapp(trainingjob.id)
                     with LOCK:
                         try:
                             DATAEXTRACTION_JOBS_CACHE.pop(trainingjob.id)
