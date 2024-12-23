@@ -48,7 +48,9 @@ def __getLeafPaths():
             },
             "trainingPipeline": {
                     "pipeline_name": "qoe_Pipeline",
-                    "pipeline_version": "2"
+                    "pipeline_version": "2", 
+                    "retraining_pipeline_name":"retrain-qoe-pipeline",
+                    "retraining_pipeline_version:"2"
         }
     '''
     paths = {
@@ -56,8 +58,10 @@ def __getLeafPaths():
         "feature_group_name": ["dataPipeline", "feature_group_name"],
         "query_filter" : ["dataPipeline", "query_filter"],
         "arguments" : ["dataPipeline", "arguments"],
-        "pipeline_name": ["trainingPipeline", "pipeline_name"],
-        "pipeline_version": ["trainingPipeline", "pipeline_version"],
+        "training_pipeline_name": ["trainingPipeline", "training_pipeline_name"],
+        "training_pipeline_version": ["trainingPipeline", "training_pipeline_version"],
+        "retraining_pipeline_name": ["trainingPipeline", "retraining_pipeline_name"],
+        "retraining_pipeline_version":["trainingPipeline", "retraining_pipeline_version"]
     }
     return paths
 

@@ -21,7 +21,7 @@ from trainingmgr.schemas import ma
 from trainingmgr.models import TrainingJob
 from trainingmgr.models.trainingjob import ModelID
 import json
-from marshmallow import pre_load, post_dump, validates, ValidationError
+from marshmallow import pre_load, post_dump, fields, validates, ValidationError
 
 PATTERN = re.compile(r"\w+")
 
@@ -29,6 +29,13 @@ class ModelSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = ModelID
         load_instance = True
+        
+    @post_dump
+    def replace_null_with_empty_string(self, data, **kwargs):
+        for key, value in data.items():
+            if value is None:
+                data[key]=""
+        return data
 
 class TrainingJobSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -37,6 +44,8 @@ class TrainingJobSchema(ma.SQLAlchemyAutoSchema):
         exclude = ("creation_time", "deletion_in_progress", "updation_time","run_id")
     
     modelId = ma.Nested(ModelSchema)
+
+    # consumer_rapp_id = fields.String(allow_none = True, dump_default="")
 
     @pre_load
     def processModelId(self, data, **kwargs):
@@ -55,5 +64,12 @@ class TrainingJobSchema(ma.SQLAlchemyAutoSchema):
         else:
             data["training_config"] = json.loads(data["training_config"])   
         
+        return data
+    
+    @post_dump
+    def replace_null_with_empty_string(self, data, **kwargs):
+        for key, value in data.items():
+            if value is None:
+                data[key]=""
         return data
         
