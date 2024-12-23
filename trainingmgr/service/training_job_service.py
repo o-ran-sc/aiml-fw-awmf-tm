@@ -206,11 +206,10 @@ def training(trainingjob):
 
     LOGGER.debug("Request for training trainingjob id %s ", trainingjob.id)
     try:
-        # trainingjob = get_training_job(trainingjob_id)
-        # print(trainingjob)
-        # trainingjob_name = trainingjob.trainingjob_name
+
         training_job_id = trainingjob.id
-        featuregroup= get_featuregroup_by_name(getField(trainingjob.training_config, "feature_group_name"))
+        featuregroup_name = getField(trainingjob.training_config, "feature_group_name")
+        featuregroup= get_featuregroup_by_name(featuregroup_name)
         LOGGER.debug("featuregroup name is: "+featuregroup.featuregroup_name)
         feature_list_string = featuregroup.feature_list
         influxdb_info_dic={}
@@ -258,11 +257,9 @@ def training(trainingjob):
         change_state_to_failed(training_job_id)
         if "No row was found when one was required" in str(err):
             return jsonify({
-                    'message': str(err)
+                    'message': f"No featuregroup found with featuregroup name {featuregroup_name}"
                 }), 404 
     except Exception as e:
-        # print(traceback.format_exc())
-        # response_data =  {"Exception": str(err)}
         LOGGER.debug("Error is training, job id: " + str(training_job_id)+" " + str(e)) 
         change_state_to_failed(training_job_id)
         return jsonify({

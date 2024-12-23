@@ -27,7 +27,7 @@ def get_featuregroup_by_name(featuregroup_name:str):
     try:
         featuregroup = get_feature_group_by_name_db(featuregroup_name)
         return featuregroup
-    except DBException as err:
+    except Exception as err:
         raise TMException(f"get featuregroup by name service failed with exception : {str(err)}")
     
 def get_featuregroup_from_inputDataType(inputDataType):
