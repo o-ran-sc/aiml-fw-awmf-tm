@@ -65,7 +65,7 @@ def get_feature_group_by_name_db(featuregroup_name):
     """
     This Function return a feature group with name "featuregroup_name"
     """
-    return FeatureGroup.query.filter_by(featuregroup_name=featuregroup_name).first()
+    return FeatureGroup.query.filter_by(featuregroup_name=featuregroup_name).one()
 
 def get_feature_groups_from_inputDataType_db(inputDataType):
     """

@@ -26,6 +26,8 @@ def get_featuregroup_by_name(featuregroup_name:str):
     LOGGER.debug(f'service for get featuregroup by name')
     try:
         featuregroup = get_feature_group_by_name_db(featuregroup_name)
+        if featuregroup is None:
+            raise TMException(f"No featuregroup found with name {featuregroup_name}")
         return featuregroup
     except DBException as err:
         raise TMException(f"get featuregroup by name service failed with exception : {str(err)}")
