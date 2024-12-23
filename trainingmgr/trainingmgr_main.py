@@ -46,7 +46,7 @@ from trainingmgr.controller.pipeline_controller import pipeline_controller
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig, getField
 from trainingmgr.handler.async_handler import start_async_handler
 from trainingmgr.service.mme_service import get_modelinfo_by_modelId_service
-from trainingmgr.service.training_job_service import change_status_tj, change_update_field_value, get_training_job, update_artifact_version
+from trainingmgr.service.training_job_service import change_status_tj, change_update_field_value, fetch_pipelinename_and_version, get_training_job, update_artifact_version
 
 APP = Flask(__name__)
 TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
@@ -170,9 +170,32 @@ def data_extraction_notification():
                 argument_dict[key] = str(val)
         LOGGER.debug(argument_dict)
         # Experiment name is harded to be Default
+
+        model_id = trainingjob.modelId
+        registered_model_list = get_modelinfo_by_modelId_service(model_id.modelname, model_id.modelversion)
+
+        if registered_model_list is None:
+            return jsonify({"Exception":f"modelId {model_id.modelname} and {model_id.modelversion} is not registered at MME, Please first register at MME and then continue"}), status.HTTP_400_BAD_REQUEST
+
+        registered_model_dict = registered_model_list[0]
+
+        pipeline_name =""
+        pipeline_version =""
+        if registered_model_dict["modelId"]["artifactVersion"] == "0.0.0":
+            if registered_model_dict["modelLocation"] == "":
+                pipeline_name, pipeline_version = fetch_pipelinename_and_version("training", trainingjob.training_config)
+            else:
+                pipeline_name, pipeline_version = fetch_pipelinename_and_version("re-training", trainingjob.training_config)
+                if pipeline_name == "" or  pipeline_version =="":
+                    return jsonify({"Error": "Provide retraining pipeline name and version"}), 500
+        else:
+            pipeline_name, pipeline_version = fetch_pipelinename_and_version("re-training", trainingjob.training_config)
+            if pipeline_name == "" or  pipeline_version =="":
+                return jsonify({"Error": "Provide retraining pipeline name and version"}), 500
+
         training_details = {
-            "pipeline_name": getField(trainingjob.training_config, "pipeline_name"), "experiment_name": 'Default',
-            "arguments": argument_dict, "pipeline_version": getField(trainingjob.training_config, "pipeline_version")
+            "pipeline_name": pipeline_name, "experiment_name": 'Default',
+            "arguments": argument_dict, "pipeline_version": pipeline_version
         }
         LOGGER.debug("training detail for kf adapter is: "+ str(training_details))
         response = training_start(TRAININGMGR_CONFIG_OBJ, training_details, trainingjob_id)
@@ -229,7 +252,6 @@ def data_extraction_notification():
     return APP.response_class(response=json.dumps({"result": "pipeline is scheduled"}),
                                     status=status.HTTP_200_OK,
                                     mimetype=MIMETYPE_JSON)
-
 
 # Will be migrated to pipline Mgr in next iteration
 @APP.route('/trainingjob/pipelineNotification', methods=['POST'])

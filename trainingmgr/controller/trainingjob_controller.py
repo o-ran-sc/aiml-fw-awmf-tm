@@ -85,15 +85,7 @@ def create_trainingjob():
         if registered_model_dict["modelLocation"] != trainingjob.model_location:
             return jsonify({"Exception":f"modelId {model_id.modelname} and {model_id.modelversion} and trainingjob created does not have same modelLocation, Please first register at MME properly and then continue"}), status.HTTP_400_BAD_REQUEST
         
-        if registered_model_dict["modelId"]["artifactVersion"] == "0.0.0":
-            if registered_model_dict["modelLocation"] == "":
-                return create_training_job(trainingjob=trainingjob, registered_model_dict=registered_model_dict)
-            else:
-                trainingjob = update_trainingPipeline(trainingjob)
-                return create_training_job(trainingjob=trainingjob, registered_model_dict=registered_model_dict)
-        else:
-            trainingjob = update_trainingPipeline(trainingjob)
-            return create_training_job(trainingjob=trainingjob, registered_model_dict=registered_model_dict)
+        return create_training_job(trainingjob=trainingjob, registered_model_dict= registered_model_dict)
         
     except ValidationError as error:
         return jsonify(error.messages), status.HTTP_400_BAD_REQUEST

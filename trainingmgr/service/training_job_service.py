@@ -270,13 +270,12 @@ def training(trainingjob):
     response.headers['Location'] = "training-jobs/" + str(training_job_id)
     return response, 201
 
-def update_trainingPipeline(trainingjob):
+    
+def fetch_pipelinename_and_version(type, training_config):
     try:
-        training_config = trainingjob.training_config
-        training_config = json.dumps(setField(training_config, "pipeline_name", "qoe_retraining_pipeline"))
-        training_config = json.dumps(setField(training_config, "pipeline_version", "qoe_retraining_pipeline"))
-        trainingjob.training_config = training_config
-        return trainingjob
+        if type =="training":
+         return getField(training_config, "training_pipeline_name"), getField(training_config, "training_pipeline_version")
+        else :
+            return getField(training_config, "retraining_pipeline_name"), getField(training_config, "retraining_pipeline_version")
     except Exception as err:
-        LOGGER.error(f"error in updating the trainingPipeline due to {str(err)}")
-        raise TMException("failed to update the trainingPipeline")
+        raise TMException(f"cant fetch training or retraining pipeline name or version from trainingconfig {training_config}")
