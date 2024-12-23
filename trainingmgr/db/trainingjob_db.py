@@ -97,11 +97,7 @@ def delete_trainingjob_by_id(id: int):
 
 def get_trainingjob(id: int=None):
     if id is not None:
-        try:
-            tj = TrainingJob.query.filter(TrainingJob.id==id).one()
-            return tj
-        except NoResultFound as err:
-            raise DBException(f"Failed to get trainingjob by id: {id} due to {str(err)}")
+        return TrainingJob.query.filter(TrainingJob.id==id).one()
     else:
         tjs = TrainingJob.query.all()
         return tjs

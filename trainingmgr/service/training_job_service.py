@@ -33,6 +33,7 @@ from trainingmgr.service.pipeline_service import terminate_training_service
 from trainingmgr.service.featuregroup_service import  get_featuregroup_by_name, get_featuregroup_from_inputDataType
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.constants import Steps, States
+from sqlalchemy.orm.exc import NoResultFound
 
 trainingJobSchema = TrainingJobSchema()
 trainingJobsSchema = TrainingJobSchema(many=True)
@@ -120,6 +121,8 @@ def delete_training_job(training_job_id : int):
             return True
         else:
             return False
+    except NoResultFound :
+        return False
     except Exception as err :
         raise DBException(f"delete_trainining_job failed with exception : {str(err)}")
 
