@@ -90,7 +90,6 @@ def create_feature_group():
         All exception are provided with exception message and HTTP status code."""
     
     api_response = {}
-    response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     LOGGER.debug('feature Group Create request, ' + json.dumps(request.json))
 
     try:
@@ -101,26 +100,25 @@ def create_feature_group():
         if (not check_trainingjob_name_or_featuregroup_name(feature_group_name) or
             len(feature_group_name) < 3 or len(feature_group_name) > 63):
             api_response = {"Exception": "Failed to create the feature group since feature group not valid"}
-            response_code = status.HTTP_400_BAD_REQUEST
+            return jsonify(api_response), status.HTTP_400_BAD_REQUEST
         else:
             # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
             add_featuregroup(featuregroup)
             api_response = FeatureGroupSchema().dump(featuregroup)
-            response_code =status.HTTP_200_OK
+
             if featuregroup.enable_dme == True :
-                response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, featuregroup)
+                response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, featuregroup.source_name, featuregroup.feature_list, featuregroup.featuregroup_name, featuregroup.host, featuregroup.dme_port, featuregroup.measured_obj_class)
                 if response.status_code != 201:
-                    api_response={"Exception": "Cannot create dme job"}
                     delete_feature_group_by_name(featuregroup)
-                    response_code=status.HTTP_400_BAD_REQUEST
+                    return jsonify({"Exception": "Cannot create dme job"}), status.HTTP_400_BAD_REQUEST
     except ValidationError as err:
         LOGGER.error(f"Failed to create the feature Group {str(err)}")
         return {"Exception": str(err)}, 400
     except DBException as err:
         LOGGER.error(f"Failed to create the feature Group {str(err)}")
         return {"Exception": str(err)}, 400
-    except Exception as e:
-        api_response = {"Exception":str(e)}
+    except Exception as err:
+        api_response = {"Exception":str(err)}
         LOGGER.error(f"Failed to create the feature Group {str(err)}")
         jsonify(json.dumps(api_response)), 500
     

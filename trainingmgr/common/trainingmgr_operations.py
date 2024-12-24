@@ -138,17 +138,20 @@ def create_dme_filtered_data_job(training_config_obj, source_name, features, fea
     """
     This function calls Non-RT RIC DME APIs for creating filter PM data jobs.
     """
+    # Converts 'a ,b,  c, d' --> ['a', 'b', 'c', 'd']
+    feature_list = [word.strip() for word in features.split(',') if word != '']
+    source_list = [word.strip() for word in source_name.split(',') if word != '']
     logger = training_config_obj.logger
     job_json = {
         "info_type_id": "PmData",
         "job_owner": "console",
         "job_definition": {
           "filter":{
-              "sourceNames":[source_name],
+              "sourceNames": source_list,
                "measObjInstIds": [],
                "measTypeSpecs": [{
                   "measuredObjClass": measured_obj_class,
-                  "measTypes":features
+                  "measTypes": feature_list
                 }],
                 "measuredEntityDns": []
           },

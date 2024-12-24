@@ -25,7 +25,7 @@ from trainingmgr.common.exceptions_utls import TMException
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.schemas.trainingjob_schema import TrainingJobSchema
 from trainingmgr.service.training_job_service import delete_training_job, create_training_job, get_training_job, get_trainingjob_by_modelId, get_trainining_jobs, \
-get_steps_state, update_trainingPipeline
+get_steps_state
 from trainingmgr.common.trainingmgr_util import check_key_in_dictionary
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig
 from trainingmgr.service.mme_service import get_modelinfo_by_modelId_service

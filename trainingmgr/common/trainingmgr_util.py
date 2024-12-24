@@ -301,5 +301,4 @@ def check_trainingjob_name_and_version(trainingjob_name, version):
 def check_trainingjob_name_or_featuregroup_name(name):
     if re.fullmatch(PATTERN, name):
         return True
-    return False
-
+    return False    
