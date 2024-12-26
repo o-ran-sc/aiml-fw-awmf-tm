@@ -52,8 +52,8 @@ APP = Flask(__name__)
 TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
 from middleware.loggingMiddleware import LoggingMiddleware
 APP.wsgi_app = LoggingMiddleware(APP.wsgi_app)
-APP.register_blueprint(featuregroup_controller)
-APP.register_blueprint(training_job_controller)
+APP.register_blueprint(featuregroup_controller, url_prefix='/ai-ml-model-training/v1')
+APP.register_blueprint(training_job_controller, url_prefix='/ai-ml-model-training/v1')
 APP.register_blueprint(pipeline_controller)
 
 PS_DB_OBJ = None
@@ -488,42 +488,6 @@ def feature_group_by_name(featuregroup_name):
                     mimetype=MIMETYPE_JSON)
 
 
-@APP.route('/featureGroup', methods=['GET'])
-def get_feature_group():
-    """
-    Rest endpoint to fetch all the feature groups
-
-    Args in function: none
-    Required Args in json:
-        no json required 
-    
-    Returns:
-        json:
-            FeatureGroups: list
-                list of dictionaries.
-                    dictionaries contains:
-                        featuregroup_name: str
-                            name of feature group
-                        features: str
-                            name of features
-                        datalake: str
-                            datalake
-                        dme: boolean
-                            whether to enable dme
-                        
-    """
-    LOGGER.debug("Request for getting all feature groups")
-    api_response={}
-    response_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-    try:
-        api_response={"featuregroups": featuregroups_schema.dump(get_feature_groups_db())}
-        response_code=status.HTTP_200_OK    
-    except Exception as err:
-        api_response =   {"Exception": str(err)}
-        LOGGER.error(str(err))
-    return APP.response_class(response=json.dumps(api_response),
-                        status=response_code,
-                        mimetype=MIMETYPE_JSON)
 
 @APP.route('/featureGroup', methods=['DELETE'])
 def delete_list_of_feature_group():
