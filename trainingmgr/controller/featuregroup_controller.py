@@ -25,6 +25,7 @@ from trainingmgr.common.trainingmgr_util import check_trainingjob_name_or_featur
 from trainingmgr.db.featuregroup_db import add_featuregroup, delete_feature_group_by_name
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.schemas import FeatureGroupSchema
+from trainingmgr.service.featuregroup_service import get_all_featuregroups
 
 
 
@@ -32,6 +33,7 @@ featuregroup_controller = Blueprint('featuregroup_controller', __name__)
 TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
 LOGGER = TRAININGMGR_CONFIG_OBJ.logger
 MIMETYPE_JSON = "application/json"
+featuregroups_schema = FeatureGroupSchema(many=True)
 
 @featuregroup_controller.route('/featureGroup', methods=['POST'])
 def create_feature_group():
@@ -116,6 +118,8 @@ def create_feature_group():
         return {"Exception": str(err)}, 400
     except DBException as err:
         LOGGER.error(f"Failed to create the feature Group {str(err)}")
+        if "already exist" in str(err):
+            return {"Exception": str(err)}, 409
         return {"Exception": str(err)}, 400
     except Exception as err:
         api_response = {"Exception":str(err)}
@@ -123,3 +127,38 @@ def create_feature_group():
         jsonify(json.dumps(api_response)), 500
     
     return jsonify(api_response), 201
+
+@featuregroup_controller.route('/featureGroup', methods=['GET'])
+def get_feature_group():
+    """
+    Rest endpoint to fetch all the feature groups
+
+    Args in function: none
+    Required Args in json:
+        no json required 
+    
+    Returns:
+        json:
+            FeatureGroups: list
+                list of dictionaries.
+                    dictionaries contains:
+                        featuregroup_name: str
+                            name of feature group
+                        features: str
+                            name of features
+                        datalake: str
+                            datalake
+                        dme: boolean
+                            whether to enable dme
+                        
+    """
+    LOGGER.debug("Request for getting all feature groups")
+    api_response={}
+    response_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+    try:
+        api_response=featuregroups_schema.dump(get_all_featuregroups())
+        response_code=status.HTTP_200_OK    
+    except Exception as err:
+        api_response =   {"Exception": "Failed to get featuregroups"}
+        LOGGER.error(str(err))
+    return jsonify({"FeatureGroups":api_response}), response_code

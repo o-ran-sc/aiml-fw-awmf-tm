@@ -17,9 +17,13 @@
 # ==================================================================================
 
 from trainingmgr.common.exceptions_utls import DBException
-from psycopg2.errorcodes import UNIQUE_VIOLATION
+from sqlalchemy.exc import IntegrityError
+from psycopg2.errors import UniqueViolation
 from psycopg2 import errors
 from trainingmgr.models import db, FeatureGroup
+from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
+
+LOGGER = TrainingMgrConfig().logger
 
 DB_QUERY_EXEC_ERROR = "Failed to execute query in "
 
@@ -30,9 +34,12 @@ def add_featuregroup(featuregroup):
     try:
         db.session.add(featuregroup)
         db.session.commit()
-    except errors.lookup(UNIQUE_VIOLATION) as e:
-        raise DBException(DB_QUERY_EXEC_ERROR + " "+ str(e))
+    except IntegrityError as e:
+        if isinstance(e.orig, UniqueViolation):
+            LOGGER.error(f"failed to add featuregroup due to: {str(e)}")
+            raise DBException(f"Featuregroup with featuregroup_name {featuregroup.featuregroup_name} already exist")
     except Exception as err:
+        LOGGER.error(f"failed to add featuregroup due to: {str(err)}")
         db.session.rollback()
         raise DBException(DB_QUERY_EXEC_ERROR + " failed to add feature group")
 
