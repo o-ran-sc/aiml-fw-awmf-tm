@@ -16,7 +16,7 @@
 #
 # ==================================================================================
 
-from trainingmgr.db.featuregroup_db import get_feature_group_by_name_db, get_feature_groups_from_inputDataType_db
+from trainingmgr.db.featuregroup_db import get_feature_group_by_name_db, get_feature_groups_db, get_feature_groups_from_inputDataType_db
 from trainingmgr.common.exceptions_utls import TMException, DBException
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 
@@ -47,6 +47,15 @@ def get_featuregroup_from_inputDataType(inputDataType):
         raise TMException(f"get get_featuregroup_from_inputDataType service failed with exception : {str(err)}")
     except Exception as err:
         raise err
+    
+def get_all_featuregroups():
+    LOGGER.debug(f'service for get all featuregroups')
+    try:
+        featuregroups = get_feature_groups_db()
+        return featuregroups
+    except Exception as err:
+        LOGGER.error("Error occured during fetching all featuregroups from db")
+        raise TMException(f"get all featuregroups service failed with exception : {str(err)}")
             
         
     

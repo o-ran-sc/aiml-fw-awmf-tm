@@ -54,7 +54,7 @@ class MmeMgr:
             This function returns the model information for given modelName and ModelVersion from MME
         """
         try:
-            url = f'http://{self.mme_ip}:{self.mme_port}/models/?model-name={modelName}&model-version={int(modelVersion)}'
+            url = f'http://{self.mme_ip}:{self.mme_port}/ai-ml-model-registration/v1/models/?model-name={modelName}&model-version={int(modelVersion)}'
             LOGGER.debug(f"Requesting modelInfo from: {url}")
             response = requests.get(url)
             if response.status_code == 200:
