@@ -165,7 +165,6 @@ def create_dme_filtered_data_job(training_config_obj, source_name, features, fea
 
 
     headers = {'Content-type': MIMETYPE_JSON}
-
     url = create_url_host_port('http', host, port, 'data-consumer/v1/info-jobs/{}'.format(feature_group_name))
     logger.debug(url)
     logger.debug(json.dumps(job_json))
@@ -201,7 +200,7 @@ def notification_rapp(trainingjob_id):
     try:
         trainingjob = get_trainingjob(trainingjob_id)
         steps_state = trainingjob.steps_state.states
-        if trainingjob.notification_url != "":
+        if trainingjob.notification_url != "" and trainingjob.notification_url is not None:
             response = requests.post(trainingjob.notification_url,
                                     data=json.dumps(steps_state),
                                     headers={

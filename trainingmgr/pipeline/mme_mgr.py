@@ -19,9 +19,7 @@
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 import requests
 from trainingmgr.common.exceptions_utls import TMException
-from flask_api import status
 import requests
-import json
 
 LOGGER = TrainingMgrConfig().logger
 

@@ -17,7 +17,7 @@
 # ==================================================================================
 
 from trainingmgr.common.exceptions_utls import DBException
-from trainingmgr.models import db, ModelID
+from trainingmgr.models import ModelID
 
 def get_model_by_modelId(modelname, modelversion):
     try:

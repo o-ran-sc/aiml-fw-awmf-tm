@@ -114,7 +114,7 @@ def delete_training_job(training_job_id : int):
             elif (step_in_progress_state == Steps.TRAINING or (step_in_progress_state == Steps.DATA_EXTRACTION_AND_TRAINING and tj.run_id is not None)):
                 # Signal the Kf-Adapter to terminate the 
                 response = terminate_training_service(tj.run_id)
-                LOGGER.debug("Deletion-Response : " + response)
+                LOGGER.debug("Deletion-Response : " + response.text)
 
         isDeleted = delete_trainingjob_by_id(id=training_job_id)
         if isDeleted:
@@ -281,4 +281,4 @@ def fetch_pipelinename_and_version(type, training_config):
         else :
             return getField(training_config, "retraining_pipeline_name"), getField(training_config, "retraining_pipeline_version")
     except Exception as err:
-        raise TMException(f"cant fetch training or retraining pipeline name or version from trainingconfig {training_config}")
+        raise TMException(f"cant fetch training or retraining pipeline name or version from trainingconfig {training_config}| Error: " + str(err))

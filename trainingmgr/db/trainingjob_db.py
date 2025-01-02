@@ -23,9 +23,7 @@ from trainingmgr.common.exceptions_utls import DBException
 from trainingmgr.models import db, TrainingJob, TrainingJobStatus, ModelID
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
-from sqlalchemy.sql import func
 from sqlalchemy.exc import NoResultFound
-from trainingmgr.common.trainingConfig_parser import getField
 
 
 
@@ -106,7 +104,6 @@ def change_field_value_by_version(trainingjob_name, version, field, field_value)
     """
     This function updates field's value to field_value of <trainingjob_name, version> trainingjob.
     """
-    conn = None
     try:
         if field == "deletion_in_progress":
             trainingjob = TrainingJob.query.filter(TrainingJob.trainingjob_name == trainingjob_name).filter(TrainingJob.version == version).first()

@@ -24,7 +24,6 @@ from logging import Logger
 from flask import Flask, request, send_file, jsonify
 from flask_api import status
 from flask_migrate import Migrate
-from marshmallow import ValidationError
 import requests
 from flask_cors import CORS
 from trainingmgr.db.trainingjob_db import change_state_to_failed
@@ -38,15 +37,14 @@ from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
 from trainingmgr.db.trainingmgr_ps_db import PSDB
 from trainingmgr.models import db
-from trainingmgr.schemas import ma, TrainingJobSchema , FeatureGroupSchema
-from trainingmgr.db.featuregroup_db import  get_feature_groups_db, \
-    get_feature_group_by_name_db, delete_feature_group_by_name
+from trainingmgr.schemas import TrainingJobSchema , FeatureGroupSchema
+from trainingmgr.db.featuregroup_db import get_feature_group_by_name_db, delete_feature_group_by_name
 from trainingmgr.controller import featuregroup_controller, training_job_controller
 from trainingmgr.controller.pipeline_controller import pipeline_controller
-from trainingmgr.common.trainingConfig_parser import validateTrainingConfig, getField
+from trainingmgr.common.trainingConfig_parser import getField
 from trainingmgr.handler.async_handler import start_async_handler
 from trainingmgr.service.mme_service import get_modelinfo_by_modelId_service
-from trainingmgr.service.training_job_service import change_status_tj, change_update_field_value, fetch_pipelinename_and_version, get_training_job, update_artifact_version
+from trainingmgr.service.training_job_service import change_status_tj, change_update_field_value, fetch_pipelinename_and_version, get_training_job
 
 APP = Flask(__name__)
 TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
@@ -116,8 +114,6 @@ def get_model(modelname, modelversion, artifactversion):
         return {"Exception": "error while downloading model"}, status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
-
-# Training-Config Handled
 @APP.route('/trainingjob/dataExtractionNotification', methods=['POST'])
 def data_extraction_notification():
     """
@@ -143,8 +139,6 @@ def data_extraction_notification():
         all exception are provided with exception message and HTTP status code.
     """
     LOGGER.debug("Data extraction notification...")
-    err_response_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    results = None
     try:
         if not check_key_in_dictionary(["trainingjob_id"], request.json) :
             err_msg = "featuregroup_name or trainingjob_id key not available in request"
@@ -211,7 +205,6 @@ def data_extraction_notification():
         if not check_key_in_dictionary(["run_status", "run_id"], json_data):
             err_msg = "Kf adapter invalid response from , key not present ,run_status or  run_id for " + str(trainingjob_id)
             Logger.error(err_msg)
-            err_response_code = status.HTTP_400_BAD_REQUEST
             raise TMException(err_msg)
 
         if json_data["run_status"] == 'scheduled':
@@ -354,57 +347,6 @@ def pipeline_notification():
         return jsonify({"Error":"Training Failed"}), 500
 
     return jsonify({"Message":"Training successful"}), 200
-
-
-
-# Moved to pipelineMgr (to be deleted in future)
-@APP.route('/experiments', methods=['GET'])
-def get_all_experiment_names():
-    """
-    Function handling rest endpoint to get all experiment names.
-
-    Args in function:
-        none
-
-    Args in json:
-        no json required
-
-    Returns:
-        json:
-            experiment_names : list
-                               list containing all experiment names(as str).
-        status code:
-            HTTP status code 200
-
-    Exceptions:
-        all exception are provided with exception message and HTTP status code.
-    """
-
-    LOGGER.debug("request for getting all experiment names is come.")
-    api_response = {}
-    reponse_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    try:
-        kf_adapter_ip = TRAININGMGR_CONFIG_OBJ.kf_adapter_ip
-        kf_adapter_port = TRAININGMGR_CONFIG_OBJ.kf_adapter_port
-        if kf_adapter_ip!=None and kf_adapter_port!=None: 
-            url = 'http://' + str(kf_adapter_ip) + ':' + str(kf_adapter_port) + '/experiments'
-        LOGGER.debug("url is :" + url)
-        response = requests.get(url)
-        if response.headers['content-type'] != MIMETYPE_JSON:
-            err_smg = ERROR_TYPE_KF_ADAPTER_JSON
-            raise TMException(err_smg)
-
-        experiment_names = []
-        for experiment in response.json().keys():
-            experiment_names.append(experiment)
-        api_response = {"experiment_names": experiment_names}
-        reponse_code = status.HTTP_200_OK
-    except Exception as err:
-        api_response =  {"Exception": str(err)}
-        LOGGER.error(str(err))
-    return APP.response_class(response=json.dumps(api_response),
-                                  status=reponse_code,
-                                  mimetype=MIMETYPE_JSON)
 
 
 @APP.route('/featureGroup/<featuregroup_name>', methods=['GET', 'PUT'])

@@ -23,17 +23,14 @@ from flask import jsonify
 import json
 import re
 from flask_api import status
-import requests
 from marshmallow import ValidationError
-from trainingmgr.db.common_db_fun import change_in_progress_to_failed_by_latest_version, \
-    get_field_by_latest_version, change_field_of_latest_version, \
-    get_latest_version_trainingjob_name
-from trainingmgr.db.featuregroup_db import add_featuregroup, edit_featuregroup, get_feature_groups_db, \
+from trainingmgr.db.common_db_fun import change_in_progress_to_failed_by_latest_version
+from trainingmgr.db.featuregroup_db import edit_featuregroup, \
 get_feature_group_by_name_db, delete_feature_group_by_name
 from trainingmgr.constants.states import States
 from trainingmgr.common.exceptions_utls import APIException,TMException,DBException
 from trainingmgr.common.trainingmgr_operations import create_dme_filtered_data_job
-from trainingmgr.schemas import ma, TrainingJobSchema , FeatureGroupSchema
+from trainingmgr.schemas import FeatureGroupSchema
 from trainingmgr.constants.steps import Steps
 
 ERROR_TYPE_KF_ADAPTER_JSON = "Kf adapter doesn't sends json type response"
@@ -224,7 +221,7 @@ def edit_feature_group_by_name(featuregroup_name: str,
         response_code =status.HTTP_200_OK
         # TODO: Implement the process where DME edits from the dashboard are applied to the endpoint
         if featuregroup.enable_dme == True :
-            response= create_dme_filtered_data_job(tm_conf_obj, featuregroup.source_name, featuregroup.feature_list, 
+            response= create_dme_filtered_data_job(tm_conf_obj, featuregroup.source_name, featuregroup.feature_list, featuregroup.featuregroup_name,
                                                    featuregroup.host, featuregroup.port, 
                                                    featuregroup.measured_obj_class)
             if response.status_code != 201:
@@ -236,7 +233,6 @@ def edit_feature_group_by_name(featuregroup_name: str,
     except DBException as err:
         return {"Exception": str(err)}, 400
     except Exception as e:
-        err_msg = "Failed to create the feature Group "
         api_response = {"Exception":str(e)}
         logger.error(str(e))
     
@@ -272,6 +268,7 @@ def get_metrics(trainingjob_name, version, mm_sdk):
     return data
 
 
+# The fxn is not getting called anywhere (Remove?)
 def handle_async_feature_engineering_status_exception_case(lock, dataextraction_job_cache, code,
                                                            message, logger, is_success,
                                                            trainingjob_name, mm_sdk):

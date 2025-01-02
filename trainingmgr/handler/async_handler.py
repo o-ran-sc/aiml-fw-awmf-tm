@@ -73,7 +73,8 @@ def check_and_notify_feature_engineering_status(APP,db):
                     )
                     if (kf_response.headers.get('content-type') != "application/json" or
                             kf_response.status_code != 200):
-                        raise TMException(f"KF adapter returned an error for {featuregroup_name}.")
+                        LOGGER.error(f"KF adapter returned an error for {featuregroup_name}. | Response : {kf_response.json()}")
+                        raise TMException(f"KF adapter returned an error for {featuregroup_name}. ")
 
                     with LOCK:
                         DATAEXTRACTION_JOBS_CACHE.pop(trainingjob.id)
