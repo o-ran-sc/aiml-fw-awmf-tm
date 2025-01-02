@@ -24,7 +24,7 @@ from marshmallow import ValidationError
 from trainingmgr.common.exceptions_utls import TMException
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.schemas.trainingjob_schema import TrainingJobSchema
-from trainingmgr.service.training_job_service import delete_training_job, create_training_job, get_training_job, get_trainingjob_by_modelId, get_trainining_jobs, \
+from trainingmgr.service.training_job_service import delete_training_job, create_training_job, get_training_job, get_trainining_jobs, \
 get_steps_state
 from trainingmgr.common.trainingmgr_util import check_key_in_dictionary
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig
@@ -42,7 +42,7 @@ MIMETYPE_JSON = "application/json"
 def delete_trainingjob(training_job_id):
     LOGGER.debug(f'delete training job : {training_job_id}')
     try:
-        if delete_training_job(str(training_job_id)):
+        if delete_training_job(int(training_job_id)):
             LOGGER.debug(f'training job with {training_job_id} is deleted successfully.')
             return '', 204
         else:

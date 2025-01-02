@@ -19,7 +19,6 @@
 from trainingmgr.common.exceptions_utls import DBException
 from sqlalchemy.exc import IntegrityError
 from psycopg2.errors import UniqueViolation
-from psycopg2 import errors
 from trainingmgr.models import db, FeatureGroup
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 
@@ -82,7 +81,7 @@ def get_feature_groups_from_inputDataType_db(inputDataType):
     try:
         return FeatureGroup.query.with_entities(FeatureGroup.featuregroup_name).filter_by(feature_list=inputDataType).all()
     except Exception as err:
-        raise DBException("Unable to query in get_feature_groups_from_inputDataType_db with error : ", err)
+        raise DBException(DB_QUERY_EXEC_ERROR + "in get_feature_groups_from_inputDataType_db with error : " + str(err))
 
 def delete_feature_group_by_name(featuregroup_name):
     """

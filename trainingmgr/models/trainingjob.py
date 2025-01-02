@@ -16,7 +16,6 @@
 #
 # ==============================================================================
 from trainingmgr.models import db
-from datetime import datetime
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, ForeignKey, String, DateTime, Column, Boolean
 from sqlalchemy.orm import relationship

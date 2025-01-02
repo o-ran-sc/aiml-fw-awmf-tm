@@ -23,9 +23,7 @@ from trainingmgr.common.exceptions_utls import DBException
 from trainingmgr.models import db, TrainingJob, TrainingJobStatus, ModelID
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
-from sqlalchemy.sql import func
 from sqlalchemy.exc import NoResultFound
-from trainingmgr.common.trainingConfig_parser import getField
 
 
 
@@ -96,17 +94,23 @@ def delete_trainingjob_by_id(id: int):
         raise DBException(f'{DB_QUERY_EXEC_ERROR} : {str(e)}' )
 
 def get_trainingjob(id: int=None):
-    if id is not None:
-        return TrainingJob.query.filter(TrainingJob.id==id).one()
-    else:
-        tjs = TrainingJob.query.all()
-        return tjs
+    try:
+        if id is not None:
+            return TrainingJob.query.filter(TrainingJob.id==id).one()
+        else:
+            tjs = TrainingJob.query.all()
+            return tjs
+    except NoResultFound:
+        # id is not present
+        return None
+    except Exception as e:
+        raise DBException(f'{DB_QUERY_EXEC_ERROR} : {str(e)}' )
+        
 
 def change_field_value_by_version(trainingjob_name, version, field, field_value):
     """
     This function updates field's value to field_value of <trainingjob_name, version> trainingjob.
     """
-    conn = None
     try:
         if field == "deletion_in_progress":
             trainingjob = TrainingJob.query.filter(TrainingJob.trainingjob_name == trainingjob_name).filter(TrainingJob.version == version).first()

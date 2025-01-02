@@ -49,6 +49,14 @@ def check_and_notify_feature_engineering_status(APP,db):
                 # trainingjob_name = trainingjob.trainingjob_name
                 with APP.app_context():
                     trainingjob = get_trainingjob(trainingjob_id)
+                
+                if trainingjob is None:
+                    # trainingjob_id not present in db, A possible case of deletion
+                    LOGGER.debug(f"Training-Job Id {trainingjob_id} is Found to be deleted| Removing from DATAEXTRACTION_JOBS_CACHE")
+                    with LOCK:
+                        DATAEXTRACTION_JOBS_CACHE.pop(trainingjob_id)
+                    continue
+                    
                 featuregroup_name = getField(trainingjob.training_config, "feature_group_name")
                 response = data_extraction_status(featuregroup_name, trainingjob_id, TRAININGMGR_CONFIG_OBJ)
                 if (response.headers.get('content-type') != "application/json" or
@@ -73,22 +81,31 @@ def check_and_notify_feature_engineering_status(APP,db):
                     )
                     if (kf_response.headers.get('content-type') != "application/json" or
                             kf_response.status_code != 200):
-                        raise TMException(f"KF adapter returned an error for {featuregroup_name}.")
+                        LOGGER.error(f"KF adapter returned an error for {featuregroup_name}. | Response : {kf_response.json()}")
+                        raise TMException(f"KF adapter returned an error for {featuregroup_name}. ")
 
                     with LOCK:
                         DATAEXTRACTION_JOBS_CACHE.pop(trainingjob.id)
                 elif response_data["task_status"] == "Error":
                     raise TMException(f"Data extraction failed for {featuregroup_name}.")
+            except DBException as err:
+                # If there is any communication error with db, the thread must not fail
+                LOGGER.error("Recieved Db Failure in async-handler| Error : " + str(err))
+                continue
             except Exception as err:
                 LOGGER.error(f"Error processing DATAEXTRACTION_JOBS_CACHE: {str(err)}")
-                with APP.app_context():
-                    change_state_to_failed(trainingjob.id)
-                    notification_rapp(trainingjob.id)
-                    with LOCK:
-                        try:
-                            DATAEXTRACTION_JOBS_CACHE.pop(trainingjob.id)
-                        except KeyError as key_err:
-                            LOGGER.error("The training job key doesn't exist in DATAEXTRACTION_JOBS_CACHE: " + str(key_err))
+                #The following try-block will prevent thread-failure when  'change_state_to_failed' fails
+                try:
+                    with APP.app_context():
+                        change_state_to_failed(trainingjob.id)
+                        notification_rapp(trainingjob.id)
+                        with LOCK:
+                                DATAEXTRACTION_JOBS_CACHE.pop(trainingjob.id)
+                except KeyError as key_err:
+                    LOGGER.error("The training job key doesn't exist in DATAEXTRACTION_JOBS_CACHE: " + str(key_err))
+                except Exception as err:
+                    LOGGER.error(f"Error processing DATAEXTRACTION_JOBS_CACHE-Exception: {str(err)}")
+                    
 
         time.sleep(10)  # Sleep before checking again
 

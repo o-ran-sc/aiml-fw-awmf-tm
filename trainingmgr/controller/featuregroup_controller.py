@@ -111,8 +111,8 @@ def create_feature_group():
             if featuregroup.enable_dme == True :
                 response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, featuregroup.source_name, featuregroup.feature_list, featuregroup.featuregroup_name, featuregroup.host, featuregroup.dme_port, featuregroup.measured_obj_class)
                 if response.status_code != 201:
-                    delete_feature_group_by_name(featuregroup)
-                    return jsonify({"Exception": "Cannot create dme job"}), status.HTTP_400_BAD_REQUEST
+                    delete_feature_group_by_name(featuregroup.featuregroup_name)
+                    return jsonify({"Exception": "Cannot create dme job | DME Error : " + str(response.json()["detail"])}), status.HTTP_400_BAD_REQUEST
     except ValidationError as err:
         LOGGER.error(f"Failed to create the feature Group {str(err)}")
         return {"Exception": str(err)}, 400

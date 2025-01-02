@@ -19,7 +19,6 @@
 """
 This module is for loading training manager configuration.
 """
-import os
 from os import getenv
 from trainingmgr.common.tmgr_logger import TMLogger
 

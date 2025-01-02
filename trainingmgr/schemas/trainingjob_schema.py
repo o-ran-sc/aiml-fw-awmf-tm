@@ -21,7 +21,7 @@ from trainingmgr.schemas import ma
 from trainingmgr.models import TrainingJob
 from trainingmgr.models.trainingjob import ModelID
 import json
-from marshmallow import pre_load, post_dump, fields, validates, ValidationError
+from marshmallow import pre_load, post_dump
 
 PATTERN = re.compile(r"\w+")
 
