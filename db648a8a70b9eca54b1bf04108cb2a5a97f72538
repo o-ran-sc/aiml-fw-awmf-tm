@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "481a77ad_19e312cf",
+        "filename": "trainingmgr/common/trainingmgr_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-01-02T13:22:52Z",
+      "side": 1,
+      "message": "Let\u0027s keep it for now adding \"TODO: xxx\"",
+      "range": {
+        "startLine": 271,
+        "startChar": 0,
+        "endLine": 271,
+        "endChar": 50
+      },
+      "revId": "db648a8a70b9eca54b1bf04108cb2a5a97f72538",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c7e8aba7_6689c8be",
+        "filename": "trainingmgr/controller/trainingjob_controller.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-01-02T13:22:52Z",
+      "side": 1,
+      "message": "please convert it to int, similar to our model",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 45,
+        "endChar": 44
+      },
+      "revId": "db648a8a70b9eca54b1bf04108cb2a5a97f72538",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
