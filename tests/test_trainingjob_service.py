@@ -203,9 +203,9 @@ class TestDeleteTrainingJob:
             }
         }
         mock_steps_state = MagicMock()
-        mock_steps_state.states = {"DATA_EXTRACTION":"FINISHED", 
+        mock_steps_state.states = json.dumps({"DATA_EXTRACTION":"FINISHED", 
                             "DATA_EXTRACTION_AND_TRAINING":"FINISHED", 
-                            "TRAINING":"IN_PROGRESS"}  
+                            "TRAINING":"IN_PROGRESS"})  
         TrainingJob.steps_state = mock_steps_state
         TrainingJob.deletion_in_progress = False
         return TrainingJob
