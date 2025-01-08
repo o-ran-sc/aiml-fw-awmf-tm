@@ -272,7 +272,7 @@ def training(trainingjob):
         }), 500  
         
     response =  jsonify(trainingJobSchema.dump(trainingjob))
-    response.headers['Location'] = "training-jobs/" + str(training_job_id)
+    response.headers['Location'] = "ai-ml-model-training/v1/training-jobs/" + str(training_job_id)
     return response, 201
 
     
