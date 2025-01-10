@@ -182,20 +182,6 @@ def delete_dme_filtered_data_job(training_config_obj, feature_group_name, host, 
     response = requests.delete(url)
     return response
 
-def get_model_info(training_config_obj, model_name):
-    logger = training_config_obj.logger
-    model_management_service_ip = training_config_obj.model_management_service_ip
-    model_management_service_port = training_config_obj.model_management_service_port
-    url ="http://"+str(model_management_service_ip)+":"+str(model_management_service_port)+"/getModelInfo/{}".format(model_name)
-    response = requests.get(url)
-    if(response.status_code==status.HTTP_200_OK):
-        model_info=json.loads(response.json()['message']["data"])
-        return model_info
-    else:
-        errMsg="model info can't be fetched, model_name: {} , err: {}".format(model_name, response.text)
-        logger.error(errMsg)
-        raise TMException(errMsg)
-
 def notification_rapp(trainingjob_id):
     try:
         trainingjob = get_trainingjob(trainingjob_id)
