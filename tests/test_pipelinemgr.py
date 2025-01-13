@@ -84,7 +84,7 @@ class TestPipelineMgr:
         file_path.write_text("pipeline content")
         with pytest.raises(TMException, match="Error while uploading pipeline"):
             pipeline_mgr.upload_pipeline_file("pipeline1", str(file_path), "Test pipeline")
-            
+
     @patch("requests.post")
     def test_start_training_success(self, mock_post, pipeline_mgr):
         mock_response = MagicMock()
@@ -93,3 +93,31 @@ class TestPipelineMgr:
         training_details = {"param1": "value1"}
         response = pipeline_mgr.start_training(training_details, "trainingjob1")
         assert response.status_code == 200
+
+    @patch("requests.delete")
+    def test_terminate_training_success(self, mock_delete, pipeline_mgr):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_delete.return_value = mock_response
+        response = pipeline_mgr.terminate_training("run1")
+        assert response.status_code == 200
+
+    @patch("requests.get")
+    def test_get_experiments_success(self, mock_get, pipeline_mgr):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.headers = {"content-type": "application/json"}
+        mock_response.json.return_value = [{"id": "experiment1"}, {"id": "experiment2"}]
+        mock_get.return_value = mock_response
+        result = pipeline_mgr.get_experiments()
+        assert len(result) == 2
+        assert result[0]["id"] == "experiment1"
+
+    @patch("requests.get")
+    def test_get_experiments_invalid_content_type(self, mock_get, pipeline_mgr):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.headers = {"content-type": "text/plain"}
+        mock_get.return_value = mock_response
+        with pytest.raises(TMException, match="Kf adapter doesn't sends json type response"):
+            pipeline_mgr.get_experiments()
