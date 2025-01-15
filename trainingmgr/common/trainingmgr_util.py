@@ -88,71 +88,6 @@ def get_step_in_progress_state(steps_state):
     
     return None
 
-def check_trainingjob_data(trainingjob_name, json_data):
-    """
-    This function checks validation for json_data dictionary and return tuple which conatins
-    values of different keys in jsn_data.
-    """
-    try:
-        if check_key_in_dictionary(["featureGroup_name", "pipeline_version", \
-                                 "pipeline_name", "experiment_name",
-                                 "arguments", "enable_versioning",
-                                 "datalake_source", "description",
-                                 "query_filter"], json_data):
-
-            description = json_data["description"]
-            feature_list = json_data["featureGroup_name"]
-            pipeline_name = json_data["pipeline_name"]
-            experiment_name = json_data["experiment_name"]
-            arguments = json_data["arguments"]
-
-            if not isinstance(arguments, dict):
-                raise TMException("Please pass agruments as dictionary for " + trainingjob_name)
-            query_filter = json_data["query_filter"]
-            enable_versioning = json_data["enable_versioning"]
-            pipeline_version = json_data["pipeline_version"]
-            datalake_source = json_data["datalake_source"]
-        else :
-            raise TMException("check_trainingjob_data- supplied data doesn't have" + \
-                                "all the required fields ")
-    except Exception as err:
-        raise APIException(status.HTTP_400_BAD_REQUEST,
-                           str(err)) from None
-    return (feature_list, description, pipeline_name, experiment_name,
-            arguments, query_filter, enable_versioning, pipeline_version,
-            datalake_source)
-
-def check_feature_group_data(json_data):
-    """
-    This function checks validation for json_data dictionary and return tuple which conatins
-    values of different keys in jsn_data.
-    """
-    try:
-        if check_key_in_dictionary(["featureGroupName", "feature_list", \
-                                    "datalake_source", "enable_Dme", "Host", 
-                                    "Port", "dmePort","bucket", "token", "source_name", "measured_obj_class", "_measurement"], json_data):
-            feature_group_name=json_data["featureGroupName"]
-            features=json_data["feature_list"]
-            datalake_source=json_data["datalake_source"]
-            enable_dme=json_data["enable_Dme"]
-            measurement = json_data["_measurement"]
-            host=json_data["Host"]
-            port=json_data["Port"]
-            dme_port=json_data["dmePort"]
-            bucket=json_data["bucket"]
-            token=json_data["token"]
-            source_name=json_data["source_name"]
-            db_org=json_data["dbOrg"]
-            measured_obj_class = json_data["measured_obj_class"]
-        else :
-            raise TMException("check_featuregroup_data- supplied data doesn't have" + \
-                                " all the required fields ")
-    
-    except Exception as err:
-        raise APIException(status.HTTP_400_BAD_REQUEST, str(err)) from None
-    
-    return (feature_group_name, features, datalake_source, enable_dme, host, port,dme_port, bucket, token, source_name,db_org, measured_obj_class, measurement)
-
 def get_feature_group_by_name(featuregroup_name, logger):
     """
     Function fetching a feature group
@@ -232,20 +167,11 @@ def edit_feature_group_by_name(featuregroup_name: str,
         return {"Exception": str(err)}, 400
     except DBException as err:
         return {"Exception": str(err)}, 400
-    except Exception as e:
-        api_response = {"Exception":str(e)}
-        logger.error(str(e))
+    except Exception as err:
+        logger.error(str(err))
+        return {"Exception": str(err)}, 400
     
     return api_response, response_code
-
-def get_one_key(dictionary):
-    '''
-    this function finds any one key from dictionary and return it.
-    '''
-    only_key = None
-    for key in dictionary:
-        only_key = key
-    return only_key
 
 
 def get_metrics(trainingjob_name, version, mm_sdk):
@@ -267,33 +193,6 @@ def get_metrics(trainingjob_name, version, mm_sdk):
         raise TMException ( "Problem while downloading metric" + errmsg)
     return data
 
-
-# TODO: Remove the fxn since it is not called anywhere
-def handle_async_feature_engineering_status_exception_case(lock, dataextraction_job_cache, code,
-                                                           message, logger, is_success,
-                                                           trainingjob_name, mm_sdk):
-    """
-    This function changes IN_PROGRESS state to FAILED state and calls response_for_training function
-    and remove trainingjob_name from dataextraction_job_cache.
-    """
-    try:
-        change_in_progress_to_failed_by_latest_version(trainingjob_name)
-        response_for_training(code, message, logger, is_success, trainingjob_name, mm_sdk)
-    except Exception as err:
-        logger.error("Failed in handle_async_feature_engineering_status_exception_case" + str(err))
-    finally:
-        #Post success/failure handle,process next item from DATAEXTRACTION_JOBS_CACHE
-        with lock:
-            try:
-                dataextraction_job_cache.pop(trainingjob_name)
-            except KeyError as key_err:
-                logger.error("The training job key doesn't exist in DATAEXTRACTION_JOBS_CACHE: " + str(key_err))
-    
-
-def check_trainingjob_name_and_version(trainingjob_name, version):
-    if (re.fullmatch(PATTERN, trainingjob_name) and version.isnumeric()):
-        return True
-    return False
 
 def check_trainingjob_name_or_featuregroup_name(name):
     if re.fullmatch(PATTERN, name):
