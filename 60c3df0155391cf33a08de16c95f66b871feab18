@@ -1,0 +1,13 @@
+Verified+1: subhash kumar singh <subh.singh@samsung.com>
+Verified+1: Rajdeep Singh <rajdeep.sin@samsung.com>
+Verified+1: ORAN Required GHA <releng+oran.required.gha@linuxfoundation.org>
+Code-Review+2: subhash kumar singh <subh.singh@samsung.com>
+Verified+1: o-ran-sc release <collab-it+o-ran-sc-release@linuxfoundation.org>
+Code-Review+1: Monosij Ghosh <mono.ghosh@samsung.com>
+Verified+1: ORAN Jobbuilder <releng+oran-jobbuilder@linuxfoundation.org>
+Code-Review+1: Rajdeep Singh <rajdeep.sin@samsung.com>
+Submitted-by: subhash kumar singh <subh.singh@samsung.com>
+Submitted-at: Wed, 15 Jan 2025 17:13:49 +0000
+Reviewed-on: https://gerrit.o-ran-sc.org/r/c/aiml-fw/awmf/tm/+/14059
+Project: aiml-fw/awmf/tm
+Branch: refs/heads/master
