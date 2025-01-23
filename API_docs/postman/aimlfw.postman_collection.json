@@ -1,0 +1,270 @@
+{
+	"info": {
+		"_postman_id": "de0e7b8a-9977-4a58-9d84-12527a4bbeae",
+		"name": "aimlfw",
+		"description": "This is the collection of curl request.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14746060"
+	},
+	"item": [
+		{
+			"name": "tm",
+			"item": [
+				{
+					"name": "experiments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:32002/experiments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "32002",
+							"path": [
+								"experiments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create feature group",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"featuregroup_name\":\"testing_influxdb_03\",\"feature_list\":\"pdcpBytesDl,pdcpBytesUl\",\"datalake_source\":\"InfluxSource\",\"enable_dme\":false,\"host\":\"my-release-influxdb.default\",\"port\":\"8086\",\"dme_port\":\"\",\"bucket\":\"UEData\",\"token\":\"mXBhJ6Sw5nytq9PmzPKi\",\"source_name\":\"\",\"measured_obj_class\":\"\",\"measurement\":\"liveCell\",\"db_org\":\"primary\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:32002/ai-ml-model-training/v1/featureGroup",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "32002",
+							"path": [
+								"ai-ml-model-training",
+								"v1",
+								"featureGroup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create trainingjob",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"modelId\": {\r\n        \"modelname\":\"qoe11\",\r\n        \"modelversion\":\"1\"\r\n    },\r\n    \"training_config\": {\r\n        \"description\": \"trainingjob for testing\",\r\n        \"dataPipeline\": {\r\n            \"feature_group_name\": \"testing_influxdb_01\",\r\n            \"query_filter\": \"\",\r\n            \"arguments\": {\"epochs\": 1}\r\n        },\r\n        \"trainingPipeline\": {\r\n                \"training_pipeline_name\": \"qoe_Pipeline_testing_1\", \r\n                \"training_pipeline_version\": \"qoe_Pipeline_testing_1\", \r\n                \"retraining_pipeline_name\":\"qoe_Pipeline_retrain\",\r\n                \"retraining_pipeline_version\":\"2\"\r\n        }\r\n    },\r\n    \"model_location\":\"\",\r\n    \"training_dataset\": \"\",\r\n    \"validation_dataset\": \"\",\r\n    \"notification_url\": \"\",\r\n    \"consumer_rapp_id\": \"\",\r\n    \"producer_rapp_id\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:32002/ai-ml-model-training/v1/training-jobs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "32002",
+							"path": [
+								"ai-ml-model-training",
+								"v1",
+								"training-jobs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "trainiingjob_by_id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:32002/trainingjobs/testing_influxdb_103/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "32002",
+							"path": [
+								"trainingjobs",
+								"testing_influxdb_103",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "trainingjob",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:32002/ai-ml-model-training/v1/training-jobs/32",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "32002",
+							"path": [
+								"ai-ml-model-training",
+								"v1",
+								"training-jobs",
+								"32"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "steps state",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:32002/ai-ml-model-training/v1/training-jobs/31/status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "32002",
+							"path": [
+								"ai-ml-model-training",
+								"v1",
+								"training-jobs",
+								"31",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "editing feature group",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"featuregroup_name\":\"testing_influxdb_02\",\"feature_list\":\"pdcpBytesDl\",\"datalake_source\":\"InfluxSource\",\"enable_dme\":false,\"host\":\"my-release-influxdb.default\",\"port\":\"8086\",\"dme_port\":\"\",\"bucket\":\"pm-bucket\",\"token\":\"asjkahsjdhaksdhaksdha\",\"source_name\":\"\",\"measured_obj_class\":\"\",\"measurement\":\"liveCell\",\"db_org\":\"primary\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:32002/featureGroup/testing_influxdb_2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "32002",
+							"path": [
+								"featureGroup",
+								"testing_influxdb_2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get featuregroup by name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:32002/featureGroup/testing_influxdb_01",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "32002",
+							"path": [
+								"featureGroup",
+								"testing_influxdb_01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete feature group",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"featuregroups_list\":[{\"featureGroup_name\":\"testing_influxdb_4\"}]}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:32002/featureGroup",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "32002",
+							"path": [
+								"featureGroup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all trainingjob latest info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:32002/ai-ml-model-training/v1//training-jobs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "32002",
+							"path": [
+								"ai-ml-model-training",
+								"v1",
+								"",
+								"training-jobs"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Collection of all the api requests to Training manager"
+		}
+	]
+}
