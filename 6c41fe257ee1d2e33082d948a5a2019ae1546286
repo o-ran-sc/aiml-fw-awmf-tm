@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5764a354_f3916846",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-01-29T09:14:41Z",
+      "side": 1,
+      "message": "it should be string similar to :\n`f\"error {version}\"`",
+      "range": {
+        "startLine": 120,
+        "startChar": 33,
+        "endLine": 120,
+        "endChar": 40
+      },
+      "revId": "6c41fe257ee1d2e33082d948a5a2019ae1546286",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
