@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "84883189_05c829dc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-01-29T09:12:03Z",
+      "side": 1,
+      "message": "could you also delete the previous postman collection in MME.",
+      "revId": "dac63d0e1b1af055107a81dbe963b8e75a252dfa",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
