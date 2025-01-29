@@ -109,7 +109,15 @@ def get_model(modelname, modelversion, artifactversion):
         
         # for no model present in leofs
         if "An error occurred (404) when calling the HeadObject operation: Not Found" in str(err):
-            return {"Exception": f"error while downloading model as no model with modelId {modelname} {modelversion} {artifactversion} was found"}, status.HTTP_404_NOT_FOUND
+            err_msg = {
+                "error": "Error while downloading model",
+                "Model Name": modelname,
+                "Model Version": modelversion,
+                "Artifact Version": artifactversion,
+                "message": "Model not found"
+            }
+            LOGGER.error(json.dumps(err_msg))  
+            return {"Exception": err_msg}, status.HTTP_404_NOT_FOUND
         
         return {"Exception": "error while downloading model"}, status.HTTP_500_INTERNAL_SERVER_ERROR
 
