@@ -16,6 +16,29 @@
       "message": "UPdated UT and the error messeage for model not found",
       "revId": "f6b92bb782babc628fc984f6ee5509d08a1230f4",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b1c4bb33_72ae2413",
+        "filename": "tests/test_trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-02-03T06:35:35Z",
+      "side": 1,
+      "message": "It should be simple string in one liner.",
+      "range": {
+        "startLine": 98,
+        "startChar": 66,
+        "endLine": 98,
+        "endChar": 83
+      },
+      "revId": "f6b92bb782babc628fc984f6ee5509d08a1230f4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
