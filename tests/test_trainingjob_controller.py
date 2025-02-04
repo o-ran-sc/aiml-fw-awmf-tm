@@ -97,7 +97,7 @@ class Test_create_trainingjob:
     @patch('trainingmgr.controller.trainingjob_controller.get_modelinfo_by_modelId_service', return_value = None)
     def test_create_trainingjob_model_not_registered(self, mock1):
         trainingmgr_main.LOGGER.debug("******* test_create_trainingjob_model_not_registered *******")
-        expected_data = "modelId test_model and 1 is not registered at MME, Please first register at MME and then continue"
+        expected_data = "Model name = test_model and Model version = 1 is not registered at MME, Please first register at MME and then continue"
         trainingjob_req = {
             "modelId":{
                 "modelname": "test_model", 
@@ -129,7 +129,7 @@ class Test_create_trainingjob:
     @patch('trainingmgr.controller.trainingjob_controller.get_modelinfo_by_modelId_service', return_value=registered_model_list)
     def test_create_trainingjob_model_location_mismatch(self, mock1):
         trainingmgr_main.LOGGER.debug("******* test_create_trainingjob_model_location_mismatch *******")
-        expected_data = "modelId test_model and 1 and trainingjob created does not have same modelLocation, Please first register at MME properly and then continue"
+        expected_data = "Model name = test_model and Model version = 1 and trainingjob created does not have same modelLocation, Please first register at MME properly and then continue"
         trainingjob_req = {
             "modelId":{
                 "modelname": "test_model", 
