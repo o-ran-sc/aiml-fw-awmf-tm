@@ -79,11 +79,11 @@ def create_trainingjob():
         registered_model_list = get_modelinfo_by_modelId_service(model_id.modelname, model_id.modelversion)
         # Verify if the modelId is registered over mme or not
         if registered_model_list is None:
-            return jsonify({"Exception":f"modelId {model_id.modelname} and {model_id.modelversion} is not registered at MME, Please first register at MME and then continue"}), status.HTTP_400_BAD_REQUEST
+            return jsonify({"Exception":f"Model name = {model_id.modelname} and Model version = {model_id.modelversion} is not registered at MME, Please first register at MME and then continue"}), status.HTTP_400_BAD_REQUEST
 
         registered_model_dict = registered_model_list[0]
         if registered_model_dict["modelLocation"] != trainingjob.model_location:
-            return jsonify({"Exception":f"modelId {model_id.modelname} and {model_id.modelversion} and trainingjob created does not have same modelLocation, Please first register at MME properly and then continue"}), status.HTTP_400_BAD_REQUEST
+            return jsonify({"Exception":f"Model name = {model_id.modelname} and Model version = {model_id.modelversion} and trainingjob created does not have same modelLocation, Please first register at MME properly and then continue"}), status.HTTP_400_BAD_REQUEST
         
         return create_training_job(trainingjob=trainingjob, registered_model_dict= registered_model_dict)
         
