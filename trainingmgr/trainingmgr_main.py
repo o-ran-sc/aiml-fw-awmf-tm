@@ -109,8 +109,16 @@ def get_model(modelname, modelversion, artifactversion):
         
         # for no model present in leofs
         if "An error occurred (404) when calling the HeadObject operation: Not Found" in str(err):
-            return {"Exception": f"error while downloading model as no model with modelId {modelname} {modelversion} {artifactversion} was found"}, status.HTTP_404_NOT_FOUND
-        
+            err_msg = (
+                f"Error while downloading model: "
+                f"Model Name = {modelname}, "
+                f"Model Version = {modelversion}, "
+                f"Artifact Version = {artifactversion}, "
+                f"Model not found"
+            )
+            LOGGER.error(err_msg)  
+            return err_msg, status.HTTP_404_NOT_FOUND
+
         return {"Exception": "error while downloading model"}, status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
@@ -169,7 +177,7 @@ def data_extraction_notification():
         registered_model_list = get_modelinfo_by_modelId_service(model_id.modelname, model_id.modelversion)
 
         if registered_model_list is None:
-            return jsonify({"Exception":f"modelId {model_id.modelname} and {model_id.modelversion} is not registered at MME, Please first register at MME and then continue"}), status.HTTP_400_BAD_REQUEST
+            return jsonify({"Exception":f"Model Name = {model_id.modelname} and Model Version = {model_id.modelversion} is not registered at MME, Please first register at MME and then continue"}), status.HTTP_400_BAD_REQUEST
 
         registered_model_dict = registered_model_list[0]
 
