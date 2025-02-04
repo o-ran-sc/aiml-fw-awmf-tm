@@ -76,14 +76,26 @@ class TestGetModel:
     @patch('trainingmgr.trainingmgr_main.MM_SDK', return_value=mocked_mm_sdk)
     @patch('trainingmgr.trainingmgr_main.send_file')
     def test_getmodel_model_not_found(self, mock_sendfile, mock_model_metrics_sdk):
-        
         mock_sendfile.side_effect = Exception("An error occurred (404) when calling the HeadObject operation: Not Found")
-        response = self.client.get("/model/{modelname}/{modelversion}/{artifactversion}/Model.zip".format(modelname="nonexistent_model",
-                                modelversion="1.0", artifactversion = "1.0"), content_type="application/json")
-        
+        response = self.client.get(
+            "/model/{modelname}/{modelversion}/{artifactversion}/Model.zip".format(
+                modelname="nonexistent_model", modelversion="1.0", artifactversion="1.0"
+            ),
+            content_type="application/json",
+        )
         assert response.status_code == 404
-        assert b"error while downloading model as no model with modelId nonexistent_model 1.0 1.0 was found" in response.data
-    
+        # Expected response as a plain string
+        expected_response = (
+            f"Error while downloading model: "
+            f"Model Name = nonexistent_model, "
+            f"Model Version = 1.0, "
+            f"Artifact Version = 1.0, "
+            f"Model not found"
+        )
+        # Convert response data from bytes to a string
+        actual_response = response.data.decode("utf-8")
+        assert actual_response == expected_response, f"Expected: {expected_response}, Got: {actual_response}"
+           
     @patch('trainingmgr.trainingmgr_main.MM_SDK', return_value=mocked_mm_sdk)
     @patch('trainingmgr.trainingmgr_main.send_file')
     def test_getmodel_internal_server_error(self, mock_sendfile, mock_model_metrics_sdk):
