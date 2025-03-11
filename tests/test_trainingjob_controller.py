@@ -50,208 +50,194 @@ trainingmgr_main.LOCK = Lock()
 trainingmgr_main.DATAEXTRACTION_JOBS_CACHE = {}
 
 
-class Test_create_trainingjob:
+class TestCreateTrainingJob:
     def setup_method(self):
         app = Flask(__name__)
         app.register_blueprint(training_job_controller)
         self.client = app.test_client()
-
-    mocked_TRAININGMGR_CONFIG_OBJ = mock.Mock(name="TRAININGMGR_CONFIG_OBJ")
-    attrs_TRAININGMGR_CONFIG_OBJ = {'kf_adapter_ip.return_value': '123', 'kf_adapter_port.return_value': '100'}
-    mocked_TRAININGMGR_CONFIG_OBJ.configure_mock(**attrs_TRAININGMGR_CONFIG_OBJ)
-
     def test_create_trainingjob_missing_training_config(self):
         trainingmgr_main.LOGGER.debug("******* test_create_trainingjob_missing_training_config *******")
-        expected_data = "The training_config is missing"
+        expected_data = {
+            "title": "Bad Request",
+            "status": 400,
+            "detail": "The 'training_config' field is missing."
+        }
         trainingjob_req = {
-                    "modelId":{
-                        "modelname": "modeltest",
-                        "modelversion": "1"
-                    }
+            "modelId": {
+                "modelname": "modeltest",
+                "modelversion": "1"
             }
-        response = self.client.post("/training-jobs", data = json.dumps(trainingjob_req),
-                                    content_type="application/json")
-        trainingmgr_main.LOGGER.debug(response.data)
-        print(response)
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert expected_data in str(response.data)
-
-    def test_create_trainingjob_invalid_training_config(self):
-        trainingmgr_main.LOGGER.debug("******* test_create_trainingjob_invalid_training_config *******")
-        expected_data = "The TrainingConfig is not correct"
-        trainingjob_req = {
-                    "modelId":{
-                        "modelname": "modeltest",
-                        "modelversion": "1"
-                    },
-                    "training_config": {
-                        "description": "trainingjob for testing"
-                    }
-            }
+        }
         response = self.client.post("/training-jobs", data=json.dumps(trainingjob_req),
                                     content_type="application/json")
         trainingmgr_main.LOGGER.debug(response.data)
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert expected_data in str(response.data)
-
-    @patch('trainingmgr.controller.trainingjob_controller.get_modelinfo_by_modelId_service', return_value = None)
+        assert response.status_code == 400
+        assert response.json == expected_data
+    def test_create_trainingjob_invalid_training_config(self):
+        trainingmgr_main.LOGGER.debug("******* test_create_trainingjob_invalid_training_config *******")
+        expected_data = {
+            "title": "Bad Request",
+            "status": 400,
+            "detail": "The provided 'training_config' is not valid."
+        }
+        trainingjob_req = {
+            "modelId": {
+                "modelname": "modeltest",
+                "modelversion": "1"
+            },
+            "training_config": {
+                "description": "training job for testing"
+            }
+        }
+        response = self.client.post("/training-jobs", data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        trainingmgr_main.LOGGER.debug(response.data)
+        assert response.status_code == 400
+        assert response.json == expected_data
+    @patch('trainingmgr.controller.trainingjob_controller.get_modelinfo_by_modelId_service', return_value=None)
     def test_create_trainingjob_model_not_registered(self, mock1):
         trainingmgr_main.LOGGER.debug("******* test_create_trainingjob_model_not_registered *******")
-        expected_data = "Model name = test_model and Model version = 1 is not registered at MME, Please first register at MME and then continue"
+        expected_data = {
+            "title": "Bad Request",
+            "status": 400,
+            "detail": "Model 'test_model' version '1' is not registered at MME."
+        }
         trainingjob_req = {
-            "modelId":{
-                "modelname": "test_model", 
+            "modelId": {
+                "modelname": "test_model",
                 "modelversion": "1"
             },
             "model_location": "",
             "training_config": {
-                    "description": "trainingjob for testing",
-                    "dataPipeline": {
-                        "feature_group_name": "testing_influxdb_01",
-                        "query_filter": "",
-                        "arguments": "{'epochs': 1'}"
-                    },
-                    "trainingPipeline": {
-                        "training_pipeline_name": "qoe_Pipeline",
-                        "training_pipeline_version": "qoe_Pipeline",
-                        "retraining_pipeline_name": "qoe_PipelineRetrain",
-                        "retraining_pipeline_version": "qoe_PipelineRetrain",
-                    }
-            },
+                "description": "trainingjob for testing",
+                "dataPipeline": {
+                    "feature_group_name": "testing_influxdb_03",
+                    "query_filter": "",
+                    "arguments": {"epochs": 10}
+                },
+                "trainingPipeline": {
+                        "training_pipeline_name": "qoe_Pipeline", 
+                        "training_pipeline_version": "qoe_Pipeline", 
+                        "retraining_pipeline_name":"qoe_Pipeline_retrain",
+                        "retraining_pipeline_version":"qoe_Pipeline_retrain"
+                }
+            }
         }
-        response = self.client.post("/training-jobs", data=json.dumps(trainingjob_req), content_type="application/json")
-        trainingmgr_main.LOGGER.debug(response.data)
-        print(response.data)
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert expected_data in str(response.data)
+        response = self.client.post("/training-jobs", data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        print("Actual Response:", response.json)  # Debugging
+        assert response.status_code == 400
+        assert response.json == expected_data
 
     registered_model_list = [{"modelLocation": "s3://different-location"}]
     @patch('trainingmgr.controller.trainingjob_controller.get_modelinfo_by_modelId_service', return_value=registered_model_list)
     def test_create_trainingjob_model_location_mismatch(self, mock1):
-        trainingmgr_main.LOGGER.debug("******* test_create_trainingjob_model_location_mismatch *******")
-        expected_data = "Model name = test_model and Model version = 1 and trainingjob created does not have same modelLocation, Please first register at MME properly and then continue"
+        expected_data = {
+            "title": "Bad Request",
+            "status": 400,
+            "detail": "Model 'test_model' version '1' does not match the registered model location."
+        }
         trainingjob_req = {
-            "modelId":{
-                "modelname": "test_model", 
+            "modelId": {
+                "modelname": "test_model",
                 "modelversion": "1"
             },
-            "model_location": "s3://model-location",
+            "model_location": "",
             "training_config": {
-                    "description": "trainingjob for testing",
-                    "dataPipeline": {
-                        "feature_group_name": "testing_influxdb_01",
-                        "query_filter": "",
-                        "arguments": "{'epochs': 1'}"
-                    },
-                    "trainingPipeline": {
-                        "training_pipeline_name": "qoe_Pipeline",
-                        "training_pipeline_version": "qoe_Pipeline",
-                        "retraining_pipeline_name": "qoe_PipelineRetrain",
-                        "retraining_pipeline_version": "qoe_PipelineRetrain",
-                    }
-            },
+                "description": "trainingjob for testing",
+                "dataPipeline": {
+                    "feature_group_name": "testing_influxdb_03",
+                    "query_filter": "",
+                    "arguments": {"epochs": 10}
+                },
+                "trainingPipeline": {
+                        "training_pipeline_name": "qoe_Pipeline", 
+                        "training_pipeline_version": "qoe_Pipeline", 
+                        "retraining_pipeline_name":"qoe_Pipeline_retrain",
+                        "retraining_pipeline_version":"qoe_Pipeline_retrain"
+                }
+            }
         }
-        response = self.client.post("/training-jobs", data=json.dumps(trainingjob_req), content_type="application/json")
-        print(response.data)
-        trainingmgr_main.LOGGER.debug(response.data)
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert expected_data in str(response.data)
-
-class Test_DeleteTrainingJob:
+        response = self.client.post("/training-jobs", data=json.dumps(trainingjob_req),
+                                    content_type="application/json")
+        assert response.status_code == 400
+        assert response.json == expected_data
+        
+class TestDeleteTrainingJob:
     def setup_method(self):
         app = Flask(__name__)
         app.register_blueprint(training_job_controller)
         self.client = app.test_client()
-
     @patch('trainingmgr.controller.trainingjob_controller.delete_training_job', return_value=True)
     def test_delete_trainingjob_success(self, mock1):
-        response = self.client.delete("/training-jobs/{}".format("123"))
-        trainingmgr_main.LOGGER.debug(response.data)
-        assert response.status_code == status.HTTP_204_NO_CONTENT
-    
+        response = self.client.delete("/training-jobs/123")
+        assert response.status_code == 204
+        assert response.data == b''
     @patch('trainingmgr.controller.trainingjob_controller.delete_training_job', return_value=False)
     def test_delete_trainingjob_not_found(self, mock1):
-        expected_data = {'message': 'training job with given id is not found'}
-        
-        response = self.client.delete("/training-jobs/{}".format("123"))
-        trainingmgr_main.LOGGER.debug(response.data)
-        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-        assert expected_data == response.json
+        expected_data = {
+            "title": "Not Found",
+            "status": 404,
+            "detail": "Training job with ID 123 does not exist."
+        }
+        response = self.client.delete("/training-jobs/123")
+        assert response.status_code == 404
+        assert response.json == expected_data
 
-
-class Test_GetTrainingJobs:
+class TestGetTrainingJobs:
     def setup_method(self):
         app = Flask(__name__)
         app.register_blueprint(training_job_controller)
         self.client = app.test_client()
-    
-    tjs = [{'id': 1, 'name': 'Test Job'}]
-    @patch('trainingmgr.controller.trainingjob_controller.get_trainining_jobs', return_value = tjs)
-    @patch('trainingmgr.controller.trainingjob_controller.trainingjobs_schema.dump', return_value = tjs)
+    @patch('trainingmgr.controller.trainingjob_controller.get_trainining_jobs', return_value=[{"id": 1, "name": "Test Job"}])
+    @patch('trainingmgr.controller.trainingjob_controller.trainingjobs_schema.dump', return_value=[{"id": 1, "name": "Test Job"}])
     def test_get_trainingjobs_success(self, mock1, mock2):
-        expected_data = [{"id": 1, "name": "Test Job"}]
         response = self.client.get('/training-jobs/')
         assert response.status_code == 200
-        assert expected_data == response.json
-
+        assert response.json == [{"id": 1, "name": "Test Job"}]
     @patch('trainingmgr.controller.trainingjob_controller.get_trainining_jobs')
     def test_get_trainingjobs_tmexception(self, mock_get_trainingjobs):
-        mock_get_trainingjobs.side_effect = TMException('Training jobs not found')
-
-        response = self.client.get('/training-jobs/')
-        assert response.status_code == 400
-        assert response.json['message'] == 'Training jobs not found'
-
-    @patch('trainingmgr.controller.trainingjob_controller.get_trainining_jobs')
-    def test_get_trainingjobs_generic_exception(self, mock_get_trainingjobs):
-        mock_get_trainingjobs.side_effect = Exception('Unexpected error')
+        mock_get_trainingjobs.side_effect = Exception('Training jobs not found')
+        expected_data = {
+            "title": "Internal Server Error",
+            "status": 500,
+            "detail": "Training jobs not found"
+        }
         response = self.client.get('/training-jobs/')
         assert response.status_code == 500
-        assert response.json['message'] == 'Unexpected error'
+        assert response.json == expected_data
 
-class Test_GetTrainingJob:
+class TestGetTrainingJob:
     def setup_method(self):
         app = Flask(__name__)
         app.register_blueprint(training_job_controller)
         self.client = app.test_client()
-
-    tj = {'id': 1, 'name': 'Test Job'}
-    @patch('trainingmgr.controller.trainingjob_controller.get_training_job', return_value = tj)
-    @patch('trainingmgr.controller.trainingjob_controller.trainingjob_schema.dump', return_value = tj)
+    @patch('trainingmgr.controller.trainingjob_controller.get_training_job', return_value={"id": 1, "name": "Test Job"})
+    @patch('trainingmgr.controller.trainingjob_controller.trainingjob_schema.dump', return_value={"id": 1, "name": "Test Job"})
     def test_get_trainingjob_success(self, mock_schema_dump, mock_get_training_job):
         response = self.client.get('/training-jobs/1')
         assert response.status_code == 200
-        assert response.json == {'id': 1, 'name': 'Test Job'}
-
-    @patch('trainingmgr.controller.trainingjob_controller.get_training_job')
-    def test_get_trainingjob_tmexception(self, mock_get_training_job):
-        # Simulate TMException
-        mock_get_training_job.side_effect = TMException('Training job not found')
-
-        response = self.client.get('/training-jobs/1')
-        assert response.status_code == 400
-        assert response.json['message'] == 'Training job not found'
-
+        assert response.json == {"id": 1, "name": "Test Job"}
     @patch('trainingmgr.controller.trainingjob_controller.get_training_job')
     def test_get_trainingjob_generic_exception(self, mock_get_training_job):
         mock_get_training_job.side_effect = Exception('Unexpected error')
+        expected_data = {
+            "title": "Internal Server Error",
+            "status": 500,
+            "detail": "Unexpected error"
+        }
         response = self.client.get('/training-jobs/1')
         assert response.status_code == 500
-        assert response.json['message'] == 'Unexpected error'
+        assert response.json == expected_data
 
-
-class Test_GetTrainingJobStatus:
+class TestGetTrainingJobStatus:
     def setup_method(self):
         app = Flask(__name__)
         app.register_blueprint(training_job_controller)
         self.client = app.test_client()
-
     expected_data = {"status": "running"}
     @patch('trainingmgr.controller.trainingjob_controller.get_steps_state', return_value=json.dumps(expected_data))
     def test_get_trainingjob_status(self, mock1):
-        expected_data = {"status": "running"}
-        response = self.client.get("/training-jobs/{}/status".format("123"))
-        trainingmgr_main.LOGGER.debug(response.data)
-        assert response.status_code == status.HTTP_200_OK
-        assert expected_data == response.json
-
+        response = self.client.get("/training-jobs/123/status")
+        assert response.status_code == 200
+        assert response.json == {"status": "running"}
