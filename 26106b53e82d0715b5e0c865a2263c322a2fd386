@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "10d4d8de_7e9210c8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002600
+      },
+      "writtenOn": "2025-03-11T09:32:40Z",
+      "side": 1,
+      "message": "I have made the error message inline with the format provided in https://specifications.o-ran.org/download?id\u003d728 \nThe details are in section A.1.2.2 on page 140 and 141",
+      "revId": "26106b53e82d0715b5e0c865a2263c322a2fd386",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
