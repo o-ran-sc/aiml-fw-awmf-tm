@@ -20,3 +20,33 @@ def test_problem_details_initialization():
     assert problem.title == "Bad Request"
     assert problem.detail == "Invalid input data"
 
+def test_problem_details_to_dict():
+    """
+    Test that ProblemDetails generates the correct dictionary representation.
+    """
+    problem = ProblemDetails(404, "Not Found", "The requested resource does not exist.")
+    expected_dict = {
+        "title": "Not Found",
+        "status": 404,
+        "detail": "The requested resource does not exist."
+    }
+    assert problem.to_dict() == expected_dict
+
+def test_problem_details_to_json(test_app):
+    """
+    Test that ProblemDetails generates the correct Flask JSON response.
+    """
+    problem = ProblemDetails(500, "Internal Server Error", "Something went wrong")
+    with Flask(__name__).test_request_context():
+        response, status, headers = problem.to_json()
+    assert status == 500
+    assert headers["Content-Type"] == "application/problem+json"
+    # Convert response data to JSON and compare
+    response_data = json.loads(response.get_data(as_text=True))
+    expected_json = {
+        "title": "Internal Server Error",
+        "status": 500,
+        "detail": "Something went wrong"
+    }
+    assert response_data == expected_json
+
