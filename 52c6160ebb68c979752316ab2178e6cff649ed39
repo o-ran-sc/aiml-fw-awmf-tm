@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "de03a803_63e9e861",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002600
+      },
+      "writtenOn": "2025-03-12T07:51:02Z",
+      "side": 1,
+      "message": "created a class ProblemDetails in the schema folder, the error messsages have been updated in the training job controller and the corresponding test file.",
+      "revId": "52c6160ebb68c979752316ab2178e6cff649ed39",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
