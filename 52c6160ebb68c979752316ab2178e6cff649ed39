@@ -62,6 +62,29 @@
       },
       "revId": "52c6160ebb68c979752316ab2178e6cff649ed39",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "98b82d78_b90d4034",
+        "filename": "trainingmgr/schemas/problemdetail_schema.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-03-12T11:04:23Z",
+      "side": 1,
+      "message": "instead make it \nclass ProblemDetails(Exception):\n\n\nand instead return in business logic :\nraise ProblemDetails(400, \"Bad Request\", \"Missing \u0027training_config\u0027 field\")\n\ncheck once!",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 21
+      },
+      "revId": "52c6160ebb68c979752316ab2178e6cff649ed39",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
