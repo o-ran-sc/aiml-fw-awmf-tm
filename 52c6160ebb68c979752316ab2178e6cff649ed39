@@ -41,6 +41,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c1250bd_a39f45a4",
+        "filename": "trainingmgr/schemas/problemdetail_schema.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1002600
+      },
+      "writtenOn": "2025-03-12T12:48:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8655102c_af2c1b1c",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 25
+      },
+      "revId": "52c6160ebb68c979752316ab2178e6cff649ed39",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9a46dc2e_835b74be",
@@ -77,6 +101,54 @@
       "writtenOn": "2025-03-12T11:04:23Z",
       "side": 1,
       "message": "instead make it \nclass ProblemDetails(Exception):\n\n\nand instead return in business logic :\nraise ProblemDetails(400, \"Bad Request\", \"Missing \u0027training_config\u0027 field\")\n\ncheck once!",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 21
+      },
+      "revId": "52c6160ebb68c979752316ab2178e6cff649ed39",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0351378e_43e6c5f7",
+        "filename": "trainingmgr/schemas/problemdetail_schema.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1002600
+      },
+      "writtenOn": "2025-03-12T12:48:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a46dc2e_835b74be",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 3,
+        "endChar": 21
+      },
+      "revId": "52c6160ebb68c979752316ab2178e6cff649ed39",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c9cfbcae_3a48c22d",
+        "filename": "trainingmgr/schemas/problemdetail_schema.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1002600
+      },
+      "writtenOn": "2025-03-12T12:48:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "98b82d78_b90d4034",
       "range": {
         "startLine": 3,
         "startChar": 0,
