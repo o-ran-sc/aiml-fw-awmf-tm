@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c3c443e9_58ec641c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002600
+      },
+      "writtenOn": "2025-03-12T12:55:11Z",
+      "side": 1,
+      "message": "Test case coverage for ProblemDetails class file is now 100%",
+      "revId": "274513ef4266f721b649cd632a3a1aa2678e366e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
