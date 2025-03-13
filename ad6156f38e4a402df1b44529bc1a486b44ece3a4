@@ -16,6 +16,23 @@
       "message": "added header and test case file for ProblemDetails class",
       "revId": "ad6156f38e4a402df1b44529bc1a486b44ece3a4",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1ea7f557_2ba8faf7",
+        "filename": "trainingmgr/schemas/problemdetail_schema.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2025-03-13T09:20:19Z",
+      "side": 1,
+      "message": "please change 2024 to 2025",
+      "revId": "ad6156f38e4a402df1b44529bc1a486b44ece3a4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
