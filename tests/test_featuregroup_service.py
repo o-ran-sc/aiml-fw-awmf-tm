@@ -76,4 +76,62 @@ class TestGetFeaturegroupByName:
         with pytest.raises(TMException) as exc_info:
             get_featuregroup_by_name("invalid_group")
         assert "get featuregroup by name service failed with exception : DB error" in str(exc_info.value)
- 
+
+class TestGetFeaturegroupFromInputDataType:
+    @patch("trainingmgr.service.featuregroup_service.get_feature_groups_from_inputDataType_db")
+    def test_single_result(self, mock_get_feature_groups):
+        mock_get_feature_groups.return_value = [("test_group",)]
+        result = get_featuregroup_from_inputDataType("some_type") 
+        assert result == "test_group"
+
+    @patch("trainingmgr.service.featuregroup_service.get_feature_groups_from_inputDataType_db", return_value = [])
+    def test_no_result(self, mock_get_feature_groups):
+        with pytest.raises(TMException) as exc_info:
+            get_featuregroup_from_inputDataType("some_type")
+        assert "No featureGroup is available for inputDataType some_type" in str(exc_info.value)
+
+    @patch("trainingmgr.service.featuregroup_service.get_feature_groups_from_inputDataType_db")
+    def test_multiple_results(self, mock_get_feature_groups):
+        mock_get_feature_groups.return_value = [("group1",), ("group2",)]
+        with pytest.raises(TMException) as exc_info: 
+            get_featuregroup_from_inputDataType("some_type")
+        assert "2 or more featureGroup are available for inputDataType" in str(exc_info.value)
+
+
+    @patch("trainingmgr.service.featuregroup_service.get_feature_groups_from_inputDataType_db")
+    def test_db_exception(self, mock_get_feature_groups):
+        mock_get_feature_groups.side_effect = DBException("DB connection failed")
+        with pytest.raises(TMException) as exc_info:
+            get_featuregroup_from_inputDataType("some_type")
+        assert "get_featuregroup_from_inputDataType service failed with exception" in str(exc_info.value)
+
+    @patch("trainingmgr.service.featuregroup_service.get_feature_groups_from_inputDataType_db")
+    def test_unexpected_exception(self, mock_get_feature_groups):
+        mock_get_feature_groups.side_effect = Exception("Unexpected error")
+        with pytest.raises(Exception) as exc_info:
+            get_featuregroup_from_inputDataType("some_type")
+        assert "Unexpected error" in str(exc_info.value)
+
+
+class TestGetAllFeaturegroups:
+    expected_value =  [
+            {"featuregroup_name": "group1"},
+            {"featuregroup_name": "group2"},
+        ]
+    
+    @patch("trainingmgr.service.featuregroup_service.get_feature_groups_db", return_value = expected_value)
+    def test_success(self, mock_get_feature_groups_db):
+        result = get_all_featuregroups()
+        assert result == [
+            {"featuregroup_name": "group1"},
+            {"featuregroup_name": "group2"},
+        ]
+
+    @patch("trainingmgr.service.featuregroup_service.get_feature_groups_db")
+    def test_exception(self, mock_get_feature_groups_db):
+        mock_get_feature_groups_db.side_effect = Exception("DB error")
+
+        with pytest.raises(TMException) as exc_info:
+            get_all_featuregroups()
+        assert "get all featuregroups service failed with exception : DB error" in str(exc_info.value)
+
