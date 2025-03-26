@@ -24,9 +24,10 @@ from marshmallow import ValidationError
 from trainingmgr.common.exceptions_utls import TMException
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.schemas.trainingjob_schema import TrainingJobSchema
+from trainingmgr.schemas.featuregroup_schema import FeatureGroupSchema
 from trainingmgr.schemas.problemdetail_schema import ProblemDetails
 from trainingmgr.service.training_job_service import delete_training_job, create_training_job, get_training_job, get_trainining_jobs, \
-get_steps_state
+get_steps_state, fetch_feature_group_from_modelId
 from trainingmgr.common.trainingmgr_util import check_key_in_dictionary
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig
 from trainingmgr.service.mme_service import get_modelinfo_by_modelId_service
@@ -39,6 +40,7 @@ LOCK = Lock()
 
 trainingjob_schema = TrainingJobSchema()
 trainingjobs_schema = TrainingJobSchema(many=True)
+featuregroup_schema = FeatureGroupSchema()
 MIMETYPE_JSON = "application/json"
 
 @training_job_controller.route('/training-jobs/<int:training_job_id>', methods=['DELETE'])
@@ -113,4 +115,18 @@ def get_trainingjob_status(training_job_id):
         return jsonify(json.loads(status)), 200
     except Exception as err:
         LOGGER.error(f"Error fetching status for training job {training_job_id}: {str(err)}")
+        return ProblemDetails(500, "Internal Server Error", str(err)).to_json()
+
+@training_job_controller.route('/feature-group-info/<model_name>/<model_version>', methods=['GET'])
+def get_feature_group_info_from_model_id(model_name, model_version):
+    LOGGER.debug(f'Requesting feature-group-info for model-Id for training job {model_name} and {model_version}')
+    try:
+        feature_group_info = fetch_feature_group_from_modelId(model_name, model_version)
+        if feature_group_info is None:
+            # Not Found
+            return ProblemDetails(404, "Not-Found", "Either the ModelId provided doesn't exist or the corresponding feature-group has been deleted").to_json()
+        
+        return jsonify(featuregroup_schema.dump(feature_group_info)), 200
+    except Exception as err:
+        LOGGER.error(f"Error fetching feature-group-info corresponding to model_name = {model_name} and model_version = {model_version} : {str(err)}")
         return ProblemDetails(500, "Internal Server Error", str(err)).to_json()
