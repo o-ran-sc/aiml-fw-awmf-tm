@@ -47,7 +47,7 @@ sys.modules["trainingmgr.handler.async_handler"] = MagicMock(ModelMetricsSdk=moc
 
 from trainingmgr.db.trainingjob_db import (
     change_state_to_failed, delete_trainingjob_by_id, create_trainingjob,
-    get_trainingjob, get_trainingjob_by_modelId_db, change_steps_state,
+    get_trainingjob, change_steps_state,
     change_field_value, change_steps_state_df, changeartifact
 )
 from trainingmgr.common.exceptions_utls import DBException, TMException

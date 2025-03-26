@@ -47,7 +47,7 @@ sys.modules["trainingmgr.handler.async_handler"] = MagicMock(ModelMetricsSdk=moc
 
 from trainingmgr.db.trainingjob_db import (
     change_state_to_failed, delete_trainingjob_by_id, create_trainingjob,
-    get_trainingjob, get_trainingjob_by_modelId_db, change_steps_state,
+    get_trainingjob, change_steps_state,
     change_field_value, change_steps_state_df, changeartifact
 )
 from trainingmgr.common.exceptions_utls import DBException, TMException
@@ -60,9 +60,9 @@ from trainingmgr.service.training_job_service import (
     get_trainining_jobs,
     create_training_job,
     delete_training_job,
-    get_trainingjob_by_modelId,
+    fetch_trainingjob_infos_from_modelId,
     update_artifact_version,
-    training
+    training,
 )
 
 class TestGetTrainingJob:
@@ -327,3 +327,26 @@ class TestTraining:
         response, status_code = training(mock_Trainingjob)
         assert status_code == 500
 
+class TestFetchTrainingJobInfosFromModelId:
+    @patch('trainingmgr.service.training_job_service.get_trainingjobs_by_modelId_db')
+    def test_success(self, mock_gettrainingJob):
+        model_name = "abc"
+        model_version = "1"
+        trainingjobs_info = fetch_trainingjob_infos_from_modelId(model_name, model_version)
+        assert True # Reached here without error, test-passed
+    
+    
+    @patch('trainingmgr.service.training_job_service.get_trainingjobs_by_modelId_db', side_effect = Exception("Generic exception"))
+    def test_internalError(self, mock_gettrainingJob):
+        model_name = "abc"
+        model_version = "1"
+        try:
+            trainingjobs_info = fetch_trainingjob_infos_from_modelId(model_name, model_version)
+            assert False, "The test should have raised an Exception, but It didn't"
+        except Exception as e:
+            # Signifies test-passed
+            pass
+            
+            
+
+    

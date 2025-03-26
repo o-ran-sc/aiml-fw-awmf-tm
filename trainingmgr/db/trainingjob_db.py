@@ -24,7 +24,7 @@ from trainingmgr.models import db, TrainingJob, TrainingJobStatus, ModelID
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
 from sqlalchemy.exc import NoResultFound
-
+from sqlalchemy import desc
 
 
 DB_QUERY_EXEC_ERROR = "Failed to execute query in "
@@ -120,22 +120,24 @@ def change_field_value_by_version(trainingjob_name, version, field, field_value)
     except Exception as err:
         raise DBException("Failed to execute query in change_field_value_by_version," + str(err))
 
-def get_trainingjob_by_modelId_db(model_id):
+
+def get_trainingjobs_by_modelId_db(model_name, model_version):
     try:
-        trainingjob = (
+        trainingjobs = (
             db.session.query(TrainingJob)
             .join(ModelID)
             .filter(
-                ModelID.modelname == model_id.modelname,
-                ModelID.modelversion == model_id.modelversion
+                ModelID.modelname == model_name,
+                ModelID.modelversion == model_version
             )
-            .one()
+            .all()
         )
-        return trainingjob
+        return trainingjobs
     except NoResultFound:
         return None
     except Exception as e:
-        raise DBException(f'{DB_QUERY_EXEC_ERROR} in the get_trainingjob_by_name_db : {str(e)}')
+        raise DBException(f'{DB_QUERY_EXEC_ERROR} in the get_trainingjobs_by_modelId_db : {str(e)}')
+
 
 def change_steps_state(trainingjob_id, step: Steps, state:States):
 

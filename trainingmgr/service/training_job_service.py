@@ -21,8 +21,8 @@ from flask_api import status
 from flask import jsonify
 from trainingmgr.common.trainingmgr_operations import data_extraction_start, notification_rapp
 from trainingmgr.db.model_db import get_model_by_modelId
-from trainingmgr.db.trainingjob_db import change_state_to_failed, delete_trainingjob_by_id, create_trainingjob, get_trainingjob, get_trainingjob_by_modelId_db, \
-change_steps_state, change_field_value, change_field_value, change_steps_state_df, changeartifact
+from trainingmgr.db.trainingjob_db import change_state_to_failed, delete_trainingjob_by_id, create_trainingjob, get_trainingjob,\
+change_steps_state, change_field_value, change_field_value, change_steps_state_df, changeartifact, get_trainingjobs_by_modelId_db
 from trainingmgr.common.exceptions_utls import DBException, TMException
 from trainingmgr.common.trainingConfig_parser import getField, setField
 from trainingmgr.handler.async_handler import DATAEXTRACTION_JOBS_CACHE
@@ -128,15 +128,6 @@ def delete_training_job(training_job_id : int):
     except Exception as err :
         raise DBException(f"delete_trainining_job failed with exception : {str(err)}")
 
-
-def get_trainingjob_by_modelId(model_id):
-    try:
-        trainingjob = get_trainingjob_by_modelId_db(model_id)
-        return trainingjob
-    except Exception as err:
-        if "No row was found when one was required" in str(err):
-            return None
-        raise DBException(f"get_trainingjob_by_name failed with exception : {str(err)}")
 
 def get_steps_state(trainingjob_id):
     try:    
@@ -284,3 +275,11 @@ def fetch_pipelinename_and_version(type, training_config):
             return getField(training_config, "retraining_pipeline_name"), getField(training_config, "retraining_pipeline_version")
     except Exception as err:
         raise TMException(f"cant fetch training or retraining pipeline name or version from trainingconfig {training_config}| Error: " + str(err))
+    
+
+def fetch_trainingjob_infos_from_modelId(model_name, model_version):
+    try:
+        trainingjob_infos = get_trainingjobs_by_modelId_db(model_name, model_version)
+        return trainingjob_infos
+    except Exception as err:
+        raise TMException(f"Can't fetch trainingjob_infos from model_name {model_name} and model_version {model_version}| Error: " + str(err))
