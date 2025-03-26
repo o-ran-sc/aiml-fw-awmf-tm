@@ -24,7 +24,7 @@ from trainingmgr.models import db, TrainingJob, TrainingJobStatus, ModelID
 from trainingmgr.constants.steps import Steps
 from trainingmgr.constants.states import States
 from sqlalchemy.exc import NoResultFound
-
+from sqlalchemy import desc
 
 
 DB_QUERY_EXEC_ERROR = "Failed to execute query in "
@@ -130,6 +130,29 @@ def get_trainingjob_by_modelId_db(model_id):
                 ModelID.modelversion == model_id.modelversion
             )
             .one()
+        )
+        return trainingjob
+    except NoResultFound:
+        return None
+    except Exception as e:
+        raise DBException(f'{DB_QUERY_EXEC_ERROR} in the get_trainingjob_by_name_db : {str(e)}')
+
+def get_latest_trainingjob_by_modelName_modelVersion_db(model_name, model_version):
+    '''
+        Since multiple TrainingJob entries can be linked to a single ModelID (determined by modelName + modelVersion), 
+        The featuregroup_name is inferred from the latest TrainingJob, which is the one with the highest trainingjobId.
+        Note: This functionality relies on the trainingjobId being auto-incremented. If this behavior changes, the logic may break.
+    '''
+    try:
+        trainingjob = (
+            db.session.query(TrainingJob)
+            .join(ModelID)
+            .filter(
+                ModelID.modelname == model_name,
+                ModelID.modelversion == model_version
+            )
+            .order_by(desc(TrainingJob.id))
+            .first()  # Fetch only the one with the highest trainingjobId
         )
         return trainingjob
     except NoResultFound:

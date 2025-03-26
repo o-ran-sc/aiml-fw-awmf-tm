@@ -22,7 +22,7 @@ from flask import jsonify
 from trainingmgr.common.trainingmgr_operations import data_extraction_start, notification_rapp
 from trainingmgr.db.model_db import get_model_by_modelId
 from trainingmgr.db.trainingjob_db import change_state_to_failed, delete_trainingjob_by_id, create_trainingjob, get_trainingjob, get_trainingjob_by_modelId_db, \
-change_steps_state, change_field_value, change_field_value, change_steps_state_df, changeartifact
+change_steps_state, change_field_value, change_field_value, change_steps_state_df, changeartifact, get_latest_trainingjob_by_modelName_modelVersion_db
 from trainingmgr.common.exceptions_utls import DBException, TMException
 from trainingmgr.common.trainingConfig_parser import getField, setField
 from trainingmgr.handler.async_handler import DATAEXTRACTION_JOBS_CACHE
@@ -284,3 +284,23 @@ def fetch_pipelinename_and_version(type, training_config):
             return getField(training_config, "retraining_pipeline_name"), getField(training_config, "retraining_pipeline_version")
     except Exception as err:
         raise TMException(f"cant fetch training or retraining pipeline name or version from trainingconfig {training_config}| Error: " + str(err))
+    
+
+def fetch_feature_group_from_modelId(model_name, model_version):
+    try:
+        latest_training_job = get_latest_trainingjob_by_modelName_modelVersion_db(model_name, model_version)
+        if latest_training_job is None:
+            LOGGER.debug(f"ModelName = {model_name} & ModelVersion = {model_version} not found under fetch_feature_group_from_modelId service")
+            return None
+        featuregroup_name = getField(latest_training_job.training_config, "feature_group_name")
+        LOGGER.debug(f"featuregroup_name corressponding to ModelName = {model_name} & ModelVersion = {model_version} is {featuregroup_name}")
+        
+        # Get featureGroup_info
+        featuregroup_info = get_featuregroup_by_name(featuregroup_name)
+        if featuregroup_info is None:
+            # It suggests FeatureGroup was deleted
+            LOGGER.debug(f"featureGroup {featuregroup_name} not found under fetch_feature_group_from_modelId service")
+            return None
+        return featuregroup_info
+    except Exception as err:
+        raise TMException(f"cant fetch featuregroup_info  from model_name {model_name} and model_version {model_version}| Error: " + str(err))

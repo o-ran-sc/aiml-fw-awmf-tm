@@ -62,7 +62,8 @@ from trainingmgr.service.training_job_service import (
     delete_training_job,
     get_trainingjob_by_modelId,
     update_artifact_version,
-    training
+    training,
+    fetch_feature_group_from_modelId
 )
 
 class TestGetTrainingJob:
@@ -327,3 +328,71 @@ class TestTraining:
         response, status_code = training(mock_Trainingjob)
         assert status_code == 500
 
+class TestFetchFeatureGroupFromModelId:
+
+    @pytest.fixture
+    def mock_training_job_fixture(self):
+        TrainingJob = MagicMock()
+        TrainingJob.id = 1
+        TrainingJob.training_config = {
+            "description": "Test description",
+            "dataPipeline": {
+                "feature_group_name": "test_feature_group",
+                "query_filter": "",
+                "arguments": {"epochs" : 1, "trainingjob_name": "test_job"}
+            },
+            "trainingPipeline": {
+                    "pipeline_name": "test_pipeline",
+                    "pipeline_version": "2",
+                    "enable_versioning": True
+            }
+        }
+        return TrainingJob
+    
+    
+    @pytest.fixture
+    def mock_feature_group_fixture(self):
+        FeatureGroupObj = MagicMock()
+        FeatureGroupObj.featuregroup_name = "test_feature_group"
+        return FeatureGroupObj
+    
+        
+    @patch('trainingmgr.service.training_job_service.get_latest_trainingjob_by_modelName_modelVersion_db')
+    @patch('trainingmgr.service.training_job_service.get_featuregroup_by_name')
+    def test_success(self, mock_getfeaturegroup, mock_gettrainingJob, mock_training_job_fixture, mock_feature_group_fixture):
+        # print(mock_Trainingjob)
+        mock_gettrainingJob.return_value = mock_training_job_fixture
+        mock_getfeaturegroup.return_value = mock_feature_group_fixture
+        model_name = "abc"
+        model_version = "1"
+        featureGroupInfo = fetch_feature_group_from_modelId(model_name, model_version)
+        assert featureGroupInfo == mock_feature_group_fixture
+    
+    @patch('trainingmgr.service.training_job_service.get_latest_trainingjob_by_modelName_modelVersion_db', return_value = None)
+    def test_corresponding_trainingJob_not_present(self, mock_gettrainingJob):
+        model_name = "abc"
+        model_version = "1"
+        assert fetch_feature_group_from_modelId(model_name, model_version) is None, "TrainingJob Doesn't Exist but It doesn't returned None "
+        
+    @patch('trainingmgr.service.training_job_service.get_latest_trainingjob_by_modelName_modelVersion_db')
+    @patch('trainingmgr.service.training_job_service.get_featuregroup_by_name', return_value = None)
+    def test_corresponding_featuregroup_not_present(self, mock_getfeaturegroup,mock_gettrainingJob, mock_training_job_fixture):
+        mock_gettrainingJob.return_value = mock_training_job_fixture
+        model_name = "abc"
+        model_version = "1"
+        assert fetch_feature_group_from_modelId(model_name, model_version) is None, "FeatureGroup Doesn't Exist but It doesn't returned None "
+    
+    @patch('trainingmgr.service.training_job_service.get_latest_trainingjob_by_modelName_modelVersion_db', side_effect = Exception("Generic exception"))
+    def test_internalError(self, mock_gettrainingJob):
+        model_name = "abc"
+        model_version = "1"
+        try:
+            featuregroup_info = fetch_feature_group_from_modelId(model_name, model_version) is None, "TrainingJob Doesn't Exist but It doesn't returned None "
+            assert False, "The test should have raised an Exception, but It didn't"
+        except Exception as e:
+            # Signifies test-passed
+            pass
+            
+            
+
+    

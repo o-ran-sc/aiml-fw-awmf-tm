@@ -242,3 +242,31 @@ class TestGetTrainingJobStatus:
         response = self.client.get("/training-jobs/123/status")
         assert response.status_code == 200
         assert response.json == {"status": "running"}
+        
+class TestGetFeatureGroupInfoFromModelId:
+    def setup_method(self):
+        app = Flask(__name__)
+        app.register_blueprint(training_job_controller)
+        self.client = app.test_client()
+    
+    @pytest.fixture
+    def mock_feature_group_fixture(self):
+        FeatureGroupObj = MagicMock()
+        FeatureGroupObj.featuregroup_name = "test_feature_group"
+        return FeatureGroupObj
+    
+    @patch('trainingmgr.controller.trainingjob_controller.fetch_feature_group_from_modelId')
+    def test_success(self, mock_fetch_feature_group, mock_feature_group_fixture):
+        mock_fetch_feature_group.return_value = mock_feature_group_fixture
+        response = self.client.get("/feature-group-info/abc/1")
+        assert response.status_code == 200
+    
+    @patch('trainingmgr.controller.trainingjob_controller.fetch_feature_group_from_modelId', return_value=None)
+    def test_featureGroup_not_found(self, mock_fetch_feature_group):
+        response = self.client.get("/feature-group-info/abc/1")
+        assert response.status_code == 404
+    
+    @patch('trainingmgr.controller.trainingjob_controller.fetch_feature_group_from_modelId', side_effect = Exception("Generic exception"))
+    def test_internal_error(self, mock_fetch_feature_group, mock_feature_group_fixture):
+        response = self.client.get("/feature-group-info/abc/1")
+        assert response.status_code == 500
