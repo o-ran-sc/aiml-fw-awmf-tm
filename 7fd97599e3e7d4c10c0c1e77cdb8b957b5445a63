@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "031e26c8_d7088e88",
+        "filename": "trainingmgr/controller/trainingjob_controller.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2025-03-26T07:16:22Z",
+      "side": 1,
+      "message": "should this api be in the featuregroup controller?",
+      "revId": "7fd97599e3e7d4c10c0c1e77cdb8b957b5445a63",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cf787b4d_1d2d0d88",
+        "filename": "trainingmgr/controller/trainingjob_controller.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2025-03-26T07:16:22Z",
+      "side": 1,
+      "message": "please add test cases also.",
+      "revId": "7fd97599e3e7d4c10c0c1e77cdb8b957b5445a63",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fc0ed2a2_67c21708",
+        "filename": "trainingmgr/db/trainingjob_db.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2025-03-26T07:16:22Z",
+      "side": 1,
+      "message": "looks good, please add test cases also",
+      "revId": "7fd97599e3e7d4c10c0c1e77cdb8b957b5445a63",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f6cdcc93_44a1ea76",
+        "filename": "trainingmgr/service/training_job_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2025-03-26T07:16:22Z",
+      "side": 1,
+      "message": "should this be in the featuregroup_service?",
+      "revId": "7fd97599e3e7d4c10c0c1e77cdb8b957b5445a63",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "534d2adb_4208701c",
+        "filename": "trainingmgr/service/training_job_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2025-03-26T07:16:22Z",
+      "side": 1,
+      "message": "please add test cases also",
+      "revId": "7fd97599e3e7d4c10c0c1e77cdb8b957b5445a63",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
