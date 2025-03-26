@@ -24,9 +24,10 @@ from marshmallow import ValidationError
 from trainingmgr.common.exceptions_utls import TMException
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.schemas.trainingjob_schema import TrainingJobSchema
+from trainingmgr.schemas.featuregroup_schema import FeatureGroupSchema
 from trainingmgr.schemas.problemdetail_schema import ProblemDetails
 from trainingmgr.service.training_job_service import delete_training_job, create_training_job, get_training_job, get_trainining_jobs, \
-get_steps_state
+get_steps_state, fetch_trainingjob_infos_from_modelId
 from trainingmgr.common.trainingmgr_util import check_key_in_dictionary
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig
 from trainingmgr.service.mme_service import get_modelinfo_by_modelId_service
@@ -113,4 +114,17 @@ def get_trainingjob_status(training_job_id):
         return jsonify(json.loads(status)), 200
     except Exception as err:
         LOGGER.error(f"Error fetching status for training job {training_job_id}: {str(err)}")
+        return ProblemDetails(500, "Internal Server Error", str(err)).to_json()
+
+@training_job_controller.route('/training-jobs/<model_name>/<model_version>', methods=['GET'])
+def get_trainingjob_infos_from_model_id(model_name, model_version):
+    '''
+     This API-endpoint takes model_name and model_version into account and returns all the trainingJobInfo related to that ModelId
+    '''
+    LOGGER.debug(f'Requesting trainingJob-info for model-Id for model_Id: {model_name} and {model_version}')
+    try:
+        trainingjob_infos = fetch_trainingjob_infos_from_modelId(model_name, model_version)
+        return jsonify(trainingjobs_schema.dump(trainingjob_infos)), 200
+    except Exception as err:
+        LOGGER.error(f"Error fetching training-job-infos corresponding to model_name = {model_name} and model_version = {model_version} : {str(err)}")
         return ProblemDetails(500, "Internal Server Error", str(err)).to_json()
