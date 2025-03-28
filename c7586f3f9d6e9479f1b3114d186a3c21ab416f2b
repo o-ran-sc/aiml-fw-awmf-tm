@@ -52,6 +52,24 @@
       "parentUuid": "71241e4d_ac6a2e61",
       "revId": "c7586f3f9d6e9479f1b3114d186a3c21ab416f2b",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "66edfd0b_fc1e48ec",
+        "filename": "trainingmgr/db/trainingjob_db.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-03-28T09:25:00Z",
+      "side": 1,
+      "message": "parent invoker method `get_trainingjob_by_modelId()` is not getting used anywhere so I feel this is stale method for us. I suggest to drop this function.\n\nAlso, I checked the documentation for `one()` which states Return exactly one result or raise an exception. This behaviour would create problem for us if this method used.",
+      "parentUuid": "21773607_ea4d1c98",
+      "revId": "c7586f3f9d6e9479f1b3114d186a3c21ab416f2b",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
