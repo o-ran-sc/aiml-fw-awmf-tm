@@ -16,6 +16,24 @@
       "message": "This function name should be revised like `get_trainingjobs_by_model_id_db` if we decided to use snake case.",
       "revId": "f6ce123f2584685ad70a7a1e57d7f3fa45566fe7",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "11319138_bfe5eec2",
+        "filename": "trainingmgr/db/trainingjob_db.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2025-03-28T09:56:16Z",
+      "side": 1,
+      "message": "Sure, I will make the change with next patchset",
+      "parentUuid": "6d0255c1_a5bfd55a",
+      "revId": "f6ce123f2584685ad70a7a1e57d7f3fa45566fe7",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
