@@ -16,6 +16,24 @@
       "message": "By `get_trainingjobs_by_modelId_db`, I don\u0027t think the combination of model name and model version guarantees uniqueness.\nSuppose that the modelname and modelversion of the model_id from 1 to 10 are same and the user requests this as model_id 5. How do we guarantee to return the correct model_id information?",
       "revId": "c7586f3f9d6e9479f1b3114d186a3c21ab416f2b",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "71241e4d_ac6a2e61",
+        "filename": "trainingmgr/db/trainingjob_db.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1002075
+      },
+      "writtenOn": "2025-03-28T08:48:13Z",
+      "side": 1,
+      "message": "I believe the name of the function should be changed to something else, agree with the point raised by @t25.kim@samsung.com. Please correct me if I am wrong, the purpose of this function is to get the latest trainingjob with the modelname and modelversion? then why not name the function something as \"latest_trainingjob_by_modelname_modelversion\" --\u003e just an example!",
+      "parentUuid": "a1b4a4e9_75f7c6de",
+      "revId": "c7586f3f9d6e9479f1b3114d186a3c21ab416f2b",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
