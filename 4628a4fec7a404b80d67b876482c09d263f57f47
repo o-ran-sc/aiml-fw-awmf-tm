@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "90803b26_e71a7d59",
+        "filename": "trainingmgr/service/training_job_service.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 280,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-03-28T09:59:39Z",
+      "side": 1,
+      "message": "Please correct this name according to snake case, too.",
+      "revId": "4628a4fec7a404b80d67b876482c09d263f57f47",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
