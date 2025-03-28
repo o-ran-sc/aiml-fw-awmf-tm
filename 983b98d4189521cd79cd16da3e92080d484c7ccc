@@ -16,6 +16,23 @@
       "message": "please acknowledge the comments in the previous commit.",
       "revId": "983b98d4189521cd79cd16da3e92080d484c7ccc",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "983c250a_ccb35b37",
+        "filename": "trainingmgr/controller/trainingjob_controller.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-03-28T01:30:47Z",
+      "side": 1,
+      "message": "I think featuregroup_controller is more suitable for this interface since this is to fetch feature group information..",
+      "revId": "983b98d4189521cd79cd16da3e92080d484c7ccc",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
