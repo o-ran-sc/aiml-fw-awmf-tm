@@ -34,6 +34,24 @@
       "parentUuid": "6d0255c1_a5bfd55a",
       "revId": "f6ce123f2584685ad70a7a1e57d7f3fa45566fe7",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6efeae35_d25fe64f",
+        "filename": "trainingmgr/db/trainingjob_db.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2025-03-31T05:16:00Z",
+      "side": 1,
+      "message": "Updated",
+      "parentUuid": "11319138_bfe5eec2",
+      "revId": "f6ce123f2584685ad70a7a1e57d7f3fa45566fe7",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
