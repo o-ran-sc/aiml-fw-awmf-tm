@@ -97,3 +97,35 @@ class TestGetPipelineInfoByName:
         assert response.status_code == 500
         expected = ProblemDetails(500, "Internal Server Error", "Error communicating with KFAdapter : Unexpected error").to_dict()
         assert response.get_json() == expected
+
+    @patch("trainingmgr.controller.pipeline_controller.get_single_pipeline", return_value={"name": "demo_pipeline", "version": "v1"})
+    def test_pipeline_info_structure(self, mock_get_pipeline_info, client):
+        response = client.get("/pipelines/demo_pipeline")
+        assert response.status_code == 200
+        assert "pipeline_info" in response.get_json()
+        assert response.get_json()["pipeline_info"]["name"] == "demo_pipeline"
+
+    @patch("trainingmgr.controller.pipeline_controller.get_single_pipeline")
+    def test_large_pipeline_info(self, mock_get_pipeline_info, client):
+        mock_data = {
+            "name": "demo_pipeline",
+            "description": "x" * 5000,
+            "metadata": {"step": i for i in range(100)}
+        }
+        mock_get_pipeline_info.return_value = mock_data
+        response = client.get("/pipelines/demo_pipeline")
+        assert response.status_code == 200
+        assert response.get_json()["pipeline_info"]["name"] == "demo_pipeline"
+
+    @patch("trainingmgr.controller.pipeline_controller.get_single_pipeline")
+    def test_pipeline_info_invalid_response_type(self, mock_get_pipeline_info, client):
+        mock_get_pipeline_info.side_effect = TypeError("bad type")
+        response = client.get("/pipelines/demo_pipeline")
+        assert response.status_code == 500
+        expected = ProblemDetails(
+            500,
+            "Internal Server Error",
+            "Error communicating with KFAdapter : bad type"
+        ).to_dict()
+        assert response.get_json() == expected
+        
