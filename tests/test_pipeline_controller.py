@@ -39,7 +39,7 @@ from trainingmgr.models import TrainingJob
 from trainingmgr.models import FeatureGroup
 from trainingmgr.common.trainingConfig_parser import getField
 from io import BytesIO
-
+from trainingmgr.schemas.problemdetail_schema import ProblemDetails
 
 #mock ModelMetricsSdk before importing
 mock_modelmetrics_sdk = MagicMock()
@@ -75,25 +75,25 @@ class TestGetPipelineInfoByName:
         assert response.status_code == 200
         assert response.get_json() == {"pipeline_info": {"name": "test_pipeline", "version": "1.0"}}
 
-    @patch("trainingmgr.controller.pipeline_controller.get_single_pipeline", return_value = None)
+    @patch("trainingmgr.controller.pipeline_controller.get_single_pipeline", return_value=None)
     def test_pipeline_not_found(self, mock_get_single_pipeline, client):
         response = client.get("/pipelines/unknown_pipeline")
-
         assert response.status_code == 404
-        assert response.get_json() == {"error": "Pipeline 'unknown_pipeline' not found"}
-
+        expected = ProblemDetails(404, "Not Found", "Pipeline 'unknown_pipeline' not found.").to_dict()
+        assert response.get_json() == expected
+    
     @patch("trainingmgr.controller.pipeline_controller.get_single_pipeline")
     def test_tm_exception(self, mock_get_single_pipeline, client):
         mock_get_single_pipeline.side_effect = TMException("Pipeline error")
-
         response = client.get("/pipelines/test_pipeline")
         assert response.status_code == 404
-        assert response.get_json() == {"error": "Pipeline error"}
-
+        expected = ProblemDetails(404, "Not Found", "Pipeline error").to_dict()
+        assert response.get_json() == expected   
+    
     @patch("trainingmgr.controller.pipeline_controller.get_single_pipeline")
     def test_unexpected_exception(self, mock_get_single_pipeline, client):
         mock_get_single_pipeline.side_effect = Exception("Unexpected error")
         response = client.get("/pipelines/test_pipeline")
-
         assert response.status_code == 500
-        assert response.get_json() == {"error": "An unexpected error occurred"}
+        expected = ProblemDetails(500, "Internal Server Error", "Error communicating with KFAdapter : Unexpected error").to_dict()
+        assert response.get_json() == expected
