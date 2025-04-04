@@ -46,3 +46,10 @@ class TestCreateFeatureGroup:
         assert response.status_code == 400
         expected = ProblemDetails(400, "Validation Error", "Invalid format").to_dict()
         assert response.get_json() == expected
+
+   @patch('trainingmgr.schemas.featuregroup_schema.FeatureGroupSchema.load', side_effect=DBException("feature group already exist"))
+    def test_conflict_error(self, mock_load, client):
+        response = client.post("/featureGroup", json={})
+        assert response.status_code == 409
+        expected = ProblemDetails(409, "Conflict", "feature group already exist").to_dict()
+        assert response.get_json() == expected
