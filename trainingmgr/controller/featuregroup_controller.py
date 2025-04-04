@@ -157,11 +157,9 @@ def get_feature_group():
     """
     LOGGER.debug("Request for getting all feature groups")
     api_response={}
-    response_code=status.HTTP_500_INTERNAL_SERVER_ERROR
     try:
-        api_response=featuregroups_schema.dump(get_all_featuregroups())
-        response_code=status.HTTP_200_OK    
+        api_response = featuregroups_schema.dump(get_all_featuregroups())
+        return jsonify({"FeatureGroups": api_response}), 200
     except Exception as err:
-        api_response =   {"Exception": "Failed to get featuregroups"}
-        LOGGER.error(str(err))
-    return jsonify({"FeatureGroups":api_response}), response_code
+        LOGGER.error(f"Failed to get featuregroups: {str(err)}")
+        return ProblemDetails(500, "Internal Server Error", "Failed to get featuregroups").to_json()
