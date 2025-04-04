@@ -67,3 +67,12 @@ class TestCreateFeatureGroup:
         assert response.status_code == 500
         expected = ProblemDetails(500, "Internal Server Error", "unexpected fail").to_dict()
         assert response.get_json() == expected
+
+class TestGetFeatureGroup:
+
+    @patch('trainingmgr.service.featuregroup_service.get_all_featuregroups', side_effect=Exception("DB fail"))
+    def test_get_failure(self, mock_get, client):
+        response = client.get("/featureGroup")
+        assert response.status_code == 500
+        expected = ProblemDetails(500, "Internal Server Error", "Failed to get featuregroups").to_dict()
+        assert response.get_json() == expected
