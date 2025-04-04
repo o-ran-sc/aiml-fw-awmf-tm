@@ -26,7 +26,7 @@ from trainingmgr.db.featuregroup_db import add_featuregroup, delete_feature_grou
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.schemas import FeatureGroupSchema
 from trainingmgr.service.featuregroup_service import get_all_featuregroups
-
+from trainingmgr.schemas.problemdetail_schema import ProblemDetails
 
 
 featuregroup_controller = Blueprint('featuregroup_controller', __name__)
@@ -93,40 +93,43 @@ def create_feature_group():
     
     api_response = {}
     LOGGER.debug('feature Group Create request, ' + json.dumps(request.json))
-
     try:
         featuregroup = FeatureGroupSchema().load(request.get_json())
         feature_group_name = featuregroup.featuregroup_name
-        # check the data conformance
-        # LOGGER.debug("the db info is : ", get_feature_group_by_name_db(PS_DB_OBJ, feature_group_name))
         if (not check_trainingjob_name_or_featuregroup_name(feature_group_name) or
             len(feature_group_name) < 3 or len(feature_group_name) > 63):
-            api_response = {"Exception": "Failed to create the feature group since feature group not valid"}
-            return jsonify(api_response), status.HTTP_400_BAD_REQUEST
-        else:
-            # the features are stored in string format in the db, and has to be passed as list of feature to the dme. Hence the conversion.
-            add_featuregroup(featuregroup)
-            api_response = FeatureGroupSchema().dump(featuregroup)
-
-            if featuregroup.enable_dme == True :
-                response= create_dme_filtered_data_job(TRAININGMGR_CONFIG_OBJ, featuregroup.source_name, featuregroup.feature_list, featuregroup.featuregroup_name, featuregroup.host, featuregroup.dme_port, featuregroup.measured_obj_class)
-                if response.status_code != 201:
-                    delete_feature_group_by_name(featuregroup.featuregroup_name)
-                    return jsonify({"Exception": "Cannot create dme job | DME Error : " + str(response.json()["detail"])}), status.HTTP_400_BAD_REQUEST
+            return ProblemDetails(400, "Bad Request", "Failed to create the feature group since feature group not valid").to_json()
+        add_featuregroup(featuregroup)
+        api_response = FeatureGroupSchema().dump(featuregroup)
+        if featuregroup.enable_dme:
+            response = create_dme_filtered_data_job(
+                TRAININGMGR_CONFIG_OBJ,
+                featuregroup.source_name,
+                featuregroup.feature_list,
+                featuregroup.featuregroup_name,
+                featuregroup.host,
+                featuregroup.dme_port,
+                featuregroup.measured_obj_class
+            )
+            if response.status_code != 201:
+                delete_feature_group_by_name(featuregroup.featuregroup_name)
+                return ProblemDetails(
+                    400,
+                    "Bad Request",
+                    "Cannot create dme job | DME Error : " + str(response.json().get("detail", "Unknown error"))
+                ).to_json()
+        return jsonify(api_response), 201
     except ValidationError as err:
-        LOGGER.error(f"Failed to create the feature Group {str(err)}")
-        return {"Exception": str(err)}, 400
+        LOGGER.error(f"ValidationError: {str(err)}")
+        return ProblemDetails(400, "Validation Error", str(err)).to_json()
     except DBException as err:
-        LOGGER.error(f"Failed to create the feature Group {str(err)}")
+        LOGGER.error(f"DBException: {str(err)}")
         if "already exist" in str(err):
-            return {"Exception": str(err)}, 409
-        return {"Exception": str(err)}, 400
+            return ProblemDetails(409, "Conflict", str(err)).to_json()
+        return ProblemDetails(400, "Bad Request", str(err)).to_json()
     except Exception as err:
-        api_response = {"Exception":str(err)}
-        LOGGER.error(f"Failed to create the feature Group {str(err)}")
-        jsonify(json.dumps(api_response)), 500
-    
-    return jsonify(api_response), 201
+        LOGGER.error(f"Unexpected Error: {str(err)}")
+        return ProblemDetails(500, "Internal Server Error", str(err)).to_json()
 
 @featuregroup_controller.route('/featureGroup', methods=['GET'])
 def get_feature_group():
