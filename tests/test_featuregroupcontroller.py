@@ -39,3 +39,10 @@ class TestCreateFeatureGroup:
         assert response.status_code == 400
         expected = ProblemDetails(400, "Bad Request", "Failed to create the feature group since feature group not valid").to_dict()
         assert response.get_json() == expected
+
+    @patch('trainingmgr.schemas.featuregroup_schema.FeatureGroupSchema.load', side_effect=ValidationError("Invalid format"))
+    def test_validation_error(self, mock_load, client):
+        response = client.post("/featureGroup", json={})
+        assert response.status_code == 400
+        expected = ProblemDetails(400, "Validation Error", "Invalid format").to_dict()
+        assert response.get_json() == expected
