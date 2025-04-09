@@ -24,6 +24,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8b5300da_b9bc1429",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1002600
+      },
+      "writtenOn": "2025-04-09T11:53:44Z",
+      "side": 1,
+      "message": "this is realted to https://github.sec.samsung.net/OSG-AIMLFW/dep/issues/59",
+      "parentUuid": "9be148cf_234dc734",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 40
+      },
+      "revId": "2e73b9647be57eff2db280441aae6fb65ecb430d",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "305b2f0d_aa1fbd93",
@@ -47,6 +71,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5ef5258c_cb236bc3",
+        "filename": "trainingmgr/controller/featuregroup_controller.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1002600
+      },
+      "writtenOn": "2025-04-09T11:53:44Z",
+      "side": 1,
+      "message": "updated to 2024 in patchset 2",
+      "parentUuid": "305b2f0d_aa1fbd93",
+      "range": {
+        "startLine": 3,
+        "startChar": 6,
+        "endLine": 3,
+        "endChar": 77
+      },
+      "revId": "2e73b9647be57eff2db280441aae6fb65ecb430d",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3d3b53cf_b57eabc7",
@@ -60,6 +108,30 @@
       "writtenOn": "2025-04-09T09:21:56Z",
       "side": 1,
       "message": "you could use http module to remove these values:https://docs.python.org/3.10/library/http.html",
+      "range": {
+        "startLine": 117,
+        "startChar": 20,
+        "endLine": 117,
+        "endChar": 23
+      },
+      "revId": "2e73b9647be57eff2db280441aae6fb65ecb430d",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8e214df6_faaeb10a",
+        "filename": "trainingmgr/controller/featuregroup_controller.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1002600
+      },
+      "writtenOn": "2025-04-09T11:53:44Z",
+      "side": 1,
+      "message": "i used the same for updating the training job controller. Following this convention, will use this in future.",
+      "parentUuid": "3d3b53cf_b57eabc7",
       "range": {
         "startLine": 117,
         "startChar": 20,
