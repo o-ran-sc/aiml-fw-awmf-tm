@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "db266202_bb2ef7da",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-04-10T07:11:47Z",
+      "side": 1,
+      "message": "Please avoid any private site reference.",
+      "parentUuid": "8b5300da_b9bc1429",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 40
+      },
+      "revId": "2e73b9647be57eff2db280441aae6fb65ecb430d",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "305b2f0d_aa1fbd93",
         "filename": "trainingmgr/controller/featuregroup_controller.py",
         "patchSetId": 1
@@ -132,6 +156,30 @@
       "side": 1,
       "message": "i used the same for updating the training job controller. Following this convention, will use this in future.",
       "parentUuid": "3d3b53cf_b57eabc7",
+      "range": {
+        "startLine": 117,
+        "startChar": 20,
+        "endLine": 117,
+        "endChar": 23
+      },
+      "revId": "2e73b9647be57eff2db280441aae6fb65ecb430d",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b41eaff3_02bf5ad5",
+        "filename": "trainingmgr/controller/featuregroup_controller.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-04-10T07:11:47Z",
+      "side": 1,
+      "message": "ok",
+      "parentUuid": "8e214df6_faaeb10a",
       "range": {
         "startLine": 117,
         "startChar": 20,
