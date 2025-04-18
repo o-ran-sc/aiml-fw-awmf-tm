@@ -22,6 +22,30 @@
       },
       "revId": "cb3620ac8f68ad2c96be708dd9d4b9f1117d41aa",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ab60cb5a_d733b679",
+        "filename": "trainingmgr/controller/featuregroup_controller.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1002600
+      },
+      "writtenOn": "2025-04-18T07:00:47Z",
+      "side": 0,
+      "message": "will do this for the entire tm module error codes in a separate commit",
+      "parentUuid": "0d83acd8_1a46d84f",
+      "range": {
+        "startLine": 160,
+        "startChar": 25,
+        "endLine": 160,
+        "endChar": 55
+      },
+      "revId": "cb3620ac8f68ad2c96be708dd9d4b9f1117d41aa",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
