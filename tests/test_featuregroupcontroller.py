@@ -53,3 +53,10 @@ class TestCreateFeatureGroup:
         assert response.status_code == 409
         expected = ProblemDetails(409, "Conflict", "feature group already exist").to_dict()
         assert response.get_json() == expected
+        
+    @patch('trainingmgr.schemas.featuregroup_schema.FeatureGroupSchema.load', side_effect=DBException("some DB error"))
+    def test_db_exception(self, mock_load, client):
+        response = client.post("/featureGroup", json={})
+        assert response.status_code == 400
+        expected = ProblemDetails(400, "Bad Request", "some DB error").to_dict()
+        assert response.get_json() == expected
