@@ -25,7 +25,7 @@ from dotenv import load_dotenv
 class cred_handle:
     def __init__(self):
         self.ps_user = "gdgdgd"
-        self.ps_password = "hdhd"
+        self.ps_password = "xxxx"
         self.ps_ip = 12345
         self.ps_port = 1000
     

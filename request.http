@@ -63,7 +63,7 @@ Content-Type: application/json
     "port": "8086",
     "dme_port": "",
     "bucket": "UEData",
-    "token": "G4xTett9YjSD9m8ShuAF",
+    "token": "xxxx",
     "source_name": "",
     "measured_obj_class": "",
     "measurement": "liveCell",

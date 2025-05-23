@@ -36,7 +36,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"featuregroup_name\":\"testing_influxdb_03\",\"feature_list\":\"pdcpBytesDl,pdcpBytesUl\",\"datalake_source\":\"InfluxSource\",\"enable_dme\":false,\"host\":\"my-release-influxdb.default\",\"port\":\"8086\",\"dme_port\":\"\",\"bucket\":\"UEData\",\"token\":\"mXBhJ6Sw5nytq9PmzPKi\",\"source_name\":\"\",\"measured_obj_class\":\"\",\"measurement\":\"liveCell\",\"db_org\":\"primary\"}",
+							"raw": "{\"featuregroup_name\":\"testing_influxdb_03\",\"feature_list\":\"pdcpBytesDl,pdcpBytesUl\",\"datalake_source\":\"InfluxSource\",\"enable_dme\":false,\"host\":\"my-release-influxdb.default\",\"port\":\"8086\",\"dme_port\":\"\",\"bucket\":\"UEData\",\"token\":\"xxxx\",\"source_name\":\"\",\"measured_obj_class\":\"\",\"measurement\":\"liveCell\",\"db_org\":\"primary\"}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -171,7 +171,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"featuregroup_name\":\"testing_influxdb_02\",\"feature_list\":\"pdcpBytesDl\",\"datalake_source\":\"InfluxSource\",\"enable_dme\":false,\"host\":\"my-release-influxdb.default\",\"port\":\"8086\",\"dme_port\":\"\",\"bucket\":\"pm-bucket\",\"token\":\"asjkahsjdhaksdhaksdha\",\"source_name\":\"\",\"measured_obj_class\":\"\",\"measurement\":\"liveCell\",\"db_org\":\"primary\"}",
+							"raw": "{\"featuregroup_name\":\"testing_influxdb_02\",\"feature_list\":\"pdcpBytesDl\",\"datalake_source\":\"InfluxSource\",\"enable_dme\":false,\"host\":\"my-release-influxdb.default\",\"port\":\"8086\",\"dme_port\":\"\",\"bucket\":\"pm-bucket\",\"token\":\"xxxx\",\"source_name\":\"\",\"measured_obj_class\":\"\",\"measurement\":\"liveCell\",\"db_org\":\"primary\"}",
 							"options": {
 								"raw": {
 									"language": "json"
