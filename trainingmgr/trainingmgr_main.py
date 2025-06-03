@@ -539,7 +539,7 @@ if __name__ == "__main__":
         PS_DB_OBJ = PSDB(TRAININGMGR_CONFIG_OBJ)
         APP.config['SQLALCHEMY_DATABASE_URI']=f'postgresql+psycopg2://{TRAININGMGR_CONFIG_OBJ.ps_user}:{TRAININGMGR_CONFIG_OBJ.ps_password}@{TRAININGMGR_CONFIG_OBJ.ps_ip}:{TRAININGMGR_CONFIG_OBJ.ps_port}/training_manager_database'
         db.init_app(APP)
-        # Todo add flask db upgrade in the docker file  
+        # Todo add flask db upgrade in the docker file
         migrate = Migrate(APP, db) 
         with APP.app_context():
             db.create_all()

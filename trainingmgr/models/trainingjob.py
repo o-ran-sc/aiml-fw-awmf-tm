@@ -15,6 +15,7 @@
 #   limitations under the License.
 #
 # ==============================================================================
+import json
 from trainingmgr.models import db
 from sqlalchemy.sql import func
 from sqlalchemy import Integer, ForeignKey, String, DateTime, Column, Boolean
@@ -57,6 +58,7 @@ class TrainingJob(db.Model):
     
     model_url = Column(String(1000), nullable=True)
     model_id = Column(Integer, nullable=False)
+    model_metrics = db.Column(db.String(5000), nullable=True, default=json.dumps({}))
 
     #defineing relationships
     steps_state = relationship("TrainingJobStatus", back_populates="trainingjobs")

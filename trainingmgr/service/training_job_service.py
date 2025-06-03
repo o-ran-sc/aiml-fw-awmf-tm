@@ -22,7 +22,7 @@ from flask import jsonify
 from trainingmgr.common.trainingmgr_operations import data_extraction_start, notification_rapp
 from trainingmgr.db.model_db import get_model_by_modelId
 from trainingmgr.db.trainingjob_db import change_state_to_failed, delete_trainingjob_by_id, create_trainingjob, get_trainingjob,\
-change_steps_state, change_field_value, change_field_value, change_steps_state_df, changeartifact, get_trainingjobs_by_model_id_db
+change_steps_state, change_field_value, get_field_value, change_steps_state_df, changeartifact, get_trainingjobs_by_model_id_db
 from trainingmgr.common.exceptions_utls import DBException, TMException
 from trainingmgr.common.trainingConfig_parser import getField, setField
 from trainingmgr.handler.async_handler import DATAEXTRACTION_JOBS_CACHE
@@ -283,3 +283,18 @@ def fetch_trainingjob_infos_from_model_id(model_name, model_version):
         return trainingjob_infos
     except Exception as err:
         raise TMException(f"Can't fetch trainingjob_infos from model_name {model_name} and model_version {model_version}| Error: " + str(err))
+    
+    
+def update_model_metrics_service(trainingjob_id, model_metrics):
+    try:
+        model_metrics_str = json.dumps(model_metrics)
+        change_field_value(trainingjob_id, "model_metrics", model_metrics_str)
+    except Exception as err:
+        raise TMException(f"Can't Update model_metrics for trainingjob_id {trainingjob_id}| Error: " + str(err))
+    
+def get_model_metrics_service(trainingjob_id):
+    try:
+        model_metrics_str = get_field_value(trainingjob_id, "model_metrics")
+        return json.loads(model_metrics_str)
+    except Exception as err:
+        raise TMException(f"Can't Update model_metrics for trainingjob_id {trainingjob_id}| Error: " + str(err))

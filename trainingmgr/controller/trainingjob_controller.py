@@ -27,7 +27,7 @@ from trainingmgr.schemas.trainingjob_schema import TrainingJobSchema
 from trainingmgr.schemas.featuregroup_schema import FeatureGroupSchema
 from trainingmgr.schemas.problemdetail_schema import ProblemDetails
 from trainingmgr.service.training_job_service import delete_training_job, create_training_job, get_training_job, get_trainining_jobs, \
-get_steps_state, fetch_trainingjob_infos_from_model_id
+get_steps_state, fetch_trainingjob_infos_from_model_id, update_model_metrics_service, get_model_metrics_service
 from trainingmgr.common.trainingmgr_util import check_key_in_dictionary
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig
 from trainingmgr.service.mme_service import get_modelinfo_by_modelId_service
@@ -127,4 +127,34 @@ def get_trainingjob_infos_from_model_id(model_name, model_version):
         return jsonify(trainingjobs_schema.dump(trainingjob_infos)), 200
     except Exception as err:
         LOGGER.error(f"Error fetching training-job-infos corresponding to model_name = {model_name} and model_version = {model_version} : {str(err)}")
+        return ProblemDetails(500, "Internal Server Error", str(err)).to_json()
+    
+@training_job_controller.route('/training-jobs/update-model-metrics/<trainingjob_id>', methods=['POST'])
+def update_model_metrics(trainingjob_id):
+    '''
+     This API-endpoint takes trainingjob_id into account and updates the model_metrics associated with the trainingjob_id
+    '''
+    
+    try:
+        request_json = request.get_json()
+        LOGGER.debug(f'Updating model_metrics of  trainingJob-ID {trainingjob_id} with new metrics  {request_json}')
+        update_model_metrics_service(trainingjob_id, request_json)
+        return jsonify({}) ,200
+    except Exception as err:
+        LOGGER.error(f"Error Updating model_metrics of  trainingJob-ID {trainingjob_id} Error: {str(err)}")
+        return ProblemDetails(500, "Internal Server Error", str(err)).to_json()
+    
+@training_job_controller.route('/training-jobs/get-model-metrics/<trainingjob_id>', methods=['GET'])
+def get_model_metrics(trainingjob_id):
+    '''
+     This API-endpoint takes trainingjob_id into account and returns the model_metrics associated with the trainingjob_id
+    '''
+    
+    try:
+
+        LOGGER.debug(f'Retrieving model_metrics of  trainingJob-ID {trainingjob_id}')
+        model_metrics = get_model_metrics_service(trainingjob_id)
+        return jsonify(model_metrics), 200
+    except Exception as err:
+        LOGGER.error(f"Error Getting model_metrics of  trainingJob-ID {trainingjob_id}: {str(err)}")
         return ProblemDetails(500, "Internal Server Error", str(err)).to_json()

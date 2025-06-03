@@ -37,17 +37,30 @@ PATTERN = re.compile(r"\w+")
 
 
 
-def change_field_value(traininigjob_id, field, value):
+def change_field_value(trainingjob_id, field, value):
     """
     This function updates field's value to field_value of trainingjob.
     """
     try:
-        trainingjob = TrainingJob.query.filter(TrainingJob.id==traininigjob_id).one()
+        trainingjob = TrainingJob.query.filter(TrainingJob.id==trainingjob_id).one()
         setattr(trainingjob, field, value)
         db.session.commit()
+    except NoResultFound as err:
+        raise DBException(f"Failed to execute change_field_value for id: {trainingjob_id}, because id doesn't exist in db")
     except Exception as err:
         raise DBException("Failed to execute query in change_field_value," + str(err))
 
+def get_field_value(trainingjob_id, field):
+    """
+    This function get field's value to field_value of trainingjob.
+    """
+    try:
+        trainingjob = TrainingJob.query.filter(TrainingJob.id==trainingjob_id).one()
+        return getattr(trainingjob, field)
+    except NoResultFound as err:
+        raise DBException(f"Failed to execute get_field_value for id: {trainingjob_id}, because id doesn't exist in db")
+    except Exception as err:
+        raise DBException("Failed to execute query in get_field_value," + str(err))
 
 def create_trainingjob(trainingjob):
         

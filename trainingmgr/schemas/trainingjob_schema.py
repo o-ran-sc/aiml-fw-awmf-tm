@@ -41,7 +41,7 @@ class TrainingJobSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = TrainingJob
         load_instance = True
-        exclude = ("creation_time", "deletion_in_progress", "updation_time","run_id")
+        exclude = ("creation_time", "deletion_in_progress", "updation_time","run_id", "model_metrics")
     
     modelId = ma.Nested(ModelSchema)
 
