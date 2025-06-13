@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "250eba9c_92053889",
+        "filename": "trainingmgr/controller/trainingjob_controller.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-06-13T12:22:12Z",
+      "side": 1,
+      "message": "OPENAPI yaml should be updated in next commit.",
+      "range": {
+        "startLine": 132,
+        "startChar": 0,
+        "endLine": 132,
+        "endChar": 104
+      },
+      "revId": "8142fa1e4f0455701df20524893643fbe4809120",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
