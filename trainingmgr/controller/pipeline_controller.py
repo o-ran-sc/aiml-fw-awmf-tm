@@ -44,7 +44,6 @@ def get_pipeline_info_by_name(pipeline_name):
         LOGGER.error(f"Unexpected error in get_pipeline_info_by_name: {str(err)}")
         return jsonify({"error": "An unexpected error occurred"}), status.HTTP_500_INTERNAL_SERVER_ERROR
     
-    
 @pipeline_controller.route("/pipelines/<pipeline_name>/versions", methods=['GET'])
 def get_versions_for_pipeline(pipeline_name):
     """
@@ -59,8 +58,7 @@ def get_versions_for_pipeline(pipeline_name):
 
     Returns:
         json:
-            versions_list : list
-                            list containing all versions(as str)
+            list containing all versions(as str)
         status code:
             HTTP status code 200
 
@@ -80,7 +78,6 @@ def get_versions_for_pipeline(pipeline_name):
         LOGGER.error(str(err))
         return jsonify({"Exception": str(err)}), status.HTTP_500_INTERNAL_SERVER_ERROR
 
-    
 @pipeline_controller.route('/pipelines', methods=['GET'])
 def get_pipelines():
     """
@@ -109,7 +106,7 @@ def get_pipelines():
     except Exception as err:
         LOGGER.error(str(err))
         return jsonify({"Exception": str(err)}, status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
 @pipeline_controller.route("/pipelines/<pipeline_name>/upload", methods=['POST'])
 def upload_pipeline(pipeline_name):
     """
@@ -169,7 +166,6 @@ def upload_pipeline(pipeline_name):
         return jsonify({'result': err.message}), status.HTTP_500_INTERNAL_SERVER_ERROR
     except Exception as err:
         return jsonify({'result': "Error in uploading Pipeline| Error : " + str(err)}), status.HTTP_500_INTERNAL_SERVER_ERROR
-
 
 @pipeline_controller.route("/pipelines/experiments", methods=['GET'])
 def get_all_experiment_names():

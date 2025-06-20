@@ -433,15 +433,14 @@ paths:
             properties:
               Exception:
                 type: "string"
-
-  /pipelines/{pipe_name}/upload:
+  /pipelines/{pipeline_name}/upload:
     post:
       tags:
         - Pipeline
       summary: "Upload pipeline"
       description: "Uploads a pipeline file to the server."
       parameters:
-        - name: "pipe_name"
+        - name: "pipeline_name"
           in: "path"
           required: true
           type: "string"
@@ -471,7 +470,6 @@ paths:
             properties:
               Exception:
                 type: "string"
-
   /pipelines/{pipeline_name}/versions:
     get:
       tags:
@@ -488,12 +486,9 @@ paths:
         200:
           description: "Successful response with pipeline versions"
           schema:
-            type: "object"
-            properties:
-              versions_list:
-                type: "array"
-                items:
-                  type: "string"
+            type: "array"
+            items:
+              type: "string"
         500:
           description: "Internal server error"
           schema:
@@ -501,7 +496,6 @@ paths:
             properties:
               Exception:
                 type: "string"
-
   /pipelines:
     get:
       tags:
@@ -514,10 +508,12 @@ paths:
           schema:
             type: "object"
             properties:
-              pipeline_names:
+              pipelines:
                 type: "array"
                 items:
-                  type: "string"
+                  $ref: '#/definitions/PipelineInfo'
+              total_size:
+                type: "integer"
         500:
           description: "Internal server error"
           schema:
@@ -525,21 +521,50 @@ paths:
             properties:
               Exception:
                 type: "string"
-
-  /experiments:
+  /pipelines/{pipeline_name}:
     get:
+      tags:
+        - Pipeline
+      summary: "Get pipeline details corresponding to pipeline_name"
+      description: "Get pipeline details corresponding to pipeline_name"
+      parameters:
+        - name: "pipeline_name"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Name of the pipeline"
+      responses:
+        200:
+          description: "Detail of pipeline_names: corresponding to pipeline_name"
+          schema:
+            $ref: '#/definitions/PipelineInfo'
+        404:
+          description: "Pipeline with given pipeline_name not found"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              error:
+                type: "string"
+  /pipelines/experiments:
+    get:
+      tags:
+          - Pipeline
       summary: "Get all experiment names"
       description: "Fetches all the names of experiments available."
       responses:
         200:
           description: "Successful response with all experiment names"
           schema:
-            type: "object"
-            properties:
-              experiment_names:
-                type: "array"
-                items:
-                  type: "string"
+            type: "array"
+            items:
+              type: "string"
         500:
           description: "Internal server error"
           schema:
@@ -716,7 +741,6 @@ paths:
                 type: "integer"
               title:
                 type: "string"
-
   /featureGroup:
     delete:
       tags:
@@ -976,3 +1000,20 @@ definitions:
       source_name:
         type: string
         description: Optional name of the data source
+  PipelineInfo:
+    type: "object"
+    properties:
+      pipeline_info:
+          type: object
+          properties:
+            created_at:
+              type: string
+              format: date-time
+              description: Timestamp when the pipeline was created
+            description:
+              type: string
+            display_name:
+              type: string
+            pipeline_id:
+              type: string
+              format: uuid
