@@ -82,6 +82,7 @@ def create_trainingjob():
         LOGGER.error(f"Error creating training job: {str(e)}")
         return ProblemDetails(500, "Internal Server Error", str(e)).to_json()
 
+
 @training_job_controller.route('/training-jobs/', methods=['GET'])
 def get_trainingjobs():
     LOGGER.debug(f'Fetching all training jobs')
@@ -105,7 +106,6 @@ def get_trainingjob(training_job_id):
         LOGGER.error(f"Error fetching training job {training_job_id}: {str(e)}")
         return ProblemDetails(500, "Internal Server Error", str(e)).to_json()
 
-
 @training_job_controller.route('/training-jobs/<int:training_job_id>/status', methods=['GET'])
 def get_trainingjob_status(training_job_id):
     LOGGER.debug(f'Requesting status for training job {training_job_id}')
@@ -128,7 +128,7 @@ def get_trainingjob_infos_from_model_id(model_name, model_version):
     except Exception as err:
         LOGGER.error(f"Error fetching training-job-infos corresponding to model_name = {model_name} and model_version = {model_version} : {str(err)}")
         return ProblemDetails(500, "Internal Server Error", str(err)).to_json()
-    
+
 @training_job_controller.route('/training-jobs/update-model-metrics/<trainingjob_id>', methods=['POST'])
 def update_model_metrics(trainingjob_id):
     '''

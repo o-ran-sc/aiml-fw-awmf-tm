@@ -4,7 +4,7 @@ info:
   version: "1.0.0"
   title: "Training Manager API"
   
-host: "localhost:5000"
+host: "localhost:32002"
 basePath: "/"
 schemes:
   - "http"
@@ -114,75 +114,234 @@ paths:
             properties:
               Exception:
                 type: "string"
-
-  /trainingjobs/{trainingjob_name}/{version}/steps_state:
+  /ai-ml-model-training/v1/training-jobs/{training_job_id}/status:
     get:
       tags:
         - Training Job
       summary: "Get steps state information for a training job"
       description: "Returns the state of each step in the training job process."
       parameters:
-        - name: "trainingjob_name"
+        - name: "training_job_id"
           in: "path"
           required: true
           type: "string"
-          description: "Name of the training job"
-        - name: "version"
-          in: "path"
-          required: true
-          type: "integer"
-          description: "Version of the training job"
+          description: "Id of the training job"
       responses:
         200:
           description: "Successful response with steps state information"
           schema:
             type: "object"
-        400:
-          description: "Invalid training job name or version"
-          schema:
-            type: "object"
-            properties:
-              Exception:
-                type: "string"
-        404:
-          description: "Training job not found"
-          schema:
-            type: "object"
-            properties:
-              Exception:
-                type: "string"
         500:
           description: "Internal server error"
           schema:
             type: "object"
             properties:
-              Exception:
+              detail:
                 type: "string"
-
-  /model/{trainingjob_name}/{version}/Model.zip:
+              status:
+                type: "integer"
+              title:
+                type: "string"
+  /ai-ml-model-training/v1/training-jobs/{training_job_id}:
     get:
       tags:
         - Training Job
-      summary: "Download model zip file"
-      description: "Returns the model zip file for a specific training job identified by its name and version."
+      summary: "Get training job"
+      description: "Returns the trainingjob corresponding to trainingjob_id."
       parameters:
-        - name: "trainingjob_name"
-          in: "path"
-          required: true
-          type: "string"
-          description: "Name of the training job"
-        - name: "version"
+        - name: "training_job_id"
           in: "path"
           required: true
           type: "integer"
-          description: "Version of the training job"
+          description: "Id of TrainingJob"
+      responses:
+        200:
+          description: "Successful response with the requested trainingjobs"
+          schema:
+            type: "object"
+        400:
+          description: "Bad Request"
+          schema:
+            type: "object"
+            properties:
+              detail:
+                type: "string"
+              title:
+                type: "string"
+              status:
+                type: "integer"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              detail:
+                type: "string"
+              title:
+                type: "string"
+              status:
+                type: "integer"
+    delete:
+      tags:
+        - Training Job
+      summary: "Delete training job"
+      description: "Deletes the trainingjob corresponding to trainingjob_id."
+      parameters:
+        - name: "training_job_id"
+          in: "path"
+          required: true
+          type: "integer"
+          description: "Id of TrainingJob"
+      responses:
+        204:
+          description: "TrainingJob is deleted successfully"
+          schema:
+            type: "object"
+        404:
+          description: "TrainingJob doesn't exist"
+          schema:
+            type: "object"
+            properties:
+              detail:
+                type: "string"
+              title:
+                type: "string"
+              status:
+                type: "integer"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              detail:
+                type: "string"
+              title:
+                type: "string"
+              status:
+                type: "integer" 
+  /ai-ml-model-training/v1/training-jobs/{model_name}/{model_version}:
+    get:
+      tags:
+        - Training Job
+      summary: "Get All trainingjobs linked to the provided model_name and model_version"
+      description: "Returns the trainingjob corresponding to trainingjob_id."
+      parameters:
+        - name: "model_name"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Name of Model"
+        - name: "model_version"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Version of Model"
+      responses:
+        200:
+          description: "Successful response with the requested trainingjobs"
+          schema:
+            type: "object"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              detail:
+                type: "string"
+              title:
+                type: "string"
+              status:
+                type: "integer"
+  /ai-ml-model-training/v1/training-jobs/get-model-metrics/{trainingjob_id}:
+    get:
+      tags:
+        - Training Job
+      summary: "Get Model Metrics"
+      description: "Returns the Model-Metrics corresponding to trainingjob_id."
+      parameters:
+        - name: "trainingjob_id"
+          in: "path"
+          required: true
+          type: "integer"
+          description: "Id of TrainingJob"
+      responses:
+        200:
+          description: "Successful response with the requested model-metrics"
+          schema:
+            type: "object"     
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              detail:
+                type: "string"
+              title:
+                type: "string"
+              status:
+                type: "integer"
+  /ai-ml-model-training/v1/training-jobs/update-model-metrics/{trainingjob_id}:
+    post:
+      tags:
+        - Training Job
+      summary: "Update Model Metrics"
+      description: "Updates the Model-Metrics corresponding to given trainingjob_id with provided data"
+      parameters:
+        - name: "trainingjob_id"
+          in: "path"
+          required: true
+          type: "integer"
+          description: "Id of TrainingJob"
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            type: "object"
+      responses:
+        200:
+          description: "Model-Metrics are saved successfully"
+          schema:
+            type: "object"     
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              detail:
+                type: "string"
+              title:
+                type: "string"
+              status:
+                type: "integer"
+  /model/{modelname}/{modelversion}/{artifactversion}/Model.zip:
+    get:
+      tags:
+        - Training Job
+      summary: "Download model zip file corresponding to ModelName, ModelVersion and ArtifactVersion"
+      description: "Returns the model zip file for a specific training job identified by its name and version."
+      parameters:
+        - name: "modelname"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Name of the Model"
+        - name: "modelversion"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Version of the Model"
+        - name: "artifactversion"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Artifact-Version of the Model"
       responses:
         200:
           description: "Successful response with model zip file"
           schema:
             type: "file"
-        400:
-          description: "Invalid training job name or version"
+        404:
+          description: "Model Not Found"
           schema:
             type: "object"
             properties:
@@ -195,44 +354,6 @@ paths:
             properties:
               Exception:
                 type: "string"
-
-  /trainingjobs/{trainingjob_name}/training:
-    post:
-      tags:
-        - Training Job
-      summary: "Start training job"
-      description: "Starts the training job by invoking the data extraction module and other training steps."
-      parameters:
-        - name: "trainingjob_name"
-          in: "path"
-          required: true
-          type: "string"
-          description: "Name of the training job"
-      responses:
-        200:
-          description: "Training job started successfully"
-          schema:
-            type: "object"
-            properties:
-              trainingjob_name:
-                type: "string"
-              result:
-                type: "string"
-        400:
-          description: "Invalid training job name"
-          schema:
-            type: "object"
-            properties:
-              Exception:
-                type: "string"
-        500:
-          description: "Internal server error"
-          schema:
-            type: "object"
-            properties:
-              Exception:
-                type: "string"
-
   /trainingjob/dataExtractionNotification:
     post:
       tags:
@@ -246,9 +367,9 @@ paths:
           schema:
             type: "object"
             properties:
-              trainingjob_name:
+              trainingjob_id:
                 type: "string"
-          description: "JSON object containing the name of the training job"
+          description: "JSON object containing the id of the training job"
       responses:
         200:
           description: "Pipeline is scheduled successfully"
@@ -271,7 +392,6 @@ paths:
             properties:
               Exception:
                 type: "string" 
-
   /trainingjob/pipelineNotification:
     post:
       tags:
@@ -285,9 +405,9 @@ paths:
           schema:
             type: "object"
             properties:
-              trainingjob_name:
+              trainingjob_id:
                 type: "string"
-                description: "Name of the training job"
+                description: "Id of the training job"
               run_status:
                 type: "string"
                 description: "Status of the run"
@@ -306,37 +426,6 @@ paths:
             properties:
               Exception:
                 type: "string"
-        500:
-          description: "Internal server error"
-          schema:
-            type: "object"
-            properties:
-              Exception:
-                type: "string"
-
-  /trainingjobs/latest:
-    get:
-      tags:
-        - Training Job
-      summary: "Get overall status and latest version of all training jobs"
-      description: "Fetches the overall status and the latest version of all existing training jobs."
-      responses:
-        200:
-          description: "Successful response with training job status and version details"
-          schema:
-            type: "object"
-            properties:
-              trainingjobs:
-                type: "array"
-                items:
-                  type: "object"
-                  properties:
-                    trainingjob_name:
-                      type: "string"
-                    version:
-                      type: "integer"
-                    overall_status:
-                      type: "string"
         500:
           description: "Internal server error"
           schema:
@@ -458,303 +547,174 @@ paths:
             properties:
               Exception:
                 type: "string"
-
-  /trainingjobs/{trainingjob_name}:
+  /ai-ml-model-training/v1/training-jobs:
+    get:
+      tags:
+        - Training Job
+      summary: "Get all training jobs"
+      description: "Returns the list of all trainingjobs."
+      responses:
+        200:
+          description: "Successful response with a list of all trainingjobs"
+          schema:
+            type: "object"
+        400:
+          description: "Bad Request"
+          schema:
+            type: "object"
+            properties:
+              detail:
+                type: "string"
+              title:
+                type: "string"
+              status:
+                type: "integer"
+            
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              detail:
+                type: "string"
+              title:
+                type: "string"
+              status:
+                type: "integer"
     post:
       tags:
         - Training Job
       summary: "Create a new training job"
       description: "Creates a new training job with the provided details."
       parameters:
-        - name: "trainingjob_name"
-          in: "path"
-          required: true
-          type: "string"
-          description: "Name of the training job"
         - name: "body"
           in: "body"
           required: true
           schema:
-            type: "object"
-            properties:
-              description:
-                type: "string"
-              featuregroup_name:
-                type: "string"
-              pipeline_name:
-                type: "string"
-              experiment_name:
-                type: "string"
-              arguments:
-                type: "object"
-              query_filter:
-                type: "string"
-              enable_versioning:
-                type: "boolean"
-              pipeline_version:
-                type: "string"
-              datalake_source:
-                type: "string"
-              _measurement:
-                type: "string"
-              bucket:
-                type: "string"
-              is_mme:
-                type: "boolean"
-              model_name:
-                type: "string"
+            $ref: '#/definitions/ModelTrainingRequest'
       responses:
         201:
           description: "Training job created successfully"
           schema:
             type: "object"
             properties:
-              result:
+              detail:
                 type: "string"
+              title:
+                type: "string"
+              status:
+                type: "integer"
         400:
           description: "Invalid training job name or data"
           schema:
             type: "object"
             properties:
-              Exception:
+              detail:
                 type: "string"
-        409:
-          description: "Training job name already exists"
-          schema:
-            type: "object"
-            properties:
-              Exception:
+              title:
                 type: "string"
-        500:
-          description: "Internal server error"
-          schema:
-            type: "object"
-            properties:
-              Exception:
-                type: "string"
-
-    put:
-      tags:
-        - Training Job
-      summary: "Update an existing training job"
-      description: "Updates an existing training job with the provided details. Precondition: the training job's overall status should be failed or finished, and no deletion process should be in progress."
-      parameters:
-        - name: "trainingjob_name"
-          in: "path"
-          required: true
-          type: "string"
-          description: "Name of the training job"
-        - name: "body"
-          in: "body"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              description:
-                type: "string"
-              featuregroup_name:
-                type: "string"
-              pipeline_name:
-                type: "string"
-              experiment_name:
-                type: "string"
-              arguments:
-                type: "object"
-              query_filter:
-                type: "string"
-              enable_versioning:
-                type: "boolean"
-              pipeline_version:
-                type: "string"
-              datalake_source:
-                type: "string"
-              is_mme:
-                type: "boolean"
-              model_name:
-                type: "string"
-      responses:
-        200:
-          description: "Training job updated successfully"
-          schema:
-            type: "object"
-            properties:
-              result:
-                type: "string"
-        400:
-          description: "Invalid training job name or data"
-          schema:
-            type: "object"
-            properties:
-              Exception:
-                type: "string"
+              status:
+                type: "integer"
         404:
-          description: "Training job not found"
+          description: "Given FeaureGroup doesn't exist"
           schema:
             type: "object"
             properties:
-              Exception:
+              detail:
                 type: "string"
+              title:
+                type: "string"
+              status:
+                type: "integer"
         500:
           description: "Internal server error"
           schema:
             type: "object"
             properties:
-              Exception:
+              detail:
                 type: "string"
-
-  /trainingjobs/retraining:
+              title:
+                type: "string"
+              status:
+                type: "integer"
+  /ai-ml-model-training/v1/featureGroup:
     post:
       tags:
-        - Training Job
-      summary: "Retrain training jobs"
-      description: "Retrains the training jobs specified in the request. The overall status of the training job should be 'failed' or 'finished', and deletion should not be in progress."
+        - Feature Group
+      summary: "Create a feature group"
+      description: "Creates a new feature group with the provided details."
       parameters:
         - name: "body"
           in: "body"
           required: true
           schema:
-            type: "object"
-            properties:
-              trainingjobs_list:
-                type: "array"
-                items:
-                  type: "object"
-                  properties:
-                    trainingjob_name:
-                      type: "string"
-                      description: "Name of the training job"
-                    notification_url:
-                      type: "string"
-                      description: "Optional URL for notifications"
-                    feature_filter:
-                      type: "string"
-                      description: "Optional feature filter"
+            $ref: '#/definitions/FeatureGroupConfig'
       responses:
-        200:
-          description: "Retraining results"
+        201:
+          description: "Feature group created successfully"
           schema:
             type: "object"
             properties:
-              success_count:
-                type: "integer"
-              failure_count:
-                type: "integer"
+              result:
+                type: "string"
         400:
-          description: "Invalid request or missing data"
+          description: "Invalid feature group data (Bad Request)"
           schema:
             type: "object"
             properties:
-              Exception:
+              detail:
+                type: "string"
+              status:
+                type: "integer"
+              title:
+                type: "string"
+        409:
+          description: "Feature group already exists"
+          schema:
+            type: "object"
+            properties:
+              detail:
+                type: "string"
+              status:
+                type: "integer"
+              title:
                 type: "string"
         500:
           description: "Internal server error"
           schema:
             type: "object"
             properties:
-              Exception:
+              detail:
                 type: "string"
-
-  /trainingjobs:
-    delete:
-      tags:
-        - Training Job
-      summary: "Delete a list of training job versions"
-      description: "Deletes the latest version of the training jobs specified in the request. The overall status of the training job should be 'failed' or 'finished', and deletion should not be in progress."
-      parameters:
-        - name: "body"
-          in: "body"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              list:
-                type: "array"
-                items:
-                  type: "object"
-                  properties:
-                    trainingjob_name:
-                      type: "string"
-                      description: "Name of the training job"
-                    version:
-                      type: "integer"
-                      description: "Version of the training job"
-      responses:
-        200:
-          description: "Deletion results"
-          schema:
-            type: "object"
-            properties:
-              success_count:
+              status:
                 type: "integer"
-              failure_count:
-                type: "integer"
-        400:
-          description: "Invalid request or missing data"
-          schema:
-            type: "object"
-            properties:
-              Exception:
+              title:
                 type: "string"
-        500:
-          description: "Internal server error"
-          schema:
-            type: "object"
-            properties:
-              Exception:
-                type: "string"
-
-  /trainingjobs/metadata/{trainingjob_name}:
     get:
       tags:
-        - Training Job
-      summary: "Get metadata for a training job"
-      description: "Fetches accuracy, version, and model download URL for all versions of the specified training job that have a FINISHED state and are not in the deletion process."
-      parameters:
-        - name: "trainingjob_name"
-          in: "path"
-          required: true
-          type: "string"
-          description: "Name of the training job"
+        - Feature Group
+      summary: "Get all feature groups"
+      description: "Fetches all feature groups available."
       responses:
         200:
-          description: "Successful response with metadata"
+          description: "Successful response with all feature groups"
           schema:
             type: "object"
             properties:
-              Successed_metadata:
+              featuregroups:
                 type: "array"
                 items:
-                  type: "object"
-                  properties:
-                    accuracy:
-                      type: "object"
-                      description: "Metrics of the model"
-                    version:
-                      type: "integer"
-                      description: "Version of the training job"
-                    url:
-                      type: "string"
-                      description: "URL for downloading the model"
-        400:
-          description: "Invalid training job name"
-          schema:
-            type: "object"
-            properties:
-              Exception:
-                type: "string"
-        404:
-          description: "Training job not found"
-          schema:
-            type: "object"
-            properties:
-              Exception:
-                type: "string"
+                  $ref: '#/definitions/FeatureGroupConfig'
         500:
           description: "Internal server error"
           schema:
             type: "object"
             properties:
-              Exception:
+              detail:
+                type: "string"
+              status:
+                type: "integer"
+              title:
                 type: "string"
 
   /featureGroup:
@@ -802,101 +762,6 @@ paths:
             properties:
               Exception:
                 type: "string"
-    post:
-      tags:
-        - Feature Group
-      summary: "Create a feature group"
-      description: "Creates a new feature group with the provided details."
-      parameters:
-        - name: "body"
-          in: "body"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              featureGroupName:
-                type: "string"
-              feature_list:
-                type: "string"
-              datalake:
-                type: "string"
-              bucket:
-                type: "string"
-              host:
-                type: "string"
-              port:
-                type: "string"
-              token:
-                type: "string"
-              db_org:
-                type: "string"
-              measurement:
-                type: "string"
-              enable_Dme:
-                type: "boolean"
-              source_name:
-                type: "string"
-              DmePort:
-                type: "string"
-              measured_obj_class:
-                type: "string"
-              datalake_source:
-                type: "string"
-      responses:
-        201:
-          description: "Feature group created successfully"
-          schema:
-            type: "object"
-            properties:
-              result:
-                type: "string"
-        400:
-          description: "Invalid feature group data or feature group already exists"
-          schema:
-            type: "object"
-            properties:
-              Exception:
-                type: "string"
-        500:
-          description: "Internal server error"
-          schema:
-            type: "object"
-            properties:
-              Exception:
-                type: "string"
-
-    get:
-      tags:
-        - Feature Group
-      summary: "Get all feature groups"
-      description: "Fetches all feature groups available."
-      responses:
-        200:
-          description: "Successful response with all feature groups"
-          schema:
-            type: "object"
-            properties:
-              featuregroups:
-                type: "array"
-                items:
-                  type: "object"
-                  properties:
-                    featuregroup_name:
-                      type: "string"
-                    features:
-                      type: "string"
-                    datalake:
-                      type: "string"
-                    dme:
-                      type: "boolean"
-        500:
-          description: "Internal server error"
-          schema:
-            type: "object"
-            properties:
-              Exception:
-                type: "string"
-
   /featureGroup/{featuregroup_name}:
     get:
       tags:
@@ -916,36 +781,7 @@ paths:
             type: "object"
             properties:
               featuregroup:
-                type: "array"
-                items:
-                  type: "object"
-                  properties:
-                    featuregroup_name:
-                      type: "string"
-                    features:
-                      type: "string"
-                    datalake:
-                      type: "string"
-                    host:
-                      type: "string"
-                    port:
-                      type: "string"
-                    bucket:
-                      type: "string"
-                    token:
-                      type: "string"
-                    db_org:
-                      type: "string"
-                    measurement:
-                      type: "string"
-                    dme:
-                      type: "boolean"
-                    measured_obj_class:
-                      type: "string"
-                    dme_port:
-                      type: "string"
-                    source_name:
-                      type: "string"
+                  $ref: '#/definitions/FeatureGroupConfig'
         400:
           description: "Invalid feature group name"
           schema:
@@ -967,9 +803,176 @@ paths:
             properties:
               Exception:
                 type: "string"
+    put:
+      tags:
+          - Feature Group
+      summary: "Updates feature-group by given data"
+      description: "Updates feature-group by data given in body."
+      parameters:
+        - name: "featuregroup_name"
+          in: "path"
+          required: true
+          type: "string"
+          description: "Name of the feature group"
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            $ref: '#/definitions/FeatureGroupConfig'
+      responses:
+        200:
+          description: "Feature-Group Updated Successfully"
+          schema:
+            type: "object"
+            properties:
+              result:
+                  type: "string"
+        400:
+          description: "Invalid feature group name"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              Exception:
+                type: "string"
+          
+
 definitions:
   ErrorResponse:
     type: "object"
     properties:
       Exception:
         type: "string"
+  ModelTrainingRequest:
+    type: object
+    required:
+      - training_config
+      - model_id
+    properties:
+      model_location:
+        type: string
+        description: Path to the model location
+      training_dataset:
+        type: string
+        description: Path to the training dataset
+      validation_dataset:
+        type: string
+        description: Path to the validation dataset
+      training_config:
+        $ref: '#/definitions/TrainingConfig'
+      notification_url:
+        type: string
+        description: Callback URL to notify after training or after any failure
+      consumer_rapp_id:
+        type: string
+        description: Consumer RAPP ID
+      producer_rapp_id:
+        type: string
+        description: Producer RAPP ID
+      model_id:
+        $ref: '#/definitions/ModelID'
+  ModelID:
+    type: object
+    required:
+      - modelname
+      - modelversion
+    properties:
+      modelname:
+        type: string
+      modelversion:
+        type: string
+      artifactversion:
+        type: string
+  TrainingConfig:
+    type: object
+    required:
+      - description
+      - dataPipeline
+      - trainingPipeline
+    properties:
+      description:
+        type: string
+      dataPipeline:
+        type: object
+        required:
+        - feature_group_name
+        - query_filter
+        - arguments
+        properties:
+          feature_group_name:
+            type: string
+          query_filter:
+            type: string
+          arguments:
+            type: object
+            description: "Training arguments (e.g., {'epochs': '1'})"
+      trainingPipeline:
+        type: object
+        required:
+        - pipeline_name
+        - pipeline_version
+        - retraining_pipeline_name
+        - retraining_pipeline_version
+        properties:
+          pipeline_name:
+            type: string
+          pipeline_version:
+            type: string
+          retraining_pipeline_name:
+            type: string
+          retraining_pipeline_version:
+            type: string
+  FeatureGroupConfig:
+    type: object
+    required:
+    - featuregroup_name
+    - feature_list
+    - datalake_source
+    - host
+    - port
+    - bucket
+    - token
+    - db_org
+    - measurement
+    - enable_dme
+    properties:
+      featuregroup_name:
+        type: string
+        description: Name of the feature group
+      feature_list:
+        type: string
+        description: Comma-separated list of features
+      datalake_source:
+        type: string
+        description: "Datalake source (E.g:'InfluxSource')"
+      host:
+        type: string
+      port:
+        type: string
+      bucket:
+        type: string
+      token:
+        type: string
+      db_org:
+        type: string
+      measurement:
+        type: string
+        description: InfluxDB measurement name
+      enable_dme:
+        type: boolean
+        description: Enable DME flag for NonRtRIc
+      measured_obj_class:
+        type: string
+        description: Optional class of measured object
+      dme_port:
+        type: string
+        description: Optional DME port
+      source_name:
+        type: string
+        description: Optional name of the data source

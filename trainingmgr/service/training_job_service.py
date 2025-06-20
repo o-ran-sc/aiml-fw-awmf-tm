@@ -297,4 +297,4 @@ def get_model_metrics_service(trainingjob_id):
         model_metrics_str = get_field_value(trainingjob_id, "model_metrics")
         return json.loads(model_metrics_str)
     except Exception as err:
-        raise TMException(f"Can't Update model_metrics for trainingjob_id {trainingjob_id}| Error: " + str(err))
+        raise TMException(f"Can't get_model_metrics_service for trainingjob_id {trainingjob_id}| Error: " + str(err))

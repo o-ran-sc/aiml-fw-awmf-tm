@@ -80,7 +80,6 @@ def error(err):
                               mimetype=MIMETYPE_JSON)
 
 
-
 @APP.route('/model/<modelname>/<modelversion>/<artifactversion>/Model.zip', methods=['GET'])
 def get_model(modelname, modelversion, artifactversion):
     """
@@ -121,7 +120,6 @@ def get_model(modelname, modelversion, artifactversion):
 
         return {"Exception": "error while downloading model"}, status.HTTP_500_INTERNAL_SERVER_ERROR
 
-
 @APP.route('/trainingjob/dataExtractionNotification', methods=['POST'])
 def data_extraction_notification():
     """
@@ -133,8 +131,8 @@ def data_extraction_notification():
         None
 
     Args in json:
-        trainingjob_name: str
-            name of trainingjob.
+        trainingjob_id: str
+            id of trainingjob.
 
     Returns:
         json:
@@ -264,8 +262,8 @@ def pipeline_notification():
     Args in function: none
 
     Required Args in json:
-        trainingjob_name: str
-            name of trainingjob.
+        trainingjob_id: str
+            id of trainingjob.
 
         run_status: str
             status of run.
@@ -356,7 +354,6 @@ def pipeline_notification():
 
     return jsonify({"Message":"Training successful"}), 200
 
-
 @APP.route('/featureGroup/<featuregroup_name>', methods=['GET', 'PUT'])
 def feature_group_by_name(featuregroup_name):
     """
@@ -436,8 +433,6 @@ def feature_group_by_name(featuregroup_name):
     return APP.response_class(response= json.dumps(api_response),
                     status= response_code,
                     mimetype=MIMETYPE_JSON)
-
-
 
 @APP.route('/featureGroup', methods=['DELETE'])
 def delete_list_of_feature_group():
