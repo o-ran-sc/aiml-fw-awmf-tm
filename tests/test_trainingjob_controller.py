@@ -59,7 +59,7 @@ class TestCreateTrainingJob:
         app = Flask(__name__)
         app.register_blueprint(training_job_controller)
         self.client = app.test_client()
-        
+
     def test_create_trainingjob_missing_training_config(self):
         trainingmgr_main.LOGGER.debug("******* test_create_trainingjob_missing_training_config *******")
         expected_data = {
@@ -189,3 +189,26 @@ class TestDeleteTrainingJob:
         response = self.client.delete("/training-jobs/123")
         assert response.status_code == 404
         assert response.json == expected_data
+
+# =======================
+# Test: Get Training Jobs (All / Filtered / Latest)
+# =======================
+class TestGetFilteredTrainingJobs:
+    def setup_method(self):
+        app = Flask(__name__)
+        app.register_blueprint(training_job_controller)
+        self.client = app.test_client()
+    @patch('trainingmgr.controller.trainingjob_controller.get_trainining_jobs')
+    @patch('trainingmgr.controller.trainingjob_controller.trainingjobs_schema.dump')
+    def test_success_all_jobs(self, mock_dump, mock_get):
+        mock_get.return_value = [
+            MagicMock(id=1, modelId=MagicMock(modelname='abc', modelversion='1')),
+            MagicMock(id=2, modelId=MagicMock(modelname='xyz', modelversion='2'))
+        ]
+        mock_dump.return_value = [
+            {"id": 1, "modelId": {"modelname": "abc", "modelversion": "1"}},
+            {"id": 2, "modelId": {"modelname": "xyz", "modelversion": "2"}}
+        ]
+        response = self.client.get("/training-jobs")
+        assert response.status_code == 200
+        assert len(response.json) == 2
