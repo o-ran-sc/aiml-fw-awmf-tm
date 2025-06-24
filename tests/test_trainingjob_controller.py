@@ -271,3 +271,18 @@ class TestGetTrainingJob:
         response = self.client.get('/training-jobs/1')
         assert response.status_code == 500
         assert response.json == expected_data
+
+# =======================
+# Test: Get Training Job Status
+# =======================
+class TestGetTrainingJobStatus:
+    def setup_method(self):
+        app = Flask(__name__)
+        app.register_blueprint(training_job_controller)
+        self.client = app.test_client()
+    expected_data = {"status": "running"}
+    @patch('trainingmgr.controller.trainingjob_controller.get_steps_state', return_value=json.dumps(expected_data))
+    def test_get_trainingjob_status(self, mock1):
+        response = self.client.get("/training-jobs/123/status")
+        assert response.status_code == 200
+        assert response.json == {"status": "running"}
