@@ -116,3 +116,15 @@ class TestGetPipelineInfoByName:
         response = client.get("/pipelines/demo_pipeline")
         assert response.status_code == 200
         assert response.get_json()["pipeline_info"]["name"] == "demo_pipeline"
+
+    @patch("trainingmgr.controller.pipeline_controller.get_single_pipeline")
+    def test_pipeline_info_invalid_response_type(self, mock_get_pipeline_info, client):
+        mock_get_pipeline_info.side_effect = TypeError("bad type")
+        response = client.get("/pipelines/demo_pipeline")
+        assert response.status_code == 500
+        expected = ProblemDetails(
+            500,
+            "Internal Server Error",
+            "Error communicating with KFAdapter : bad type"
+        ).to_dict()
+        assert response.get_json() == expected
