@@ -27,7 +27,7 @@ from trainingmgr.schemas.trainingjob_schema import TrainingJobSchema
 from trainingmgr.schemas.featuregroup_schema import FeatureGroupSchema
 from trainingmgr.schemas.problemdetail_schema import ProblemDetails
 from trainingmgr.service.training_job_service import delete_training_job, create_training_job, get_training_job, get_trainining_jobs, \
-get_steps_state, fetch_trainingjob_infos_from_model_id, update_model_metrics_service, get_model_metrics_service
+get_steps_state, fetch_trainingjob_infos_from_model_id
 from trainingmgr.common.trainingmgr_util import check_key_in_dictionary
 from trainingmgr.common.trainingConfig_parser import validateTrainingConfig
 from trainingmgr.service.mme_service import get_modelinfo_by_modelId_service
@@ -82,19 +82,6 @@ def create_trainingjob():
         LOGGER.error(f"Error creating training job: {str(e)}")
         return ProblemDetails(500, "Internal Server Error", str(e)).to_json()
 
-
-@training_job_controller.route('/training-jobs/', methods=['GET'])
-def get_trainingjobs():
-    LOGGER.debug(f'Fetching all training jobs')
-    try:
-        resp = trainingjobs_schema.dump(get_trainining_jobs())
-        return jsonify(resp), 200
-    except TMException as err:
-        return ProblemDetails(400, "Bad Request", str(err)).to_json()
-    except Exception as e:
-        LOGGER.error(f"Error fetching training jobs: {str(e)}")
-        return ProblemDetails(500, "Internal Server Error", str(e)).to_json()
-
 @training_job_controller.route('/training-jobs/<int:training_job_id>', methods=['GET'])
 def get_trainingjob(training_job_id):
     LOGGER.debug(f'Fetching training job {training_job_id}')
@@ -106,6 +93,7 @@ def get_trainingjob(training_job_id):
         LOGGER.error(f"Error fetching training job {training_job_id}: {str(e)}")
         return ProblemDetails(500, "Internal Server Error", str(e)).to_json()
 
+
 @training_job_controller.route('/training-jobs/<int:training_job_id>/status', methods=['GET'])
 def get_trainingjob_status(training_job_id):
     LOGGER.debug(f'Requesting status for training job {training_job_id}')
@@ -116,45 +104,32 @@ def get_trainingjob_status(training_job_id):
         LOGGER.error(f"Error fetching status for training job {training_job_id}: {str(err)}")
         return ProblemDetails(500, "Internal Server Error", str(err)).to_json()
 
-@training_job_controller.route('/training-jobs/<model_name>/<model_version>', methods=['GET'])
-def get_trainingjob_infos_from_model_id(model_name, model_version):
-    '''
-     This API-endpoint takes model_name and model_version into account and returns all the trainingJobInfo related to that ModelId
-    '''
-    LOGGER.debug(f'Requesting trainingJob-info for model-Id for model_Id: {model_name} and {model_version}')
+@training_job_controller.route('/training-jobs', methods=['GET'])
+def get_filtered_trainingjobs():
+    model_name = request.args.get('model_name')
+    model_version = request.args.get('model_version')
+    latest = request.args.get('latest', 'false').lower() == 'true'
+    LOGGER.debug(f"Fetching training jobs with filters - model_name: {model_name}, model_version: {model_version}, latest: {latest}")
     try:
-        trainingjob_infos = fetch_trainingjob_infos_from_model_id(model_name, model_version)
-        return jsonify(trainingjobs_schema.dump(trainingjob_infos)), 200
-    except Exception as err:
-        LOGGER.error(f"Error fetching training-job-infos corresponding to model_name = {model_name} and model_version = {model_version} : {str(err)}")
-        return ProblemDetails(500, "Internal Server Error", str(err)).to_json()
-
-@training_job_controller.route('/training-jobs/update-model-metrics/<trainingjob_id>', methods=['POST'])
-def update_model_metrics(trainingjob_id):
-    '''
-     This API-endpoint takes trainingjob_id into account and updates the model_metrics associated with the trainingjob_id
-    '''
-    
-    try:
-        request_json = request.get_json()
-        LOGGER.debug(f'Updating model_metrics of  trainingJob-ID {trainingjob_id} with new metrics  {request_json}')
-        update_model_metrics_service(trainingjob_id, request_json)
-        return jsonify({}) ,200
-    except Exception as err:
-        LOGGER.error(f"Error Updating model_metrics of  trainingJob-ID {trainingjob_id} Error: {str(err)}")
-        return ProblemDetails(500, "Internal Server Error", str(err)).to_json()
-    
-@training_job_controller.route('/training-jobs/get-model-metrics/<trainingjob_id>', methods=['GET'])
-def get_model_metrics(trainingjob_id):
-    '''
-     This API-endpoint takes trainingjob_id into account and returns the model_metrics associated with the trainingjob_id
-    '''
-    
-    try:
-
-        LOGGER.debug(f'Retrieving model_metrics of  trainingJob-ID {trainingjob_id}')
-        model_metrics = get_model_metrics_service(trainingjob_id)
-        return jsonify(model_metrics), 200
-    except Exception as err:
-        LOGGER.error(f"Error Getting model_metrics of  trainingJob-ID {trainingjob_id}: {str(err)}")
-        return ProblemDetails(500, "Internal Server Error", str(err)).to_json()
+        # Fetch all training jobs
+        trainingjobs = get_trainining_jobs()
+        # Filter by model_name and model_version if provided
+        if model_name:
+            trainingjobs = [job for job in trainingjobs if job.modelId.modelname == model_name]
+        if model_version:
+            trainingjobs = [job for job in trainingjobs if job.modelId.modelversion == model_version]
+        # If 'latest' flag is true, return the job with the highest training job 'id'
+        if latest:
+            if trainingjobs:
+                latest_job = max(trainingjobs, key=lambda job: job.id)
+                return jsonify(trainingjobs_schema.dump([latest_job])), 200
+            else:
+                return jsonify([]), 200
+        # Return all matching jobs (after filtering, if any)
+        return jsonify(trainingjobs_schema.dump(trainingjobs)), 200
+    except TMException as err:
+        LOGGER.error(f"TMException occurred: {str(err)}")
+        return ProblemDetails(400, "Bad Request", str(err)).to_json()
+    except Exception as e:
+        LOGGER.error(f"Error fetching training jobs: {str(e)}")
+        return ProblemDetails(500, "Internal Server Error", str(e)).to_json()

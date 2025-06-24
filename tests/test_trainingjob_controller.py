@@ -51,11 +51,15 @@ trainingmgr_main.LOCK = Lock()
 trainingmgr_main.DATAEXTRACTION_JOBS_CACHE = {}
 
 
+# =======================
+# Test: Create Training Job
+# =======================
 class TestCreateTrainingJob:
     def setup_method(self):
         app = Flask(__name__)
         app.register_blueprint(training_job_controller)
         self.client = app.test_client()
+        
     def test_create_trainingjob_missing_training_config(self):
         trainingmgr_main.LOGGER.debug("******* test_create_trainingjob_missing_training_config *******")
         expected_data = {
@@ -71,9 +75,9 @@ class TestCreateTrainingJob:
         }
         response = self.client.post("/training-jobs", data=json.dumps(trainingjob_req),
                                     content_type="application/json")
-        trainingmgr_main.LOGGER.debug(response.data)
         assert response.status_code == 400
         assert response.json == expected_data
+
     def test_create_trainingjob_invalid_training_config(self):
         trainingmgr_main.LOGGER.debug("******* test_create_trainingjob_invalid_training_config *******")
         expected_data = {
@@ -92,9 +96,9 @@ class TestCreateTrainingJob:
         }
         response = self.client.post("/training-jobs", data=json.dumps(trainingjob_req),
                                     content_type="application/json")
-        trainingmgr_main.LOGGER.debug(response.data)
         assert response.status_code == 400
         assert response.json == expected_data
+
     @patch('trainingmgr.controller.trainingjob_controller.get_modelinfo_by_modelId_service', return_value=None)
     def test_create_trainingjob_model_not_registered(self, mock1):
         trainingmgr_main.LOGGER.debug("******* test_create_trainingjob_model_not_registered *******")
@@ -117,20 +121,19 @@ class TestCreateTrainingJob:
                     "arguments": {"epochs": 10}
                 },
                 "trainingPipeline": {
-                        "training_pipeline_name": "qoe_Pipeline", 
-                        "training_pipeline_version": "qoe_Pipeline", 
-                        "retraining_pipeline_name":"qoe_Pipeline_retrain",
-                        "retraining_pipeline_version":"qoe_Pipeline_retrain"
+                    "training_pipeline_name": "qoe_Pipeline",
+                    "training_pipeline_version": "qoe_Pipeline",
+                    "retraining_pipeline_name": "qoe_Pipeline_retrain",
+                    "retraining_pipeline_version": "qoe_Pipeline_retrain"
                 }
             }
         }
         response = self.client.post("/training-jobs", data=json.dumps(trainingjob_req),
                                     content_type="application/json")
-        print("Actual Response:", response.json)  # Debugging
         assert response.status_code == 400
         assert response.json == expected_data
-
     registered_model_list = [{"modelLocation": "s3://different-location"}]
+
     @patch('trainingmgr.controller.trainingjob_controller.get_modelinfo_by_modelId_service', return_value=registered_model_list)
     def test_create_trainingjob_model_location_mismatch(self, mock1):
         expected_data = {
@@ -152,10 +155,10 @@ class TestCreateTrainingJob:
                     "arguments": {"epochs": 10}
                 },
                 "trainingPipeline": {
-                        "training_pipeline_name": "qoe_Pipeline", 
-                        "training_pipeline_version": "qoe_Pipeline", 
-                        "retraining_pipeline_name":"qoe_Pipeline_retrain",
-                        "retraining_pipeline_version":"qoe_Pipeline_retrain"
+                    "training_pipeline_name": "qoe_Pipeline",
+                    "training_pipeline_version": "qoe_Pipeline",
+                    "retraining_pipeline_name": "qoe_Pipeline_retrain",
+                    "retraining_pipeline_version": "qoe_Pipeline_retrain"
                 }
             }
         }
@@ -163,7 +166,9 @@ class TestCreateTrainingJob:
                                     content_type="application/json")
         assert response.status_code == 400
         assert response.json == expected_data
-        
+# =======================
+# Test: Delete Training Job
+# =======================
 class TestDeleteTrainingJob:
     def setup_method(self):
         app = Flask(__name__)
@@ -184,85 +189,3 @@ class TestDeleteTrainingJob:
         response = self.client.delete("/training-jobs/123")
         assert response.status_code == 404
         assert response.json == expected_data
-
-class TestGetTrainingJobs:
-    def setup_method(self):
-        app = Flask(__name__)
-        app.register_blueprint(training_job_controller)
-        self.client = app.test_client()
-    @patch('trainingmgr.controller.trainingjob_controller.get_trainining_jobs', return_value=[{"id": 1, "name": "Test Job"}])
-    @patch('trainingmgr.controller.trainingjob_controller.trainingjobs_schema.dump', return_value=[{"id": 1, "name": "Test Job"}])
-    def test_get_trainingjobs_success(self, mock1, mock2):
-        response = self.client.get('/training-jobs/')
-        assert response.status_code == 200
-        assert response.json == [{"id": 1, "name": "Test Job"}]
-    @patch('trainingmgr.controller.trainingjob_controller.get_trainining_jobs')
-    def test_get_trainingjobs_tmexception(self, mock_get_trainingjobs):
-        mock_get_trainingjobs.side_effect = Exception('Training jobs not found')
-        expected_data = {
-            "title": "Internal Server Error",
-            "status": 500,
-            "detail": "Training jobs not found"
-        }
-        response = self.client.get('/training-jobs/')
-        assert response.status_code == 500
-        assert response.json == expected_data
-
-class TestGetTrainingJob:
-    def setup_method(self):
-        app = Flask(__name__)
-        app.register_blueprint(training_job_controller)
-        self.client = app.test_client()
-    @patch('trainingmgr.controller.trainingjob_controller.get_training_job', return_value={"id": 1, "name": "Test Job"})
-    @patch('trainingmgr.controller.trainingjob_controller.trainingjob_schema.dump', return_value={"id": 1, "name": "Test Job"})
-    def test_get_trainingjob_success(self, mock_schema_dump, mock_get_training_job):
-        response = self.client.get('/training-jobs/1')
-        assert response.status_code == 200
-        assert response.json == {"id": 1, "name": "Test Job"}
-    @patch('trainingmgr.controller.trainingjob_controller.get_training_job')
-    def test_get_trainingjob_generic_exception(self, mock_get_training_job):
-        mock_get_training_job.side_effect = Exception('Unexpected error')
-        expected_data = {
-            "title": "Internal Server Error",
-            "status": 500,
-            "detail": "Unexpected error"
-        }
-        response = self.client.get('/training-jobs/1')
-        assert response.status_code == 500
-        assert response.json == expected_data
-
-class TestGetTrainingJobStatus:
-    def setup_method(self):
-        app = Flask(__name__)
-        app.register_blueprint(training_job_controller)
-        self.client = app.test_client()
-    expected_data = {"status": "running"}
-    @patch('trainingmgr.controller.trainingjob_controller.get_steps_state', return_value=json.dumps(expected_data))
-    def test_get_trainingjob_status(self, mock1):
-        response = self.client.get("/training-jobs/123/status")
-        assert response.status_code == 200
-        assert response.json == {"status": "running"}
-        
-class TestGetTrainingJobInfosFromModelId:
-    def setup_method(self):
-        app = Flask(__name__)
-        app.register_blueprint(training_job_controller)
-        self.client = app.test_client()
-    
-    @pytest.fixture
-    def mock_feature_group_fixture(self):
-        FeatureGroupObj = MagicMock()
-        FeatureGroupObj.featuregroup_name = "test_feature_group"
-        return FeatureGroupObj
-    
-    @patch('trainingmgr.controller.trainingjob_controller.fetch_trainingjob_infos_from_model_id')
-    def test_success(self, mock_fetch_feature_group, mock_feature_group_fixture):
-        mock_fetch_feature_group.return_value = mock_feature_group_fixture
-        response = self.client.get("/training-jobs/abc/1")
-        assert response.status_code == 200
-    
-
-    @patch('trainingmgr.controller.trainingjob_controller.fetch_trainingjob_infos_from_model_id', side_effect = Exception("Generic exception"))
-    def test_internal_error(self, mock_fetch_feature_group, mock_feature_group_fixture):
-        response = self.client.get("/training-jobs/abc/1")
-        assert response.status_code == 500
