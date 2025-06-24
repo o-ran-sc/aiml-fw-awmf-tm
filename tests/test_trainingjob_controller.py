@@ -228,3 +228,21 @@ class TestGetFilteredTrainingJobs:
         response = self.client.get("/training-jobs?model_name=abc&model_version=1")
         assert response.status_code == 200
         assert all(job["modelId"]["modelname"] == "abc" and job["modelId"]["modelversion"] == "1" for job in response.json)
+
+    @patch('trainingmgr.controller.trainingjob_controller.get_trainining_jobs')
+    @patch('trainingmgr.controller.trainingjob_controller.trainingjobs_schema.dump')
+    def test_success_latest(self, mock_dump, mock_get):
+        job1 = MagicMock(id=1, modelId=MagicMock(modelname='abc', modelversion='1'))
+        job2 = MagicMock(id=3, modelId=MagicMock(modelname='abc', modelversion='1'))
+        job3 = MagicMock(id=2, modelId=MagicMock(modelname='abc', modelversion='1'))
+        mock_get.return_value = [job1, job2, job3]
+        mock_dump.return_value = [{"id": 3, "modelId": {"modelname": "abc", "modelversion": "1"}}]
+        response = self.client.get("/training-jobs?model_name=abc&model_version=1&latest=true")
+        assert response.status_code == 200
+        assert response.json[0]['id'] == 3
+    @patch('trainingmgr.controller.trainingjob_controller.get_trainining_jobs', side_effect=Exception("Generic error"))
+    def test_internal_error(self, mock_get):
+        response = self.client.get("/training-jobs?model_name=abc&model_version=1")
+        assert response.status_code == 500
+        assert response.json["title"] == "Internal Server Error"
+
