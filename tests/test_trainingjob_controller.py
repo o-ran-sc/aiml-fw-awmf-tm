@@ -246,3 +246,28 @@ class TestGetFilteredTrainingJobs:
         assert response.status_code == 500
         assert response.json["title"] == "Internal Server Error"
 
+# =======================
+# Test: Get Training Job by ID
+# =======================
+class TestGetTrainingJob:
+    def setup_method(self):
+        app = Flask(__name__)
+        app.register_blueprint(training_job_controller)
+        self.client = app.test_client()
+    @patch('trainingmgr.controller.trainingjob_controller.get_training_job', return_value={"id": 1, "name": "Test Job"})
+    @patch('trainingmgr.controller.trainingjob_controller.trainingjob_schema.dump', return_value={"id": 1, "name": "Test Job"})
+    def test_get_trainingjob_success(self, mock_schema_dump, mock_get_training_job):
+        response = self.client.get('/training-jobs/1')
+        assert response.status_code == 200
+        assert response.json == {"id": 1, "name": "Test Job"}
+    @patch('trainingmgr.controller.trainingjob_controller.get_training_job')
+    def test_get_trainingjob_generic_exception(self, mock_get_training_job):
+        mock_get_training_job.side_effect = Exception('Unexpected error')
+        expected_data = {
+            "title": "Internal Server Error",
+            "status": 500,
+            "detail": "Unexpected error"
+        }
+        response = self.client.get('/training-jobs/1')
+        assert response.status_code == 500
+        assert response.json == expected_data
