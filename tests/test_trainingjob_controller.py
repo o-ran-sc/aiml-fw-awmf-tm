@@ -212,3 +212,19 @@ class TestGetFilteredTrainingJobs:
         response = self.client.get("/training-jobs")
         assert response.status_code == 200
         assert len(response.json) == 2
+
+    @patch('trainingmgr.controller.trainingjob_controller.get_trainining_jobs')
+    @patch('trainingmgr.controller.trainingjob_controller.trainingjobs_schema.dump')
+    def test_success_with_filters(self, mock_dump, mock_get):
+        mock_get.return_value = [
+            MagicMock(id=1, modelId=MagicMock(modelname='abc', modelversion='1')),
+            MagicMock(id=2, modelId=MagicMock(modelname='abc', modelversion='1')),
+            MagicMock(id=3, modelId=MagicMock(modelname='xyz', modelversion='2'))
+        ]
+        mock_dump.return_value = [
+            {"id": 1, "modelId": {"modelname": "abc", "modelversion": "1"}},
+            {"id": 2, "modelId": {"modelname": "abc", "modelversion": "1"}}
+        ]
+        response = self.client.get("/training-jobs?model_name=abc&model_version=1")
+        assert response.status_code == 200
+        assert all(job["modelId"]["modelname"] == "abc" and job["modelId"]["modelversion"] == "1" for job in response.json)
