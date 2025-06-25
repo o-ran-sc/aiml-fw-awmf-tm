@@ -1,11 +1,11 @@
 ---
 #Release tag for tm
 distribution_type: container
-container_release_tag: 3.0.0
+container_release_tag: 4.0.0
 container_pull_registry: nexus3.o-ran-sc.org:10004
 container_push_registry: nexus3.o-ran-sc.org:10002
 project: aiml-fw/awmf/tm
-ref: b8fe1a1895b38fcc910678e48d000f3a28dfc387
+ref: 985418252d3b56ab792685a059d1ed5004032871
 containers:
     - name: aiml-fw-awmf-tm-docker
-      version: 3.0.0
+      version: 4.0.0
