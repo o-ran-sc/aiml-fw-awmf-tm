@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "29ae9047_ba7dbd14",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-07-01T10:58:48Z",
+      "side": 1,
+      "message": "Can you let me know the Issue-ID of JIRA?",
+      "revId": "3e0ce662c2d71ae758f87c689418846c9ef78336",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
