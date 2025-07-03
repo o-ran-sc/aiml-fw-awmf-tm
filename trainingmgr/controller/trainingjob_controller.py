@@ -158,3 +158,33 @@ def get_model_metrics(trainingjob_id):
     except Exception as err:
         LOGGER.error(f"Error Getting model_metrics of  trainingJob-ID {trainingjob_id}: {str(err)}")
         return ProblemDetails(500, "Internal Server Error", str(err)).to_json()
+
+@training_job_controller.route('/training-jobs', methods=['GET'])
+def get_filtered_trainingjobs():
+    model_name = request.args.get('model_name')
+    model_version = request.args.get('model_version')
+    latest = request.args.get('latest', 'false').lower() == 'true'
+    LOGGER.debug(f"Fetching training jobs with filters - model_name: {model_name}, model_version: {model_version}, latest: {latest}")
+    try:
+        # Fetch all training jobs
+        trainingjobs = get_trainining_jobs()
+        # Filter by model_name and model_version if provided
+        if model_name:
+            trainingjobs = [job for job in trainingjobs if job.modelId.modelname == model_name]
+        if model_version:
+            trainingjobs = [job for job in trainingjobs if job.modelId.modelversion == model_version]
+        # If 'latest' flag is true, return the job with the highest training job 'id'
+        if latest:
+            if trainingjobs:
+                latest_job = max(trainingjobs, key=lambda job: job.id)
+                return jsonify(trainingjobs_schema.dump([latest_job])), 200
+            else:
+                return jsonify([]), 200
+        # Return all matching jobs (after filtering, if any)
+        return jsonify(trainingjobs_schema.dump(trainingjobs)), 200
+    except TMException as err:
+        LOGGER.error(f"TMException occurred: {str(err)}")
+        return ProblemDetails(400, "Bad Request", str(err)).to_json()
+    except Exception as e:
+        LOGGER.error(f"Error fetching training jobs: {str(e)}")
+  
