@@ -32,19 +32,41 @@ Version history
 | 2023-12-14         | 1.2.0              | Sandeep Jaisawal   | I release            |
 |                    |                    |                    |                      |
 +--------------------+--------------------+--------------------+----------------------+
-
+| 2025-07-03         | 4.0.0              | Swaraj Kumar       | L release            |
+|                    |                    |                    |                      |
++--------------------+--------------------+--------------------+----------------------+
 
 Summary
 =======
 
-The I release of AIMLFW Training manager supports the new functionalities like
-
-#. Integration with Model Management Service
-#. feature group enhancements 
+The L release of AIMLFW Training manager supports the new functionalities like
+#Enhanced error handling and API stability with robust response error management and API fixes
+#resolved TM failure issues to improve system reliability and overall stability.
 
 
 Release Data
 ============
+
+L Release
+---------
+
++--------------------------------------+--------------------------------------+
+| **Project**                          | AIMLFW Training manager              |
+|                                      |                                      |
++--------------------------------------+--------------------------------------+
+| **Repo/commit-ID**                   | aiml-fw/awmf/tm                      |
+|                                      |                                      |
++--------------------------------------+--------------------------------------+
+| **Release designation**              | L release                            |
+|                                      |                                      |
++--------------------------------------+--------------------------------------+
+| **Release date**                     | 2025-07-03                           |
+|                                      |                                      |
++--------------------------------------+--------------------------------------+
+| **Purpose of the delivery**          | AIMLFW Training manager              |
+|                                      |                                      |
++--------------------------------------+--------------------------------------+
+
 
 I Release
 ---------------------
@@ -127,3 +149,5 @@ G Release
 | **Purpose of the delivery**          | AIMLFW Training manager              |
 |                                      |                                      |
 +--------------------------------------+--------------------------------------+
+
+
