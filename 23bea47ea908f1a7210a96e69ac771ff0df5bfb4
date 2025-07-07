@@ -1,0 +1,159 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "125c60b9_c9b38b36",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-07-07T09:05:44Z",
+      "side": 1,
+      "message": "Also please update the API documentation as well.",
+      "revId": "23bea47ea908f1a7210a96e69ac771ff0df5bfb4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a64131d_c3800c80",
+        "filename": "trainingmgr/controller/trainingjob_controller.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-07-07T09:05:44Z",
+      "side": 1,
+      "message": "in logs `model_name` and `model_version` will appear `None` if we don\u0027t provide any query parameter. Could you fix logs in following manner:\n\noption 1. no query parameter: Fetching all the training jobs \notherwise: fetching jobs with filter....",
+      "range": {
+        "startLine": 167,
+        "startChar": 4,
+        "endLine": 167,
+        "endChar": 133
+      },
+      "revId": "23bea47ea908f1a7210a96e69ac771ff0df5bfb4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c8b8e3a9_4459056d",
+        "filename": "trainingmgr/controller/trainingjob_controller.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-07-07T09:05:44Z",
+      "side": 1,
+      "message": "one possible bug please validate this scenario: if modelname is not provided and modelversion is provided. I think we should not consider this query.",
+      "range": {
+        "startLine": 172,
+        "startChar": 7,
+        "endLine": 175,
+        "endChar": 101
+      },
+      "revId": "23bea47ea908f1a7210a96e69ac771ff0df5bfb4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4912e7cd_41f1f236",
+        "filename": "trainingmgr/controller/trainingjob_controller.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-07-07T09:05:44Z",
+      "side": 1,
+      "message": "remove",
+      "range": {
+        "startLine": 176,
+        "startChar": 0,
+        "endLine": 176,
+        "endChar": 85
+      },
+      "revId": "23bea47ea908f1a7210a96e69ac771ff0df5bfb4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f45f835e_f5604d29",
+        "filename": "trainingmgr/controller/trainingjob_controller.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-07-07T09:05:44Z",
+      "side": 1,
+      "message": "please mention in comment that job.id is always increasing.",
+      "range": {
+        "startLine": 179,
+        "startChar": 0,
+        "endLine": 179,
+        "endChar": 70
+      },
+      "revId": "23bea47ea908f1a7210a96e69ac771ff0df5bfb4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "055b7e9d_a249be0b",
+        "filename": "trainingmgr/controller/trainingjob_controller.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-07-07T09:05:44Z",
+      "side": 1,
+      "message": "if trainingjobs is non then it should be handled while fetching.",
+      "range": {
+        "startLine": 182,
+        "startChar": 16,
+        "endLine": 182,
+        "endChar": 39
+      },
+      "revId": "23bea47ea908f1a7210a96e69ac771ff0df5bfb4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e5084d19_50f6755f",
+        "filename": "trainingmgr/controller/trainingjob_controller.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-07-07T09:05:44Z",
+      "side": 1,
+      "message": "remove this line",
+      "range": {
+        "startLine": 184,
+        "startChar": 0,
+        "endLine": 184,
+        "endChar": 67
+      },
+      "revId": "23bea47ea908f1a7210a96e69ac771ff0df5bfb4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
