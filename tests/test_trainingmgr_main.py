@@ -233,7 +233,7 @@ class TestDataExtractionNotification:
     @patch('trainingmgr.trainingmgr_main.change_status_tj')
     @patch('trainingmgr.trainingmgr_main.change_update_field_value')
     def test_dataextraction_trainingModel_validresponse_kf(self, mock_update_field_val, mock_change_status,
-     mock_training_start, mock_fetch_pipeline, mock_getmodelInfo, mock_get_trainingjob, mock_check_dict, mock_training_job):        
+    mock_training_start, mock_fetch_pipeline, mock_getmodelInfo, mock_get_trainingjob, mock_check_dict, mock_training_job):        
          
         mock_response_valid = MagicMock()
         mock_response_valid.headers = {'content-type': 'application/json'}
@@ -338,7 +338,7 @@ class TestPipelineNotification:
     @patch('trainingmgr.trainingmgr_main.change_status_tj')
     @patch('trainingmgr.trainingmgr_main.notification_rapp')
     def test_unsuccess(self, mock_notification_rapp, mock_change_status, mock_get_trainingjob, mock_check_in_dict, 
-     mock_training_job):
+    mock_training_job):
         mock_get_trainingjob.return_value = mock_training_job
         trainingjob_req = {
                      "trainingjob_id" : "123",
