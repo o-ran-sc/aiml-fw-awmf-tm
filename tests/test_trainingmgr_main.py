@@ -55,7 +55,7 @@ class TestGetModel:
     def setup_method(self):
         self.client = trainingmgr_main.APP.test_client(self)
     
-    mocked_mm_sdk=mock.Mock(name="MM_SDK")
+    mocked_mm_sdk = mock.Mock(name="MM_SDK")
     attrs_mm_sdk = {'check_object.return_value': True, 'get_model_zip.return_value':"model.zip"}
     mocked_mm_sdk.configure_mock(**attrs_mm_sdk)
 
@@ -209,7 +209,7 @@ class TestDataExtractionNotification:
     @patch('trainingmgr.trainingmgr_main.fetch_pipelinename_and_version', return_value = ("qoe_pipeline", "v1"))
     @patch('trainingmgr.trainingmgr_main.training_start')
     def test_dataextraction_trainingModel_invalidresponse_kf(self, mock_training_start, mock_fetch_pipeline, 
-    mock_getmodelInfo, mock_get_trainingjob, mock_check_dict, mock_training_job):        
+     mock_getmodelInfo, mock_get_trainingjob, mock_check_dict, mock_training_job):        
          
         mock_response_invalid = MagicMock()
         mock_response_invalid.headers = {'content-type': 'text/plain'}
@@ -223,7 +223,6 @@ class TestDataExtractionNotification:
 
         response = self.client.post('/trainingjob/dataExtractionNotification', data = json.dumps(trainingjob_req), content_type="application/json")
         assert response.status_code == 500
-
 
     @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value = True)
     @patch('trainingmgr.trainingmgr_main.get_training_job')
@@ -300,7 +299,7 @@ class TestPipelineNotification:
     @patch('trainingmgr.trainingmgr_main.change_update_field_value')
     
     def test_success(self, mock_update_field_value, mock_get_modelinfo, mock_notification_rapp, mock_change_status, 
-    mock_get_trainingjob, mock_check_in_dict, mock_mmsdk, mock_training_job):
+     mock_get_trainingjob, mock_check_in_dict, mock_mmsdk, mock_training_job):
         mock_mmsdk.check_object.return_value = True
         mock_get_trainingjob.return_value = mock_training_job
         trainingjob_req = {
@@ -322,7 +321,7 @@ class TestPipelineNotification:
     @patch('trainingmgr.trainingmgr_main.get_modelinfo_by_modelId_service', return_value = registered_model_list)
     
     def test_unsuccess_object_not_present_in_mmsdk(self, mock_get_modelinfo, mock_notification_rapp, mock_change_status, 
-    mock_get_trainingjob, mock_check_in_dict, mock_mmsdk, mock_training_job):  
+     mock_get_trainingjob, mock_check_in_dict, mock_mmsdk, mock_training_job):  
         mock_mmsdk.check_object.return_value = False
         mock_get_trainingjob.return_value = mock_training_job
         trainingjob_req = {
@@ -410,7 +409,6 @@ class TestDeleteListOfFeatureGroup:
         assert response.status_code == 200
         assert response.json == {"success count": 1, "failure count": 0}
 
-    
     @patch('trainingmgr.trainingmgr_main.check_key_in_dictionary', return_value = True)
     @patch('trainingmgr.trainingmgr_main.get_feature_group_by_name_db')
     @patch('trainingmgr.trainingmgr_main.delete_feature_group_by_name')
