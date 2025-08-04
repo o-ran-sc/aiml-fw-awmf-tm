@@ -113,6 +113,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "287a5164_0d6d3e62",
+        "filename": "tests/test_mme_mgr.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-08-04T10:34:47Z",
+      "side": 1,
+      "message": "I agree with you Dr. Moonki.\nA quick glance over apache 2.0 page[1] clarifies it.\n\nReference: https://www.apache.org/licenses/LICENSE-2.0#apply",
+      "parentUuid": "1a02449a_9eeecf79",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 13
+      },
+      "revId": "af1af3badc144957bf10f34c83da0a41d515ed0a",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9f04014d_93a596a5",
