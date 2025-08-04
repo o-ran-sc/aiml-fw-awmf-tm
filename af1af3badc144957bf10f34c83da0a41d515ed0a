@@ -89,6 +89,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1a02449a_9eeecf79",
+        "filename": "tests/test_mme_mgr.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000065
+      },
+      "writtenOn": "2025-08-04T10:19:48Z",
+      "side": 1,
+      "message": "Thanks for the feedback. Instead of leaving the [company name] as empty, what about fill in that with the contributor name?",
+      "parentUuid": "e72fa4ce_6646d02d",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 13
+      },
+      "revId": "af1af3badc144957bf10f34c83da0a41d515ed0a",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9f04014d_93a596a5",
