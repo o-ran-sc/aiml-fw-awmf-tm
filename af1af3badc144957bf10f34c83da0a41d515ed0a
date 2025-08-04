@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "45e8a61e_bc31c6ec",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000065
+      },
+      "writtenOn": "2025-08-04T03:31:03Z",
+      "side": 1,
+      "message": "What if a 3rd party contributor is not from any of corporation? Any guidance for that case in terms of copyright header draft from O-RAN SC?",
+      "revId": "af1af3badc144957bf10f34c83da0a41d515ed0a",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1b883f1d_9afb2325",
@@ -14,6 +31,30 @@
       "writtenOn": "2025-08-02T18:42:19Z",
       "side": 1,
       "message": "please add license header.",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 13
+      },
+      "revId": "af1af3badc144957bf10f34c83da0a41d515ed0a",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fc21cf15_4ef2f27c",
+        "filename": "tests/test_mme_mgr.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000065
+      },
+      "writtenOn": "2025-08-04T03:31:03Z",
+      "side": 1,
+      "message": "What if the contributor is not from any corporation? Need your guidance.",
+      "parentUuid": "1b883f1d_9afb2325",
       "range": {
         "startLine": 1,
         "startChar": 0,
