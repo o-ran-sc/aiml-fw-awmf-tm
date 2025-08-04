@@ -18,6 +18,23 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc08986d_d1bc74b2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000065
+      },
+      "writtenOn": "2025-08-04T11:19:34Z",
+      "side": 1,
+      "message": "Please take a look at my comment. 🙏",
+      "revId": "af1af3badc144957bf10f34c83da0a41d515ed0a",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1b883f1d_9afb2325",
@@ -127,6 +144,29 @@
       "side": 1,
       "message": "I agree with you Dr. Moonki.\nA quick glance over apache 2.0 page[1] clarifies it.\n\nReference: https://www.apache.org/licenses/LICENSE-2.0#apply",
       "parentUuid": "1a02449a_9eeecf79",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 13
+      },
+      "revId": "af1af3badc144957bf10f34c83da0a41d515ed0a",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2cce186d_d834ba5f",
+        "filename": "tests/test_mme_mgr.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000065
+      },
+      "writtenOn": "2025-08-04T11:19:34Z",
+      "side": 1,
+      "message": "Please adhere the Copyright and license header with commenting as follows.\n(You can see an example even from other python code in AIMLFW)\n\nCopyright 2025 \u003cYour Name AND email address\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.",
       "range": {
         "startLine": 1,
         "startChar": 0,
