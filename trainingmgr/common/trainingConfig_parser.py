@@ -32,7 +32,7 @@ def parse_dict_by_fields(data, fields):
             cur = cur[field]
         return cur
     except Exception as e:
-        raise Exception("Can't parse Fields: {} in Data : {}| recieved-error : {}".format(fields, data, e))
+        raise Exception("Can't parse Fields: {} in Data : {}| received-error : {}".format(fields, data, e))
         
         
 def __getLeafPaths():
@@ -47,10 +47,11 @@ def __getLeafPaths():
                 "arguments": "{'epochs': '1'}"
             },
             "trainingPipeline": {
-                    "pipeline_name": "qoe_Pipeline",
-                    "pipeline_version": "2", 
-                    "retraining_pipeline_name":"retrain-qoe-pipeline",
-                    "retraining_pipeline_version:"2"
+                "pipeline_name": "qoe_Pipeline",
+                "pipeline_version": "2", 
+                "retraining_pipeline_name": "retrain-qoe-pipeline",
+                "retraining_pipeline_version": "2"
+            }
         }
     '''
     paths = {
@@ -61,11 +62,11 @@ def __getLeafPaths():
         "training_pipeline_name": ["trainingPipeline", "training_pipeline_name"],
         "training_pipeline_version": ["trainingPipeline", "training_pipeline_version"],
         "retraining_pipeline_name": ["trainingPipeline", "retraining_pipeline_name"],
-        "retraining_pipeline_version":["trainingPipeline", "retraining_pipeline_version"]
+        "retraining_pipeline_version": ["trainingPipeline", "retraining_pipeline_version"]
     }
     return paths
 
-def prepocessTrainingConfig(trainingConfig):
+def preprocessTrainingConfig(trainingConfig):
     if (isinstance(trainingConfig, str)):
         return json.loads(trainingConfig)
     return trainingConfig
@@ -75,7 +76,7 @@ def validateTrainingConfig(trainingConfig):
         One way to Validate TrainingConfig is to see if each Leafpath exists or not
         Any other key:value pair than TrainingConfig Schema is not treated as invalid. 
     '''
-    trainingConfig = prepocessTrainingConfig(trainingConfig)
+    trainingConfig = preprocessTrainingConfig(trainingConfig)
     allPaths = __getLeafPaths()
     try:
         for fieldPath in allPaths.values():
@@ -86,7 +87,7 @@ def validateTrainingConfig(trainingConfig):
         return False
     
 def getField(trainingConfig, fieldname):
-    trainingConfig = prepocessTrainingConfig(trainingConfig)
+    trainingConfig = preprocessTrainingConfig(trainingConfig)
     fieldPath = __getLeafPaths()[fieldname]
     return parse_dict_by_fields(trainingConfig, fieldPath)
 
@@ -94,7 +95,7 @@ def setField(trainingConfig, fieldname, value):
     """
     Set the value of a specific field in the training configuration.
     """
-    trainingConfig = prepocessTrainingConfig(trainingConfig)
+    trainingConfig = preprocessTrainingConfig(trainingConfig)
     fieldPath = __getLeafPaths()[fieldname]
     if not fieldPath:
         raise KeyError(f"Field '{fieldname}' is not defined in the schema.")
