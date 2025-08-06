@@ -33,6 +33,23 @@
       "message": "This is a start for the 3rd party developers to onboard AI/ML Framework contribution. Surely, the core issues will be handled altogether after their smooth landing. At the same time, code visibility is also very important for others to jump into the joint collaboration at the end of the day. I think that this is quite rationale. Right?",
       "revId": "79e8b8158bd82b294cd42f19074bf1a9a87138fa",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "74fab112_9d62754e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-08-06T07:19:49Z",
+      "side": 1,
+      "message": "LGTM",
+      "revId": "79e8b8158bd82b294cd42f19074bf1a9a87138fa",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
