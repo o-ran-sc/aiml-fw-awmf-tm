@@ -59,8 +59,9 @@ def delete_trainingjob(training_job_id):
 @training_job_controller.route('/training-jobs', methods=['POST'])
 def create_trainingjob():
     try:
-        LOGGER.debug(f"Request for training job with JSON: {request.get_json()}")
         request_json = request.get_json()
+        LOGGER.debug(f"Request for training job with JSON: {request_json}")
+
         if not check_key_in_dictionary(["training_config"], request_json):
             return ProblemDetails(400, "Bad Request", "The 'training_config' field is missing.").to_json()
         request_json['training_config'] = json.dumps(request_json["training_config"])
