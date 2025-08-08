@@ -60,7 +60,7 @@ def delete_trainingjob(training_job_id):
 def create_trainingjob():
     try:
         request_json = request.get_json()
-        LOGGER.debug(f"Request for training job with JSON: {request_json()}")
+        LOGGER.debug(f"Request for training job with JSON: {request_json}")
 
         if not check_key_in_dictionary(["training_config"], request_json):
             return ProblemDetails(400, "Bad Request", "The 'training_config' field is missing.").to_json()
