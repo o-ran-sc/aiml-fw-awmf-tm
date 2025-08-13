@@ -50,6 +50,23 @@
       "message": "LGTM",
       "revId": "79e8b8158bd82b294cd42f19074bf1a9a87138fa",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1635a58e_49ecf336",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-08-13T09:09:50Z",
+      "side": 1,
+      "message": "I think the indentation in your suggested code might be incorrect.",
+      "revId": "79e8b8158bd82b294cd42f19074bf1a9a87138fa",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
