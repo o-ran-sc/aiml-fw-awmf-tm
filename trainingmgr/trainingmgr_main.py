@@ -41,6 +41,7 @@ from trainingmgr.schemas import TrainingJobSchema , FeatureGroupSchema
 from trainingmgr.db.featuregroup_db import get_feature_group_by_name_db, delete_feature_group_by_name
 from trainingmgr.controller import featuregroup_controller, training_job_controller
 from trainingmgr.controller.pipeline_controller import pipeline_controller
+from trainingmgr.controller.agent_controller import agent_controller
 from trainingmgr.common.trainingConfig_parser import getField
 from trainingmgr.handler.async_handler import start_async_handler
 from trainingmgr.service.mme_service import get_modelinfo_by_modelId_service
@@ -52,6 +53,7 @@ from middleware.loggingMiddleware import LoggingMiddleware
 APP.wsgi_app = LoggingMiddleware(APP.wsgi_app)
 APP.register_blueprint(featuregroup_controller, url_prefix='/ai-ml-model-training/v1')
 APP.register_blueprint(training_job_controller, url_prefix='/ai-ml-model-training/v1')
+APP.register_blueprint(agent_controller, url_prefix="/agent")
 APP.register_blueprint(pipeline_controller)
 
 PS_DB_OBJ = None
