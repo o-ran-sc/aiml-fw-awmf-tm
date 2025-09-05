@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec2a8259_c35e830f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-05T02:31:19Z",
+      "side": 1,
+      "message": "Thank you for your contribution!\nIt would be great if you add unit tests for the interfaces.",
+      "revId": "5e23c5c0f61cc34586b5e786507fe92e4233086e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4c9ab91d_b0fd73f2",
+        "filename": "trainingmgr/controller/agent_controller.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-05T02:31:19Z",
+      "side": 1,
+      "message": "Is `provider` information required for the agent? If not, perhaps we could exclude this for now.",
+      "revId": "5e23c5c0f61cc34586b5e786507fe92e4233086e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b136e5d2_36d86b4c",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-05T02:31:19Z",
+      "side": 1,
+      "message": "What about not having `url_prefix` since the current agent is still in the feasibility stage?",
+      "revId": "5e23c5c0f61cc34586b5e786507fe92e4233086e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
