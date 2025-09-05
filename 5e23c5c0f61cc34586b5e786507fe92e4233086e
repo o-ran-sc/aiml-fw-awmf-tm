@@ -50,6 +50,24 @@
       "message": "What about not having `url_prefix` since the current agent is still in the feasibility stage?",
       "revId": "5e23c5c0f61cc34586b5e786507fe92e4233086e",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2a41eb73_cb994859",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1002769
+      },
+      "writtenOn": "2025-09-05T23:59:36Z",
+      "side": 1,
+      "message": "Thanks for the review!\n\nfor the feasibility phase, would you like me to mount the agent endpoints at the root (no url_prefix) for fastest smoke testing—e.g., GET /modelInfo, POST /generate-content—or keep a short prefix like /agent to avoid route collisions and make later policy/routing easier?",
+      "parentUuid": "b136e5d2_36d86b4c",
+      "revId": "5e23c5c0f61cc34586b5e786507fe92e4233086e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
