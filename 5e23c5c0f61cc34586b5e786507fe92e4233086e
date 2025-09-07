@@ -68,6 +68,24 @@
       "parentUuid": "b136e5d2_36d86b4c",
       "revId": "5e23c5c0f61cc34586b5e786507fe92e4233086e",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "244f7238_dfc29b6a",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-07T04:33:43Z",
+      "side": 1,
+      "message": "Keeping /agent as a short prefix sounds good!",
+      "parentUuid": "2a41eb73_cb994859",
+      "revId": "5e23c5c0f61cc34586b5e786507fe92e4233086e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
