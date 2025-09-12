@@ -16,6 +16,24 @@
       "message": "Let\u0027s wait for the design document/confluence and then proceed for the review.",
       "revId": "9eac9f7bce1d8ba4ed19b1c501d9271848afd169",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0e9deea5_12f82d70",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002769
+      },
+      "writtenOn": "2025-09-12T17:10:58Z",
+      "side": 1,
+      "message": "I’ve published the design document on Confluence:\nhttps://lf-o-ran-sc.atlassian.net/wiki/spaces/AIMLFEW/pages/546078733/AIMLFW+LLM+agent\n\nThis is an initial draft I authored to get the discussion moving, so many parts may change. I’d appreciate your feedback. Please proceed with the review when convenient, and I’m happy to discuss this on Slack as well.\n\nThanks!",
+      "parentUuid": "76613270_72e1bd43",
+      "revId": "9eac9f7bce1d8ba4ed19b1c501d9271848afd169",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
