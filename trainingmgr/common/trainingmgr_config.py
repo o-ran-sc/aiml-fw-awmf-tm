@@ -63,6 +63,12 @@ class TrainingMgrConfig:
         self.__allow_control_access_origin = getenv('ACCESS_CONTROL_ALLOW_ORIGIN').rstrip() if getenv('ACCESS_CONTROL_ALLOW_ORIGIN') is not None else None
         self.__pipeline = getenv('PIPELINE').rstrip() if getenv('PIPELINE') is not None else None
 
+        self.__llm_agent_service_ip  = getenv('LLM_AGENT_SERVICE_IP').rstrip() if getenv('LLM_AGENT_SERVICE_IP') is not None else None
+        self.__llm_agent_service_port = getenv('LLM_AGENT_SERVICE_PORT').rstrip() if getenv('LLM_AGENT_SERVICE_PORT') is not None else None
+        
+        self.__llm_agent_model_for_tm = getenv('LLM_AGENT_MODEL_FOR_TM').rstrip() if getenv('LLM_AGENT_MODEL_FOR_TM') is not None else None
+        self.__llm_agent_model_token_for_tm = getenv('LLM_AGENT_MODEL_TOKEN_FOR_TM').rstrip() if getenv('LLM_AGENT_MODEL_TOKEN_FOR_TM') is not None else None
+
         conf_filepath = getenv("CONF_LOG", "common/conf_log.yaml")
         self.tmgr_logger = TMLogger(conf_filepath)
         self.__logger = self.tmgr_logger.logger
@@ -249,25 +255,76 @@ class TrainingMgrConfig:
         """
         return self.__pipeline
 
+    @property
+    def llm_agent_model_for_tm(self):
+        """
+        Retrieves the name of the LLM agent serving model for the training manager
+        Args:None
+
+        Returns:
+            LLM agent's serving model
+        """
+        return self.__llm_agent_model_for_tm
+
+    @property
+    def llm_agent_model_token_for_tm(self):
+        """
+        Retrieves api token of the LLM agent serving model for the training manager
+        Args:None
+
+        Returns:
+            LLM agent's model API token
+        """
+        return self.__llm_agent_model_token_for_tm
+
+    @property
+    def llm_agent_service_port(self):
+        """
+        Function for getting LLM agent's service port
+        Args:None
+
+        Returns:
+            LLM agent's service port number
+        """
+        return self.__llm_agent_service_port
+
+    @property
+    def llm_agent_service_ip(self):
+        """
+        Function for getting LLM agent's service ip
+        Args:None
+
+        Returns:
+            LLM agent's service ip number
+        """
+        return self.__llm_agent_service_ip
+
+
     def is_config_loaded_properly(self):
         """
         This function checks where all environment variable got value or not.
         if all environment variables got value then function returns True
         otherwise it return False.
         """
-        return all([val is not None for val in [self.__kf_adapter_ip, 
-                                                self.__kf_adapter_port,
+        return all([val is not None for val in [
+                    self.__kf_adapter_ip, 
+                    self.__kf_adapter_port,
                     self.__data_extraction_ip, 
                     self.__data_extraction_port,
-                    self.__my_port, 
+                    self.__my_ip, 
+                    self.__my_port,
                     self.__ps_ip, 
                     self.__ps_port, 
                     self.__ps_user,
                     self.__ps_password, 
-                    self.__my_ip,
                     self.__model_management_service_ip, 
                     self.__model_management_service_port, 
                     self.__allow_control_access_origin,
                     self.__pipeline, 
-                    self.__logger]])
+                    self.__llm_agent_service_ip,
+                    self.__llm_agent_service_port,
+                    self.__llm_agent_model_for_tm,
+                    self.__llm_agent_model_token_for_tm,
+                    self.__logger
+        ]])
 
