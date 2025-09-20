@@ -42,7 +42,7 @@ class TrainingMgrConfig:
         """
         if self.__initialized:
             return
-        
+
         self.__kf_adapter_port = getenv('KF_ADAPTER_PORT').rstrip() if getenv('KF_ADAPTER_PORT') is not None else None
         self.__kf_adapter_ip = getenv('KF_ADAPTER_IP').rstrip() if getenv('KF_ADAPTER_IP') is not None else None
 
@@ -62,6 +62,9 @@ class TrainingMgrConfig:
 
         self.__allow_control_access_origin = getenv('ACCESS_CONTROL_ALLOW_ORIGIN').rstrip() if getenv('ACCESS_CONTROL_ALLOW_ORIGIN') is not None else None
         self.__pipeline = getenv('PIPELINE').rstrip() if getenv('PIPELINE') is not None else None
+
+        self.__llm_agent_model_for_tm = getenv('LLM_AGENT_MODEL_FOR_TM').rstrip() if getenv('LLM_AGENT_MODEL_FOR_TM') is not None else None
+        self.__llm_agent_model_token_for_tm = getenv('LLM_AGENT_MODEL_TOKEN_FOR_TM').rstrip() if getenv('LLM_AGENT_MODEL_TOKEN_FOR_TM') is not None else None
 
         conf_filepath = getenv("CONF_LOG", "common/conf_log.yaml")
         self.tmgr_logger = TMLogger(conf_filepath)
@@ -199,7 +202,7 @@ class TrainingMgrConfig:
             port number where postgres db is accessible
         """
         return self.__ps_port
-    
+
     @property
     def model_management_service_port(self):
         """
@@ -210,7 +213,7 @@ class TrainingMgrConfig:
             string model_management_service_port
         """
         return self.__model_management_service_port
-    
+
 
     @property
     def model_management_service_ip(self):
@@ -232,7 +235,7 @@ class TrainingMgrConfig:
 
         Returns:
             string allow_control_access_origin
-        
+
         """
         return self.__allow_control_access_origin
 
@@ -245,9 +248,31 @@ class TrainingMgrConfig:
 
         Returns:
             string pipelines
-        
+
         """
         return self.__pipeline
+
+    @property
+    def llm_agent_model_for_tm(self):
+        """
+        Retrieves the name of the LLM agent model for the training manager
+        Args:None
+
+        Returns:
+            LLM agent's model
+        """
+        return self.__llm_agent_model_for_tm
+
+    @property
+    def llm_agent_model_token_for_tm(self):
+        """
+        Retrieves api token of the LLM agent model for the training manager
+        Args:None
+
+       Returns:
+            LLM agent's model API token
+        """
+        return self.__llm_agent_model_token_for_tm
 
     def is_config_loaded_properly(self):
         """
@@ -255,19 +280,20 @@ class TrainingMgrConfig:
         if all environment variables got value then function returns True
         otherwise it return False.
         """
-        return all([val is not None for val in [self.__kf_adapter_ip, 
-                                                self.__kf_adapter_port,
-                    self.__data_extraction_ip, 
+        return all([val is not None for val in [
+                    self.__kf_adapter_ip,
+                    self.__kf_adapter_port,
+                    self.__data_extraction_ip,
                     self.__data_extraction_port,
-                    self.__my_port, 
-                    self.__ps_ip, 
-                    self.__ps_port, 
-                    self.__ps_user,
-                    self.__ps_password, 
                     self.__my_ip,
-                    self.__model_management_service_ip, 
-                    self.__model_management_service_port, 
+                    self.__my_port,
+                    self.__ps_ip,
+                    self.__ps_port,
+                    self.__ps_user,
+                    self.__ps_password,
+                    self.__model_management_service_ip,
+                    self.__model_management_service_port,
                     self.__allow_control_access_origin,
-                    self.__pipeline, 
-                    self.__logger]])
-
+                    self.__pipeline,
+                    self.__logger
+        ]])
