@@ -53,6 +53,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa045574_98d2c26d",
+        "filename": "trainingmgr/common/trainingmgr_config.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1002753
+      },
+      "writtenOn": "2025-09-22T18:00:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "74809d83_ff54fac6",
+      "revId": "fa30ca6f4addcfbeba3f09850dfeccfa14112f9c",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0a02dc52_2df33a97",
@@ -66,6 +84,24 @@
       "writtenOn": "2025-09-22T00:15:05Z",
       "side": 1,
       "message": "ditto",
+      "revId": "fa30ca6f4addcfbeba3f09850dfeccfa14112f9c",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "387c7506_ff2c6f25",
+        "filename": "trainingmgr/common/trainingmgr_config.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1002753
+      },
+      "writtenOn": "2025-09-22T18:00:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0a02dc52_2df33a97",
       "revId": "fa30ca6f4addcfbeba3f09850dfeccfa14112f9c",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
