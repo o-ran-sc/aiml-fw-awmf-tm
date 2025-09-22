@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "393fa1ac_813b2b62",
+        "filename": "trainingmgr/common/trainingmgr_config.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-22T00:15:05Z",
+      "side": 1,
+      "message": "Please remove the word `serving`.",
+      "revId": "fa30ca6f4addcfbeba3f09850dfeccfa14112f9c",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "74809d83_ff54fac6",
+        "filename": "trainingmgr/common/trainingmgr_config.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-22T00:15:05Z",
+      "side": 1,
+      "message": "ditto",
+      "revId": "fa30ca6f4addcfbeba3f09850dfeccfa14112f9c",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0a02dc52_2df33a97",
+        "filename": "trainingmgr/common/trainingmgr_config.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-22T00:15:05Z",
+      "side": 1,
+      "message": "ditto",
+      "revId": "fa30ca6f4addcfbeba3f09850dfeccfa14112f9c",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ddda63b_44fbba6e",
+        "filename": "trainingmgr/common/trainingmgr_config.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-22T00:15:05Z",
+      "side": 1,
+      "message": "Since `__llm_agent_model_for_tm` and `__llm_agent_model_token_for_tm` are not mandatory variables, please exclude them here.",
+      "revId": "fa30ca6f4addcfbeba3f09850dfeccfa14112f9c",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
