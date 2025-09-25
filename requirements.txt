@@ -32,3 +32,4 @@ marshmallow==3.26.1
 psycopg2-binary==2.9.10
 marshmallow-sqlalchemy
 flask-marshmallow
+dspy

@@ -46,6 +46,7 @@ from trainingmgr.common.trainingConfig_parser import getField
 from trainingmgr.handler.async_handler import start_async_handler
 from trainingmgr.service.mme_service import get_modelinfo_by_modelId_service
 from trainingmgr.service.training_job_service import change_status_tj, change_update_field_value, fetch_pipelinename_and_version, get_training_job
+from trainingmgr.service.agent_service import initialize_agent
 
 APP = Flask(__name__)
 TRAININGMGR_CONFIG_OBJ = TrainingMgrConfig()
@@ -540,6 +541,10 @@ if __name__ == "__main__":
         migrate = Migrate(APP, db) 
         with APP.app_context():
             db.create_all()
+        
+        # Initialize DSPy agent
+        initialize_agent()
+
         start_async_handler(APP,db)
         # LOCK = Lock()
         # DATAEXTRACTION_JOBS_CACHE = get_data_extraction_in_progress_trainingjobs(PS_DB_OBJ)
