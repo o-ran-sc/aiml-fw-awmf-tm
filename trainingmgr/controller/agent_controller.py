@@ -16,6 +16,7 @@
 #
 # ==================================================================================
 from flask import Blueprint, request, jsonify
+from trainingmgr.service.agent_service import process_user_request
 
 agent_controller = Blueprint("agent_controller", __name__)
 
@@ -23,7 +24,7 @@ agent_controller = Blueprint("agent_controller", __name__)
 def model_info():
     return jsonify({
         "llm": {
-            "model": ""
+            "model": "",
         }
     }), 200
 
@@ -31,17 +32,41 @@ def model_info():
 def generate_content():
     body = request.get_json(silent=True) or {}
     text = body.get("text")
+    
     if not isinstance(text, str) or not text.strip():
         return jsonify({
             "title": "Bad Request",
             "status": 400,
             "detail": "The 'text' field is required and must be a non-empty string."
         }), 400
-    dry_run = bool(body.get("dry_run", True))
-    return jsonify({
-        "action": "noop",
-        "request": {"text": text, "dry_run": dry_run},
-        "response": {"note": "Received successfully"},
-        "status": "ok",
-        "error_message": None
-    }), 200
+    
+    LOGGER.debug(f"Processing user request: {text}")
+    
+    try:
+        result = process_user_request(text)
+        
+        if result['success']:
+            return jsonify({
+                "action": "completed",
+                "request": {"text": text},
+                "response": {"result": result['result']},
+                "status": "ok",
+                "error_message": None
+            }), 200
+        else:
+            return jsonify({
+                "action": "failed",
+                "request": {"text": text},
+                "response": {"error": result['error']},
+                "status": "error",
+                "error_message": result['error']
+            }), 500
+        
+    except Exception as err:
+        return jsonify({
+            "action": "failed",
+            "request": {"text": text},
+            "response": {"error": str(err)},
+            "status": "error",
+            "error_message": str(err)
+        }), 500
