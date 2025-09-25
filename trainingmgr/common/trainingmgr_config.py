@@ -60,6 +60,12 @@ class TrainingMgrConfig:
         self.__model_management_service_ip = getenv('MODEL_MANAGEMENT_SERVICE_IP').rstrip() if getenv('MODEL_MANAGEMENT_SERVICE_IP') is not None else None
         self.__model_management_service_port = getenv('MODEL_MANAGEMENT_SERVICE_PORT').rstrip() if getenv('MODEL_MANAGEMENT_SERVICE_PORT') is not None else None
 
+        self.__llm_agent_service_ip  = getenv('LLM_AGENT_SERVICE_IP').rstrip() if getenv('LLM_AGENT_SERVICE_IP') is not None else None
+        self.__llm_agent_service_port = getenv('LLM_AGENT_SERVICE_PORT').rstrip() if getenv('LLM_AGENT_SERVICE_PORT') is not None else None
+        self.__llm_agent_model_for_tm = getenv('LLM_AGENT_MODEL_FOR_TM').rstrip() if getenv('LLM_AGENT_MODEL_FOR_TM') is not None else None
+        self.__llm_agent_token_for_tm = getenv('LLM_AGENT_TOKEN_FOR_TM').rstrip() if getenv('LLM_AGENT_TOKEN_FOR_TM') is not None else None
+
+
         self.__allow_control_access_origin = getenv('ACCESS_CONTROL_ALLOW_ORIGIN').rstrip() if getenv('ACCESS_CONTROL_ALLOW_ORIGIN') is not None else None
         self.__pipeline = getenv('PIPELINE').rstrip() if getenv('PIPELINE') is not None else None
 
@@ -222,6 +228,50 @@ class TrainingMgrConfig:
             string model_management_service_ip
         """
         return self.__model_management_service_ip
+
+    @property
+    def agent_service_ip(self):
+        """
+        Function for getting LLM agent service ip
+        Args:None
+
+        Returns:
+            string llm_agent_service_ip
+        """
+        return self.__llm_agent_service_ip
+
+    @property
+    def agent_service_port(self):
+        """
+        Function for getting LLM agent service port
+        Args:None
+
+        Returns:
+            string llm_agent_service_port
+        """
+        return self.__llm_agent_service_port
+
+    @property
+    def agent_model(self):
+        """
+        Function for getting LLM agent model name for TM
+        Args:None
+
+        Returns:
+            string llm_agent_model_for_tm
+        """
+        return self.__llm_agent_model_for_tm
+
+    @property
+    def model_token(self):
+        """
+        Function for getting LLM agent model token for TM
+        Args:None
+
+        Returns:
+            string llm_agent_model_token_for_tm
+        """
+        return self.__llm_agent_token_for_tm
 
     @property
     def allow_control_access_origin(self):
