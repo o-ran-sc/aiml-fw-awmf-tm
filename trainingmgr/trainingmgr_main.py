@@ -540,6 +540,7 @@ if __name__ == "__main__":
         migrate = Migrate(APP, db) 
         with APP.app_context():
             db.create_all()
+
         start_async_handler(APP,db)
         # LOCK = Lock()
         # DATAEXTRACTION_JOBS_CACHE = get_data_extraction_in_progress_trainingjobs(PS_DB_OBJ)
