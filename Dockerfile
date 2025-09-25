@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Install dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends python3-pip apt-utils git && \
+    apt-get install -y --no-install-recommends python3-pip apt-utils git build-essential && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
