@@ -52,6 +52,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6737b6ea_06893aec",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-25T12:14:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a510ec1_558e15c3",
+      "revId": "646cf7c97ee750ed728faad28269a38e7f55195b",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e85d685a_829b1c0f",
@@ -82,6 +100,24 @@
       "writtenOn": "2025-09-25T09:14:30Z",
       "side": 1,
       "message": "Please add `return Flase`.",
+      "revId": "646cf7c97ee750ed728faad28269a38e7f55195b",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "162c093b_f1aeedd2",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-25T12:14:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "03dcb4a4_361469dd",
       "revId": "646cf7c97ee750ed728faad28269a38e7f55195b",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
