@@ -16,6 +16,29 @@
       "message": "LGTM",
       "revId": "2c0d61ccac27e259f4aec2b858e0b4fa77d8cc07",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9775c3c1_7761ebb3",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2025-09-26T08:05:33Z",
+      "side": 1,
+      "message": "In general, it’s best to avoid using global variables.\n(Reference: https://www.baeldung.com/cs/global-variables#what-are-the-problems-with-global-variables)\n\nInstead, I suggest creating a class, e.g., AgentClient (or another suitable name).\n1. Move the `agent` into this class as a private attribute.\n2. Define `initialize_agent` and `process_user_request` as methods within the class.\n3. The `agent_service` can then interact with these methods instead of relying on a global variable.\n\nIf the AgentClient needs to be initialized only once, consider implementing it as a Singleton.\n(Reference: https://stackabuse.com/creating-a-singleton-in-python/)",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 12
+      },
+      "revId": "2c0d61ccac27e259f4aec2b858e0b4fa77d8cc07",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
