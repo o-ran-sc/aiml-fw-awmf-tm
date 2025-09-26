@@ -24,6 +24,30 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d2012858_1a74f592",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-26T02:40:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "65ecaaa0_25c2f490",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 79
+      },
+      "revId": "c98c9fc78ab15d80f6ba40a3093278cb600db302",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "175c881c_2c34dca7",
@@ -41,6 +65,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dfcb673f_6320062d",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-26T02:40:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "175c881c_2c34dca7",
+      "revId": "c98c9fc78ab15d80f6ba40a3093278cb600db302",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6014595c_95e2a9c7",
@@ -54,6 +96,30 @@
       "writtenOn": "2025-09-25T12:14:53Z",
       "side": 1,
       "message": "Can you empty tools? If emptying `tools` doesn\u0027t lead to an error, I think it\u0027s better to implement this in the next CL.",
+      "range": {
+        "startLine": 39,
+        "startChar": 12,
+        "endLine": 39,
+        "endChar": 56
+      },
+      "revId": "c98c9fc78ab15d80f6ba40a3093278cb600db302",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b2e2872f_9232bc51",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-26T02:40:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6014595c_95e2a9c7",
       "range": {
         "startLine": 39,
         "startChar": 12,

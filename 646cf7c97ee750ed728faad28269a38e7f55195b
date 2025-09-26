@@ -35,6 +35,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "956d90ef_49f7f88c",
+        "filename": "trainingmgr/common/trainingmgr_config.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-26T02:40:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "85a32a28_3bada44a",
+      "revId": "646cf7c97ee750ed728faad28269a38e7f55195b",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3a510ec1_558e15c3",
@@ -87,6 +105,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a608034e_8e37d94c",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-26T02:40:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e85d685a_829b1c0f",
+      "revId": "646cf7c97ee750ed728faad28269a38e7f55195b",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "03dcb4a4_361469dd",
@@ -135,6 +171,24 @@
       "writtenOn": "2025-09-25T09:59:06Z",
       "side": 1,
       "message": "Can you empty tools?",
+      "revId": "646cf7c97ee750ed728faad28269a38e7f55195b",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ae5c0a5_6657ead7",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-26T02:40:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1cde6fac_891929a7",
       "revId": "646cf7c97ee750ed728faad28269a38e7f55195b",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
