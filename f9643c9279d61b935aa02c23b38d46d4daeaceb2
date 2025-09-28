@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "63532ca7_1d787d0f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 13
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-28T07:06:55Z",
+      "side": 1,
+      "message": "Please revise the commit message according to the recent changes.",
+      "revId": "f9643c9279d61b935aa02c23b38d46d4daeaceb2",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aac8bef7_efeac281",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 543,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-28T07:06:55Z",
+      "side": 1,
+      "message": "If the only change is a blank line, it’s better not to include this file in the CL.",
+      "revId": "f9643c9279d61b935aa02c23b38d46d4daeaceb2",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
