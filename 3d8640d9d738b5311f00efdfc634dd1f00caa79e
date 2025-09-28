@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e6594e2c_2e77bd73",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-28T12:13:28Z",
+      "side": 1,
+      "message": "I think you should call `initialize_agent` here.",
+      "revId": "3d8640d9d738b5311f00efdfc634dd1f00caa79e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9f2bfe30_199423b5",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-28T12:13:28Z",
+      "side": 1,
+      "message": "It\u0027s correct to use `initialize_agent`, right?",
+      "range": {
+        "startLine": 51,
+        "startChar": 8,
+        "endLine": 51,
+        "endChar": 23
+      },
+      "revId": "3d8640d9d738b5311f00efdfc634dd1f00caa79e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
