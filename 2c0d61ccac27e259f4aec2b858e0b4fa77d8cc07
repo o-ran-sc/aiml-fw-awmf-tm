@@ -39,6 +39,30 @@
       },
       "revId": "2c0d61ccac27e259f4aec2b858e0b4fa77d8cc07",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5ebb2a93_d9a06e50",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2025-09-29T06:19:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9775c3c1_7761ebb3",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 12
+      },
+      "revId": "2c0d61ccac27e259f4aec2b858e0b4fa77d8cc07",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
