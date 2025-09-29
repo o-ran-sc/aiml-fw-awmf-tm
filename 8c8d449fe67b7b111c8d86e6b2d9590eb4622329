@@ -33,6 +33,29 @@
       "message": "lgtm",
       "revId": "8c8d449fe67b7b111c8d86e6b2d9590eb4622329",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8ec2e2d4_42108765",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 15
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-09-29T07:24:05Z",
+      "side": 1,
+      "message": "Here I could see a bigger bug (__new__ and __init__ is not used correctly for singleton):\n\nWhen you invok `AgentClint()` 2 times then it will set self._initialized \u003d False and `process_user_request` will start returning the error.\n\ne.g. \nfile1.py\n```\n# Singleton instance of AgentClient\n_agent_client \u003d AgentClient()\n\n# Initialize the agent once when the module is loaded\n_agent_client.initialize_agent()\n```\n\nfile2.py\nlater in some other class, if someone does \n```\n_agent_client \u003d AgentClient()    ## this will set self._initialized \u003d False\n```\n\nand common agent will throw error on invoking `process_user_request`:\n```\nif not self._initialized or self._agent is None:\n            raise TMException(\"Agent not initialized\"\n```\n\nPlease let me know your clarification.",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 47,
+        "endChar": 23
+      },
+      "revId": "8c8d449fe67b7b111c8d86e6b2d9590eb4622329",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }

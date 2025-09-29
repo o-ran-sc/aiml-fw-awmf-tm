@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "455c6cb6_5b363a24",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-09-29T07:24:05Z",
+      "side": 1,
+      "message": "I agree.",
+      "parentUuid": "e6594e2c_2e77bd73",
+      "revId": "3d8640d9d738b5311f00efdfc634dd1f00caa79e",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9f2bfe30_199423b5",
         "filename": "trainingmgr/service/agent_service.py",
         "patchSetId": 14
