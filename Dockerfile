@@ -18,12 +18,7 @@ COPY . .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Clone SDK repositories and install SDKs
-RUN git clone --depth 1 "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/feature-store" /SDK/featurestoresdk_main && \
-    git clone --depth 1 "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/sdk/model-storage" /SDK/modelmetricssdk_main && \
-    pip3 install --no-cache-dir /SDK/featurestoresdk_main/. && \
-    pip3 install --no-cache-dir /SDK/modelmetricssdk_main/. && \
-    rm -rf /SDK
-
+RUN pip3 install --no-cache-dir featurestoresdk==0.3.1 modelmetricsdk==0.3.1
 # Final stage
 FROM python:3.10-slim
 
