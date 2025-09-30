@@ -15,13 +15,66 @@
 #   limitations under the License.
 #
 # ==================================================================================
-import dspy
 import os
+import requests
+import dspy
+from threading import Lock
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.exceptions_utls import TMException
-from threading import Lock
+from trainingmgr.schemas.agent_schema import FeatureGroupIntent
 
 LOGGER = TrainingMgrConfig().logger
+
+# Define the DSPy tool
+@dspy.Tool
+def create_feature_group(
+    featuregroup_name: str,
+    feature_list: str,
+    datalake_source: str,
+    enable_dme: bool,
+    host: str,
+    port: str,
+    bucket: str,
+    token: str,
+    measurement: str,
+    db_org: str,
+    dme_port: str = None,
+    source_name: str = None,
+    measured_obj_class: str = None,
+) -> str:
+    """Create a feature group using the Training Manager API."""
+    try:
+        data = {
+            "featuregroup_name": featuregroup_name,
+            "feature_list": feature_list,
+            "datalake_source": datalake_source,
+            "enable_dme": enable_dme,
+            "host": host,
+            "port": port,
+            "bucket": bucket,
+            "token": token,
+            "measurement": measurement,
+            "db_org": db_org,
+            "dme_port": dme_port,
+            "source_name": source_name,
+            "measured_obj_class": measured_obj_class,
+        }
+        obj = FeatureGroupIntent.model_validate(data)
+        json_payload = obj.model_dump(exclude_none=True)
+        
+        my_ip = os.getenv("TRAINING_MANAGER_IP")
+        my_port = os.getenv("TRAINING_MANAGER_PORT")
+        if not my_ip or not my_port:
+            raise TMException("TRAINING_MANAGER_IP/PORT not specified")
+
+        url = f"http://{my_ip}:{my_port}/ai-ml-model-training/v1/featureGroup"
+        response = requests.post(url, json=json_payload, timeout=15)
+        response.raise_for_status()
+        return f"Feature group '{obj.featuregroup_name}' created (status={response.status_code})."
+    except Exception as err:
+        LOGGER.error(f"Error creating feature group: {str(err)}")
+        return f"Error creating feature group: {str(err)}"
+
 
 # Define the agent signature
 class AgentSignature(dspy.Signature):
@@ -71,7 +124,7 @@ class AgentClient:
             # Agent configuration
             self._agent = dspy.ReAct(
                 AgentSignature,
-                tools=[],
+                tools=[create_feature_group],
                 max_iters=6
             )
 
@@ -80,7 +133,7 @@ class AgentClient:
             return True
 
         except Exception as err:
-            raise TMException(f"fail to initialize agent exception : {str(err)}")
+            raise TMException(f"fail to initialize agent exception: {str(err)}")
 
     def process_user_request(self, user_text_request):
         """Process user request with agent tools."""
@@ -100,4 +153,3 @@ class AgentClient:
                 'success': False,
                 'error': str(err),
             }
-
