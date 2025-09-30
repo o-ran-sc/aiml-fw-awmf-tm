@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "70b3bb70_db361a81",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-30T14:22:50Z",
+      "side": 1,
+      "message": "I verified that it works.",
+      "revId": "4188aca677ce6374cbab1f1fa11da2339bfe6257",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "487e943c_a5564e01",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-30T14:22:50Z",
+      "side": 1,
+      "message": "It would be nice to be able to default to `InfluxSource` if no input is provided for `datalake_souce`.",
+      "revId": "4188aca677ce6374cbab1f1fa11da2339bfe6257",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
