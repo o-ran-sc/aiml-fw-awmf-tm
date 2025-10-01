@@ -14,7 +14,7 @@ consumes:
 produces:
   - "application/json"
 
-tags:
+tags:producerRAppId
   - name: Feature Group
     description: Feature group related operations
   - name: Pipeline
@@ -876,42 +876,42 @@ definitions:
   ModelTrainingRequest:
     type: object
     required:
-      - training_config
-      - model_id
+      - trainingConfig
+      - modelId
     properties:
-      model_location:
+      modelLocation:
         type: string
         description: Path to the model location
-      training_dataset:
+      trainingDataset:
         type: string
         description: Path to the training dataset
-      validation_dataset:
+      validationDataset:
         type: string
         description: Path to the validation dataset
-      training_config:
+      trainingConfig:
         $ref: '#/definitions/TrainingConfig'
-      notification_url:
+      notificationDestination:
         type: string
         description: Callback URL to notify after training or after any failure
-      consumer_rapp_id:
+      consumerRAppId:
         type: string
         description: Consumer RAPP ID
-      producer_rapp_id:
+      producerRAppId:
         type: string
         description: Producer RAPP ID
-      model_id:
+      modelId:
         $ref: '#/definitions/ModelID'
   ModelID:
     type: object
     required:
-      - modelname
-      - modelversion
+      - modelName
+      - modelVersion
     properties:
-      modelname:
+      modelName:
         type: string
-      modelversion:
+      modelVersion:
         type: string
-      artifactversion:
+      artifactVersion:
         type: string
   TrainingConfig:
     type: object
