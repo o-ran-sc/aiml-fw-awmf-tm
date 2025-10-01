@@ -62,13 +62,13 @@ def create_trainingjob():
         request_json = request.get_json()
         LOGGER.debug(f"Request for training job with JSON: {request_json}")
 
-        if not check_key_in_dictionary(["training_config"], request_json):
-            return ProblemDetails(400, "Bad Request", "The 'training_config' field is missing.").to_json()
-        request_json['training_config'] = json.dumps(request_json["training_config"])
+        if not check_key_in_dictionary(["trainingConfig"], request_json):
+            return ProblemDetails(400, "Bad Request", "The 'trainingConfig' field is missing.").to_json()
+        request_json['trainingConfig'] = json.dumps(request_json["trainingConfig"])
         trainingjob = trainingjob_schema.load(request_json)
-        trainingConfig = trainingjob.training_config
-        if not validateTrainingConfig(trainingConfig):
-            return ProblemDetails(400, "Bad Request", "The provided 'training_config' is not valid.").to_json()
+        training_config = trainingjob.training_config
+        if not validateTrainingConfig(training_config):
+            return ProblemDetails(400, "Bad Request", "The provided 'trainingConfig' is not valid.").to_json()
         model_id = trainingjob.modelId
         registered_model_list = get_modelinfo_by_modelId_service(model_id.modelname, model_id.modelversion)
         if registered_model_list is None:
@@ -82,7 +82,6 @@ def create_trainingjob():
     except Exception as e:
         LOGGER.error(f"Error creating training job: {str(e)}")
         return ProblemDetails(500, "Internal Server Error", str(e)).to_json()
-
 
 @training_job_controller.route('/training-jobs/', methods=['GET'])
 def get_trainingjobs():
