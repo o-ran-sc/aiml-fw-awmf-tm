@@ -88,11 +88,11 @@ Content-Type: application/json
 
 {
     "modelId":{
-        "modelname": "modeltest7",
-        "modelversion": "1"
+        "modelName": "modeltest7",
+        "modelVersion": "1"
     },
-    "model_location": "",
-    "training_config": {
+    "modelLocation": "",
+    "trainingConfig": {
         "description": "trainingjob for testing",
         "dataPipeline": {
             "feature_group_name": "testing_influxdb_01",
@@ -105,11 +105,11 @@ Content-Type: application/json
                 "enable_versioning": false
         }
     },
-    "training_dataset": "",
-    "validation_dataset": "",
-    "notification_url": "",
-    "consumer_rapp_id": "",
-    "producer_rapp_id": ""
+    "trainingDataset": "",
+    "validationDataset": "",
+    "notificationDestination": "",
+    "consumerRAppId": "",
+    "producerRAppId": ""
 }
 
 ### tm: get pipelines
