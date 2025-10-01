@@ -61,12 +61,12 @@ class TestCreateTrainingJob:
         expected_data = {
             "title": "Bad Request",
             "status": 400,
-            "detail": "The 'training_config' field is missing."
+            "detail": "The 'trainingConfig' field is missing."
         }
         trainingjob_req = {
             "modelId": {
-                "modelname": "modeltest",
-                "modelversion": "1"
+                "modelName": "modeltest",
+                "modelVersion": "1"
             }
         }
         response = self.client.post("/training-jobs", data=json.dumps(trainingjob_req),
@@ -79,14 +79,14 @@ class TestCreateTrainingJob:
         expected_data = {
             "title": "Bad Request",
             "status": 400,
-            "detail": "The provided 'training_config' is not valid."
+            "detail": "The provided 'trainingConfig' is not valid."
         }
         trainingjob_req = {
             "modelId": {
-                "modelname": "modeltest",
-                "modelversion": "1"
+                "modelName": "modeltest",
+                "modelVersion": "1"
             },
-            "training_config": {
+            "trainingConfig": {
                 "description": "training job for testing"
             }
         }
@@ -105,11 +105,11 @@ class TestCreateTrainingJob:
         }
         trainingjob_req = {
             "modelId": {
-                "modelname": "test_model",
-                "modelversion": "1"
+                "modelName": "test_model",
+                "modelVersion": "1"
             },
-            "model_location": "",
-            "training_config": {
+            "modelLocation": "",
+            "trainingConfig": {
                 "description": "trainingjob for testing",
                 "dataPipeline": {
                     "feature_group_name": "testing_influxdb_03",
@@ -140,11 +140,11 @@ class TestCreateTrainingJob:
         }
         trainingjob_req = {
             "modelId": {
-                "modelname": "test_model",
-                "modelversion": "1"
+                "modelName": "test_model",
+                "modelVersion": "1"
             },
-            "model_location": "",
-            "training_config": {
+            "modelLocation": "",
+            "trainingConfig": {
                 "description": "trainingjob for testing",
                 "dataPipeline": {
                     "feature_group_name": "testing_influxdb_03",

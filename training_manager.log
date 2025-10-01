@@ -1,0 +1,87 @@
+2025-10-04 11:00:02,136 | http_handler.py 587 _should_use_aiohttp_transport() |  DEBUG | Using AiohttpTransport...
+2025-10-04 11:00:02,137 | http_handler.py 645 _create_aiohttp_transport() |  DEBUG | Creating AiohttpTransport...
+2025-10-04 11:00:02,137 | http_handler.py 655 _create_aiohttp_transport() |  DEBUG | NEW SESSION: Creating new ClientSession (no shared session provided)
+2025-10-04 11:00:02,225 | _trace.py 47 trace() |  DEBUG | connect_tcp.started host='raw.githubusercontent.com' port=443 local_address=None timeout=5 socket_options=None
+2025-10-04 11:00:02,231 | _trace.py 47 trace() |  DEBUG | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7fed42ae2860>
+2025-10-04 11:00:02,231 | _trace.py 47 trace() |  DEBUG | start_tls.started ssl_context=<ssl.SSLContext object at 0x7fed3f18bb40> server_hostname='raw.githubusercontent.com' timeout=5
+2025-10-04 11:00:02,239 | _trace.py 47 trace() |  DEBUG | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7fed42ae2830>
+2025-10-04 11:00:02,239 | _trace.py 47 trace() |  DEBUG | send_request_headers.started request=<Request [b'GET']>
+2025-10-04 11:00:02,239 | _trace.py 47 trace() |  DEBUG | send_request_headers.complete
+2025-10-04 11:00:02,239 | _trace.py 47 trace() |  DEBUG | send_request_body.started request=<Request [b'GET']>
+2025-10-04 11:00:02,240 | _trace.py 47 trace() |  DEBUG | send_request_body.complete
+2025-10-04 11:00:02,240 | _trace.py 47 trace() |  DEBUG | receive_response_headers.started request=<Request [b'GET']>
+2025-10-04 11:00:02,244 | _trace.py 47 trace() |  DEBUG | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Connection', b'keep-alive'), (b'Content-Length', b'42072'), (b'Cache-Control', b'max-age=300'), (b'Content-Security-Policy', b"default-src 'none'; style-src 'unsafe-inline'; sandbox"), (b'Content-Type', b'text/plain; charset=utf-8'), (b'ETag', b'W/"db315bbe2c6ab054848d49196d3eafcbffee20f9eeecd6be5418e6aad913b21e"'), (b'Strict-Transport-Security', b'max-age=31536000'), (b'X-Content-Type-Options', b'nosniff'), (b'X-Frame-Options', b'deny'), (b'X-XSS-Protection', b'1; mode=block'), (b'X-GitHub-Request-Id', b'B4AE:222C27:16A71D:4AF2D5:68E0A800'), (b'Content-Encoding', b'gzip'), (b'Accept-Ranges', b'bytes'), (b'Date', b'Sat, 04 Oct 2025 11:00:02 GMT'), (b'Via', b'1.1 varnish'), (b'X-Served-By', b'cache-icn1450080-ICN'), (b'X-Cache', b'HIT'), (b'X-Cache-Hits', b'12'), (b'X-Timer', b'S1759575602.247910,VS0,VE0'), (b'Vary', b'Authorization,Accept-Encoding'), (b'Access-Control-Allow-Origin', b'*'), (b'Cross-Origin-Resource-Policy', b'cross-origin'), (b'X-Fastly-Request-ID', b'7c9dbedba822790cce4be4bb8c755f2f4154225d'), (b'Expires', b'Sat, 04 Oct 2025 11:05:02 GMT'), (b'Source-Age', b'138')])
+2025-10-04 11:00:02,245 | _trace.py 47 trace() |  DEBUG | receive_response_body.started request=<Request [b'GET']>
+2025-10-04 11:00:02,247 | _trace.py 47 trace() |  DEBUG | receive_response_body.complete
+2025-10-04 11:00:02,247 | _trace.py 47 trace() |  DEBUG | response_closed.started
+2025-10-04 11:00:02,247 | _trace.py 47 trace() |  DEBUG | response_closed.complete
+2025-10-04 11:00:02,248 | _trace.py 47 trace() |  DEBUG | close.started
+2025-10-04 11:00:02,248 | _trace.py 47 trace() |  DEBUG | close.complete
+2025-10-04 11:00:02,913 | litellm_logging.py 181 <module>() |  DEBUG | [Non-Blocking] Unable to import GenericAPILogger - LiteLLM Enterprise Feature - No module named 'litellm_enterprise'
+2025-10-04 11:00:03,095 | http_handler.py 587 _should_use_aiohttp_transport() |  DEBUG | Using AiohttpTransport...
+2025-10-04 11:00:03,096 | http_handler.py 645 _create_aiohttp_transport() |  DEBUG | Creating AiohttpTransport...
+2025-10-04 11:00:03,096 | http_handler.py 655 _create_aiohttp_transport() |  DEBUG | NEW SESSION: Creating new ClientSession (no shared session provided)
+2025-10-04 11:00:03,135 | http_handler.py 587 _should_use_aiohttp_transport() |  DEBUG | Using AiohttpTransport...
+2025-10-04 11:00:03,135 | http_handler.py 645 _create_aiohttp_transport() |  DEBUG | Creating AiohttpTransport...
+2025-10-04 11:00:03,135 | http_handler.py 655 _create_aiohttp_transport() |  DEBUG | NEW SESSION: Creating new ClientSession (no shared session provided)
+2025-10-04 11:00:03,172 | http_handler.py 587 _should_use_aiohttp_transport() |  DEBUG | Using AiohttpTransport...
+2025-10-04 11:00:03,172 | http_handler.py 645 _create_aiohttp_transport() |  DEBUG | Creating AiohttpTransport...
+2025-10-04 11:00:03,172 | http_handler.py 655 _create_aiohttp_transport() |  DEBUG | NEW SESSION: Creating new ClientSession (no shared session provided)
+2025-10-04 11:34:25,258 | http_handler.py 587 _should_use_aiohttp_transport() |  DEBUG | Using AiohttpTransport...
+2025-10-04 11:34:25,259 | http_handler.py 645 _create_aiohttp_transport() |  DEBUG | Creating AiohttpTransport...
+2025-10-04 11:34:25,259 | http_handler.py 655 _create_aiohttp_transport() |  DEBUG | NEW SESSION: Creating new ClientSession (no shared session provided)
+2025-10-04 11:34:25,347 | _trace.py 47 trace() |  DEBUG | connect_tcp.started host='raw.githubusercontent.com' port=443 local_address=None timeout=5 socket_options=None
+2025-10-04 11:34:25,353 | _trace.py 47 trace() |  DEBUG | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7efdd92e2380>
+2025-10-04 11:34:25,353 | _trace.py 47 trace() |  DEBUG | start_tls.started ssl_context=<ssl.SSLContext object at 0x7efdd9293ac0> server_hostname='raw.githubusercontent.com' timeout=5
+2025-10-04 11:34:25,362 | _trace.py 47 trace() |  DEBUG | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7efdd92e2350>
+2025-10-04 11:34:25,362 | _trace.py 47 trace() |  DEBUG | send_request_headers.started request=<Request [b'GET']>
+2025-10-04 11:34:25,362 | _trace.py 47 trace() |  DEBUG | send_request_headers.complete
+2025-10-04 11:34:25,362 | _trace.py 47 trace() |  DEBUG | send_request_body.started request=<Request [b'GET']>
+2025-10-04 11:34:25,362 | _trace.py 47 trace() |  DEBUG | send_request_body.complete
+2025-10-04 11:34:25,362 | _trace.py 47 trace() |  DEBUG | receive_response_headers.started request=<Request [b'GET']>
+2025-10-04 11:34:25,366 | _trace.py 47 trace() |  DEBUG | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Connection', b'keep-alive'), (b'Content-Length', b'42072'), (b'Cache-Control', b'max-age=300'), (b'Content-Security-Policy', b"default-src 'none'; style-src 'unsafe-inline'; sandbox"), (b'Content-Type', b'text/plain; charset=utf-8'), (b'ETag', b'W/"db315bbe2c6ab054848d49196d3eafcbffee20f9eeecd6be5418e6aad913b21e"'), (b'Strict-Transport-Security', b'max-age=31536000'), (b'X-Content-Type-Options', b'nosniff'), (b'X-Frame-Options', b'deny'), (b'X-XSS-Protection', b'1; mode=block'), (b'X-GitHub-Request-Id', b'B4AE:222C27:16A71D:4AF2D5:68E0A800'), (b'Content-Encoding', b'gzip'), (b'Accept-Ranges', b'bytes'), (b'Date', b'Sat, 04 Oct 2025 11:34:25 GMT'), (b'Via', b'1.1 varnish'), (b'X-Served-By', b'cache-icn1450084-ICN'), (b'X-Cache', b'HIT'), (b'X-Cache-Hits', b'20'), (b'X-Timer', b'S1759577665.366103,VS0,VE0'), (b'Vary', b'Authorization,Accept-Encoding'), (b'Access-Control-Allow-Origin', b'*'), (b'Cross-Origin-Resource-Policy', b'cross-origin'), (b'X-Fastly-Request-ID', b'112de1bf99a747bf6369e87a1faae1797ccb6eb8'), (b'Expires', b'Sat, 04 Oct 2025 11:39:25 GMT'), (b'Source-Age', b'97')])
+2025-10-04 11:34:25,367 | _trace.py 47 trace() |  DEBUG | receive_response_body.started request=<Request [b'GET']>
+2025-10-04 11:34:25,370 | _trace.py 47 trace() |  DEBUG | receive_response_body.complete
+2025-10-04 11:34:25,370 | _trace.py 47 trace() |  DEBUG | response_closed.started
+2025-10-04 11:34:25,370 | _trace.py 47 trace() |  DEBUG | response_closed.complete
+2025-10-04 11:34:25,370 | _trace.py 47 trace() |  DEBUG | close.started
+2025-10-04 11:34:25,370 | _trace.py 47 trace() |  DEBUG | close.complete
+2025-10-04 11:34:26,017 | litellm_logging.py 181 <module>() |  DEBUG | [Non-Blocking] Unable to import GenericAPILogger - LiteLLM Enterprise Feature - No module named 'litellm_enterprise'
+2025-10-04 11:34:26,194 | http_handler.py 587 _should_use_aiohttp_transport() |  DEBUG | Using AiohttpTransport...
+2025-10-04 11:34:26,194 | http_handler.py 645 _create_aiohttp_transport() |  DEBUG | Creating AiohttpTransport...
+2025-10-04 11:34:26,194 | http_handler.py 655 _create_aiohttp_transport() |  DEBUG | NEW SESSION: Creating new ClientSession (no shared session provided)
+2025-10-04 11:34:26,233 | http_handler.py 587 _should_use_aiohttp_transport() |  DEBUG | Using AiohttpTransport...
+2025-10-04 11:34:26,233 | http_handler.py 645 _create_aiohttp_transport() |  DEBUG | Creating AiohttpTransport...
+2025-10-04 11:34:26,234 | http_handler.py 655 _create_aiohttp_transport() |  DEBUG | NEW SESSION: Creating new ClientSession (no shared session provided)
+2025-10-04 11:34:26,270 | http_handler.py 587 _should_use_aiohttp_transport() |  DEBUG | Using AiohttpTransport...
+2025-10-04 11:34:26,271 | http_handler.py 645 _create_aiohttp_transport() |  DEBUG | Creating AiohttpTransport...
+2025-10-04 11:34:26,271 | http_handler.py 655 _create_aiohttp_transport() |  DEBUG | NEW SESSION: Creating new ClientSession (no shared session provided)
+2025-10-04 13:07:47,214 | http_handler.py 587 _should_use_aiohttp_transport() |  DEBUG | Using AiohttpTransport...
+2025-10-04 13:07:47,214 | http_handler.py 645 _create_aiohttp_transport() |  DEBUG | Creating AiohttpTransport...
+2025-10-04 13:07:47,214 | http_handler.py 655 _create_aiohttp_transport() |  DEBUG | NEW SESSION: Creating new ClientSession (no shared session provided)
+2025-10-04 13:07:47,302 | _trace.py 47 trace() |  DEBUG | connect_tcp.started host='raw.githubusercontent.com' port=443 local_address=None timeout=5 socket_options=None
+2025-10-04 13:07:47,309 | _trace.py 47 trace() |  DEBUG | connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7f8ba55e64d0>
+2025-10-04 13:07:47,309 | _trace.py 47 trace() |  DEBUG | start_tls.started ssl_context=<ssl.SSLContext object at 0x7f8ba5597ac0> server_hostname='raw.githubusercontent.com' timeout=5
+2025-10-04 13:07:47,318 | _trace.py 47 trace() |  DEBUG | start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7f8ba55e64a0>
+2025-10-04 13:07:47,318 | _trace.py 47 trace() |  DEBUG | send_request_headers.started request=<Request [b'GET']>
+2025-10-04 13:07:47,318 | _trace.py 47 trace() |  DEBUG | send_request_headers.complete
+2025-10-04 13:07:47,318 | _trace.py 47 trace() |  DEBUG | send_request_body.started request=<Request [b'GET']>
+2025-10-04 13:07:47,318 | _trace.py 47 trace() |  DEBUG | send_request_body.complete
+2025-10-04 13:07:47,318 | _trace.py 47 trace() |  DEBUG | receive_response_headers.started request=<Request [b'GET']>
+2025-10-04 13:07:47,323 | _trace.py 47 trace() |  DEBUG | receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Connection', b'keep-alive'), (b'Content-Length', b'42072'), (b'Cache-Control', b'max-age=300'), (b'Content-Security-Policy', b"default-src 'none'; style-src 'unsafe-inline'; sandbox"), (b'Content-Type', b'text/plain; charset=utf-8'), (b'ETag', b'W/"db315bbe2c6ab054848d49196d3eafcbffee20f9eeecd6be5418e6aad913b21e"'), (b'Strict-Transport-Security', b'max-age=31536000'), (b'X-Content-Type-Options', b'nosniff'), (b'X-Frame-Options', b'deny'), (b'X-XSS-Protection', b'1; mode=block'), (b'X-GitHub-Request-Id', b'B4AE:222C27:16A71D:4AF2D5:68E0A800'), (b'Content-Encoding', b'gzip'), (b'Accept-Ranges', b'bytes'), (b'Date', b'Sat, 04 Oct 2025 13:07:47 GMT'), (b'Via', b'1.1 varnish'), (b'X-Served-By', b'cache-icn1450093-ICN'), (b'X-Cache', b'HIT'), (b'X-Cache-Hits', b'44'), (b'X-Timer', b'S1759583267.327819,VS0,VE0'), (b'Vary', b'Authorization,Accept-Encoding'), (b'Access-Control-Allow-Origin', b'*'), (b'Cross-Origin-Resource-Policy', b'cross-origin'), (b'X-Fastly-Request-ID', b'9e1c70825c67a6979376181c4ba4807bade7300a'), (b'Expires', b'Sat, 04 Oct 2025 13:12:47 GMT'), (b'Source-Age', b'291')])
+2025-10-04 13:07:47,324 | _trace.py 47 trace() |  DEBUG | receive_response_body.started request=<Request [b'GET']>
+2025-10-04 13:07:47,327 | _trace.py 47 trace() |  DEBUG | receive_response_body.complete
+2025-10-04 13:07:47,327 | _trace.py 47 trace() |  DEBUG | response_closed.started
+2025-10-04 13:07:47,327 | _trace.py 47 trace() |  DEBUG | response_closed.complete
+2025-10-04 13:07:47,327 | _trace.py 47 trace() |  DEBUG | close.started
+2025-10-04 13:07:47,327 | _trace.py 47 trace() |  DEBUG | close.complete
+2025-10-04 13:07:47,972 | litellm_logging.py 181 <module>() |  DEBUG | [Non-Blocking] Unable to import GenericAPILogger - LiteLLM Enterprise Feature - No module named 'litellm_enterprise'
+2025-10-04 13:07:48,150 | http_handler.py 587 _should_use_aiohttp_transport() |  DEBUG | Using AiohttpTransport...
+2025-10-04 13:07:48,150 | http_handler.py 645 _create_aiohttp_transport() |  DEBUG | Creating AiohttpTransport...
+2025-10-04 13:07:48,150 | http_handler.py 655 _create_aiohttp_transport() |  DEBUG | NEW SESSION: Creating new ClientSession (no shared session provided)
+2025-10-04 13:07:48,189 | http_handler.py 587 _should_use_aiohttp_transport() |  DEBUG | Using AiohttpTransport...
+2025-10-04 13:07:48,189 | http_handler.py 645 _create_aiohttp_transport() |  DEBUG | Creating AiohttpTransport...
+2025-10-04 13:07:48,189 | http_handler.py 655 _create_aiohttp_transport() |  DEBUG | NEW SESSION: Creating new ClientSession (no shared session provided)
+2025-10-04 13:07:48,226 | http_handler.py 587 _should_use_aiohttp_transport() |  DEBUG | Using AiohttpTransport...
+2025-10-04 13:07:48,226 | http_handler.py 645 _create_aiohttp_transport() |  DEBUG | Creating AiohttpTransport...
+2025-10-04 13:07:48,227 | http_handler.py 655 _create_aiohttp_transport() |  DEBUG | NEW SESSION: Creating new ClientSession (no shared session provided)
