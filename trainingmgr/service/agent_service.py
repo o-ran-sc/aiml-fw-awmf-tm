@@ -19,11 +19,9 @@ import dspy
 import os
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.exceptions_utls import TMException
-from threading import Lock
 
 LOGGER = TrainingMgrConfig().logger
 
-# Define the agent signature
 class AgentSignature(dspy.Signature):
     """A signature for the DSPy agent."""
     query: str = dspy.InputField(desc= "The user's natural language request for creating feature group or registering model")
@@ -34,25 +32,19 @@ class AgentClient:
     """Encapsulates the DSPy agent. Implements Singleton pattern if desired."""
 
     _instance = None
-    _lock = Lock()
+    _initialized = False
+    _agent = None
 
     def __new__(cls, *args, **kwargs):
         """Singleton: ensure only one instance is created."""
         if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super().__new__(cls, *args, **kwargs)
+            cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
-    
-    def __init__(self):
-       self._agent = None
-       self._initialized = False
 
     def initialize_agent(self) -> bool:
         """Initialize the DSPy agent with tools."""
-        if self._initialized:
+        if AgentClient._initialized:
             return True
-
         try:
             agent_model = os.getenv("LLM_AGENT_MODEL_FOR_TM")
             agent_token = os.getenv("LLM_AGENT_MODEL_TOKEN_FOR_TM")
@@ -69,26 +61,24 @@ class AgentClient:
             dspy.configure(lm=lm)
 
             # Agent configuration
-            self._agent = dspy.ReAct(
+            AgentClient._agent = dspy.ReAct(
                 AgentSignature,
                 tools=[],
                 max_iters=6
             )
-
-            self._initialized = True
+            AgentClient._initialized = True
             LOGGER.info("Agent initialized successfully.")
             return True
-
         except Exception as err:
             raise TMException(f"fail to initialize agent exception : {str(err)}")
 
     def process_user_request(self, user_text_request):
         """Process user request with agent tools."""
-        if not self._initialized or self._agent is None:
+        if not AgentClient._initialized or AgentClient._agent is None:
             raise TMException("Agent not initialized")
 
         try:
-            result = self._agent(query=user_text_request)
+            result = AgentClient._agent(query=user_text_request)
             response = result.final
             return {
                 'success': True,
@@ -100,4 +90,3 @@ class AgentClient:
                 'success': False,
                 'error': str(err),
             }
-
