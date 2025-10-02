@@ -16,6 +16,23 @@
       "message": "Thank you for the contribution related to the specification.\nCan you also update the failed unit tests below?\n```\nFAILED tests/test_trainingjob_controller.py::TestCreateTrainingJob::test_create_trainingjob_missing_training_config\nFAILED tests/test_trainingjob_controller.py::TestCreateTrainingJob::test_create_trainingjob_invalid_training_config\nFAILED tests/test_trainingjob_controller.py::TestCreateTrainingJob::test_create_trainingjob_model_not_registered\nFAILED tests/test_trainingjob_controller.py::TestCreateTrainingJob::test_create_trainingjob_model_location_mismatch\n```",
       "revId": "8e41b7cc7ae54ece1dd17e8235b82e5c37ffaf50",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "13f10d6a_ce956226",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-10-02T03:14:08Z",
+      "side": 1,
+      "message": "@subh.singh@samsung.com Can you let him know which files should be updated in terms of the api document?",
+      "revId": "8e41b7cc7ae54ece1dd17e8235b82e5c37ffaf50",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
