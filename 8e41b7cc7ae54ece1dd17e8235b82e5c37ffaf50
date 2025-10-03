@@ -51,6 +51,47 @@
       "parentUuid": "13f10d6a_ce956226",
       "revId": "8e41b7cc7ae54ece1dd17e8235b82e5c37ffaf50",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "98ca0c91_aa4cf715",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2025-10-03T08:07:14Z",
+      "side": 1,
+      "message": "And once it is done (merged), The official documentation also needs to be updated:\nhttps://github.com/o-ran-sc/aiml-fw-aimlfw-dep/blob/master/docs/installation-guide.rst#training-job-creation-with-dme-or-standalone-influxdb-as-data-source",
+      "parentUuid": "b733a815_301f97f7",
+      "revId": "8e41b7cc7ae54ece1dd17e8235b82e5c37ffaf50",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b8bc6322_58423e4f",
+        "filename": "trainingmgr/controller/trainingjob_controller.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2025-10-03T08:07:14Z",
+      "side": 1,
+      "message": "Please make sure to update the test cases as well.\n\nYou can run `tox -e code` locally to check which ones are failing, and resolve them accordingly.",
+      "range": {
+        "startLine": 60,
+        "startChar": 4,
+        "endLine": 60,
+        "endChar": 22
+      },
+      "revId": "8e41b7cc7ae54ece1dd17e8235b82e5c37ffaf50",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
