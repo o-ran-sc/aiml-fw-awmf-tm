@@ -33,6 +33,24 @@
       "message": "@subh.singh@samsung.com Can you let him know which files should be updated in terms of the api document?",
       "revId": "8e41b7cc7ae54ece1dd17e8235b82e5c37ffaf50",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b733a815_301f97f7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-10-03T04:06:50Z",
+      "side": 1,
+      "message": "Please update following document:\n\n1. https://github.com/o-ran-sc/aiml-fw-awmf-tm/blob/master/API_docs/training-manager.yaml (API documentation reference).\n2. https://github.com/o-ran-sc/aiml-fw-awmf-tm/blob/master/request.http (used for development/testing activity)\n3. https://github.com/o-ran-sc/aiml-fw-awmf-tm/blob/master/API_docs/postman/aimlfw.postman_collection.json ( postman collection used for development and/testing activity).",
+      "parentUuid": "13f10d6a_ce956226",
+      "revId": "8e41b7cc7ae54ece1dd17e8235b82e5c37ffaf50",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
