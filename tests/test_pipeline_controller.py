@@ -27,7 +27,8 @@ from threading import Lock
 import os
 import sys
 import datetime
-from flask_api import status
+# from flask_api import status
+from http import HTTPStatus as status
 from dotenv import load_dotenv
 load_dotenv('tests/test.env')
 from trainingmgr.constants.states import States
@@ -97,3 +98,86 @@ class TestGetPipelineInfoByName:
 
         assert response.status_code == 500
         assert response.get_json() == {"error": "An unexpected error occurred"}
+
+# ---------------------------
+# Test: get_versions_for_pipeline
+# ---------------------------
+class TestGetVersionsForPipeline:
+    @patch("trainingmgr.controller.pipeline_controller.get_all_pipeline_versions")
+    def test_success(self, mock_versions, client):
+        mock_versions.return_value = ["v1", "v2"]
+        resp = client.get("/pipelines/test/versions")
+        assert resp.status_code == 200
+        assert resp.get_json() == ["v1", "v2"]
+
+    @patch("trainingmgr.controller.pipeline_controller.get_all_pipeline_versions", return_value=None)
+    def test_not_found(self, mock_versions, client):
+        resp = client.get("/pipelines/unknown/versions")
+        assert resp.status_code == 404
+
+
+# ---------------------------
+# Test: get_pipelines
+# ---------------------------
+class TestGetPipelines:
+    @patch("trainingmgr.controller.pipeline_controller.get_all_pipelines")
+    def test_success(self, mock_pipelines, client):
+        mock_pipelines.return_value = ["pipeline1", "pipeline2"]
+        resp = client.get("/pipelines")
+        assert resp.status_code == 200
+        assert resp.get_json() == ["pipeline1", "pipeline2"]
+
+
+# ---------------------------
+# Test: upload_pipeline
+# ---------------------------
+class TestUploadPipeline:
+    @patch("trainingmgr.controller.pipeline_controller.upload_pipeline_service")
+    def test_success(self, mock_upload, client):
+        data = {"file": (BytesIO(b"fake content"), "test.py")}
+        resp = client.post("/pipelines/test/upload", data=data, content_type="multipart/form-data")
+        assert resp.status_code == 200
+        assert "Pipeline uploaded test Sucessfully!" in resp.get_json()["result"]
+
+    def test_invalid_name(self, client):
+        resp = client.post("/pipelines/invalid!name/upload", data={})
+        assert resp.status_code == 500
+        assert "not correct" in resp.get_json()["result"]
+
+    def test_no_file(self, client):
+        resp = client.post("/pipelines/test/upload", data={}, content_type="multipart/form-data")
+        assert resp.status_code == 500
+        assert "File not found" in resp.get_json()["result"]
+
+    def test_empty_filename(self, client):
+        data = {"file": (BytesIO(b""), "")}
+        resp = client.post("/pipelines/test/upload", data=data, content_type="multipart/form-data")
+        assert resp.status_code == 500
+        assert "Filename is not found" in resp.get_json()["result"]
+
+    @patch("trainingmgr.controller.pipeline_controller.upload_pipeline_service")
+    def test_tm_exception(self, mock_upload, client):
+        mock_upload.side_effect = TMException("Upload failed")
+        data = {"file": (BytesIO(b"fake content"), "test.py")}
+        resp = client.post("/pipelines/test/upload", data=data, content_type="multipart/form-data")
+        assert resp.status_code == 500
+        assert "Upload failed" in resp.get_json()["result"]
+
+
+# ---------------------------
+# Test: get_all_experiment_names
+# ---------------------------
+class TestGetAllExperimentNames:
+    @patch("trainingmgr.controller.pipeline_controller.list_experiments_service")
+    def test_success(self, mock_experiments, client):
+        mock_experiments.return_value = ["exp1", "exp2"]
+        resp = client.get("/pipelines/experiments")
+        assert resp.status_code == 200
+        assert resp.get_json() == ["exp1", "exp2"]
+
+    @patch("trainingmgr.controller.pipeline_controller.list_experiments_service")
+    def test_exception(self, mock_experiments, client):
+        mock_experiments.side_effect = Exception("DB error")
+        resp = client.get("/pipelines/experiments")
+        assert resp.status_code == 500
+        assert "DB error" in resp.get_json()["Exception"]
