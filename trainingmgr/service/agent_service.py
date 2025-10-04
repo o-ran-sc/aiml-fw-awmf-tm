@@ -18,7 +18,6 @@
 import os
 import requests
 import dspy
-from threading import Lock
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.exceptions_utls import TMException
 from trainingmgr.schemas.agent_schema import FeatureGroupIntent
@@ -87,19 +86,18 @@ class AgentClient:
     """Encapsulates the DSPy agent. Implements Singleton pattern if desired."""
 
     _instance = None
-    _lock = Lock()
 
     def __new__(cls, *args, **kwargs):
         """Singleton: ensure only one instance is created."""
         if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super().__new__(cls, *args, **kwargs)
+            cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
     
     def __init__(self):
-       self._agent = None
-       self._initialized = False
+        if hasattr(self, '_initialized') and self._initialized:
+            return
+        self._initialized = False
+        self._agent = None
 
     def initialize_agent(self) -> bool:
         """Initialize the DSPy agent with tools."""
