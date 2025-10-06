@@ -49,8 +49,21 @@ class TrainingJobSchema(ma.SQLAlchemyAutoSchema):
 
     @pre_load
     def processModelId(self, data, **kwargs):
-        modelname = data['modelId']['modelname']
-        modelversion = data['modelId']['modelversion']
+        modelname = data['modelId']['modelName']
+        modelversion = data['modelId']['modelVersion']
+        
+        mapping = {
+            "modelLocation": "model_location",
+            "trainingConfig": "training_config",
+            "trainingDataset": "training_dataset",
+            "validationDataset": "validation_dataset",
+            "notificationDestination": "notification_url",
+            "consumerRAppId": "consumer_rapp_id",
+            "producerRAppId": "producer_rapp_id",
+        }
+        for src, dst in mapping.items():
+            if src in data and dst not in data:
+                data[dst] = data.pop(src)
 
         modeldict = dict(modelname=modelname, modelversion=modelversion)
         data['modelId'] = modeldict
