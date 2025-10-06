@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "02aa9e08_0c320540",
+        "filename": "API_docs/training-manager.yaml",
+        "patchSetId": 5
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2025-10-06T09:36:13Z",
+      "side": 1,
+      "message": "Please remove `producerRAppId` as it is not a valid key syntax for YAML files.",
+      "range": {
+        "startLine": 17,
+        "startChar": 5,
+        "endLine": 17,
+        "endChar": 19
+      },
+      "revId": "2935244eeffb05a141838beac8df74e220782f3d",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}

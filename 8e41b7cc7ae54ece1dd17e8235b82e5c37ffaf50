@@ -92,6 +92,30 @@
       },
       "revId": "8e41b7cc7ae54ece1dd17e8235b82e5c37ffaf50",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ea82204_d0fd08b0",
+        "filename": "trainingmgr/controller/trainingjob_controller.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1001948
+      },
+      "writtenOn": "2025-10-06T09:36:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b8bc6322_58423e4f",
+      "range": {
+        "startLine": 60,
+        "startChar": 4,
+        "endLine": 60,
+        "endChar": 22
+      },
+      "revId": "8e41b7cc7ae54ece1dd17e8235b82e5c37ffaf50",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
