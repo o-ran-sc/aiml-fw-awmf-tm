@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ed6595b3_80ef3e92",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-10-06T01:57:10Z",
+      "side": 1,
+      "message": "It’s working fine on my side. @subh.singh@samsung.com PTAL",
+      "revId": "ed1cfc601eb53fb4b3d0ee8f44f45be3a548c911",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
