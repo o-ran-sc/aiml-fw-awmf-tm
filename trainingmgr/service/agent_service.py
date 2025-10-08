@@ -20,7 +20,7 @@ import requests
 import dspy
 from trainingmgr.common.trainingmgr_config import TrainingMgrConfig
 from trainingmgr.common.exceptions_utls import TMException
-from trainingmgr.schemas.agent_schema import FeatureGroupIntent
+from trainingmgr.schemas.agent_schema import FeatureGroupIntent, ModelRegistrationIntent
 
 CONFIG = TrainingMgrConfig()
 LOGGER = CONFIG.logger
@@ -74,6 +74,59 @@ def create_feature_group(
     except Exception as err:
         raise TMException(f"Error creating feature group: {str(err)}")
 
+@dspy.Tool
+def register_model(
+    model_name: str,
+    model_version: str,
+    description: str,
+    author: str,
+    owner: str = "",
+    input_data_type: str = "",
+    output_data_type: str = "",
+    model_location: str = ""
+) -> str:
+    """Register a model in the Model Management Service (MME)."""
+    try:
+        mme_ip = CONFIG.model_management_service_ip
+        mme_port = CONFIG.model_management_service_port
+        if not mme_ip or not mme_port:
+            raise TMException("Model management service IP/Port not configured")
+
+        obj = ModelRegistrationIntent(
+            model_name=model_name,
+            model_version=model_version,
+            description=description,
+            author=author,
+            owner=owner or "",
+            input_data_type=input_data_type or "",
+            output_data_type=output_data_type or "",
+            model_location=model_location or None,
+        )
+
+        payload = {
+            "modelId": {
+                "modelName": obj.model_name,
+                "modelVersion": obj.model_version,
+            },
+            "description": obj.description,
+            "modelInformation": {
+                "metadata": {
+                    "author": obj.author,
+                    "owner": obj.owner or "",
+                },
+                "inputDataType": obj.input_data_type,
+                "outputDataType": obj.output_data_type,
+            },
+        }
+        if obj.model_location:
+            payload["modelLocation"] = obj.model_location
+
+        url = f"http://{mme_ip}:{mme_port}/ai-ml-model-registration/v1/model-registrations"
+        response = requests.post(url, json=payload, timeout=15)
+        response.raise_for_status()
+        return f"Model '{model_name}' version '{model_version}' registered (status={response.status_code})."
+    except Exception as err:
+        raise TMException(f"Error registering model: {str(err)}")
 
 # Define the agent signature
 class AgentSignature(dspy.Signature):
@@ -122,7 +175,7 @@ class AgentClient:
             # Agent configuration
             self._agent = dspy.ReAct(
                 AgentSignature,
-                tools=[create_feature_group],
+                tools=[create_feature_group, register_model],
                 max_iters=6
             )
 
