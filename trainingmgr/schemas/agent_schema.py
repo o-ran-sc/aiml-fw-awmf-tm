@@ -32,3 +32,14 @@ class FeatureGroupIntent(BaseModel):
     dme_port: Optional[str] = None
     source_name: Optional[str] = None
     measured_obj_class: Optional[str] = None
+
+class ModelRegistrationIntent(BaseModel):
+    model_name: str
+    model_version: str
+    description: str
+    author: str
+    owner: Optional[str] = ""
+    input_data_type: str
+    output_data_type: str
+    model_location: Optional[str] = None
+    artifact_version: Optional[str] = None
