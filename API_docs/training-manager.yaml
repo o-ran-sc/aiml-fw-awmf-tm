@@ -114,14 +114,14 @@ paths:
             properties:
               Exception:
                 type: "string"
-  /ai-ml-model-training/v1/training-jobs/{training_job_id}/status:
+  /ai-ml-model-training/v1/training-jobs/{trainingJobId}/status: #CHANGED: camelCase
     get:
       tags:
         - Training Job
       summary: "Get steps state information for a training job"
       description: "Returns the state of each step in the training job process."
       parameters:
-        - name: "training_job_id"
+        - name: "trainingJobId"  #CHANGED: camelCase
           in: "path"
           required: true
           type: "string"
@@ -142,17 +142,17 @@ paths:
                 type: "integer"
               title:
                 type: "string"
-  /ai-ml-model-training/v1/training-jobs/{training_job_id}:
+  /ai-ml-model-training/v1/training-jobs/{trainingJobId}: #CHANGED: camelCase
     get:
       tags:
         - Training Job
       summary: "Get training job"
       description: "Returns the trainingjob corresponding to trainingjob_id."
       parameters:
-        - name: "training_job_id"
+        - name: "trainingJobId" #CHANGED: camelCase
           in: "path"
           required: true
-          type: "integer"
+          type: "string" #CHANGED: type string
           description: "Id of TrainingJob"
       responses:
         200:
@@ -187,10 +187,10 @@ paths:
       summary: "Delete training job"
       description: "Deletes the trainingjob corresponding to trainingjob_id."
       parameters:
-        - name: "training_job_id"
+        - name: "trainingJobId"  #CHANGED: camelCase
           in: "path"
           required: true
-          type: "integer"
+          type: "string" #CHANGED: type string
           description: "Id of TrainingJob"
       responses:
         204:
@@ -219,19 +219,19 @@ paths:
                 type: "string"
               status:
                 type: "integer" 
-  /ai-ml-model-training/v1/training-jobs/{model_name}/{model_version}:
+  /ai-ml-model-training/v1/training-jobs/{modelName}/{modelVersion}: #CHANGED: camelCase
     get:
       tags:
         - Training Job
       summary: "Get All trainingjobs linked to the provided model_name and model_version"
       description: "Returns the trainingjob corresponding to trainingjob_id."
       parameters:
-        - name: "model_name"
+        - name: "modelName" #CHANGED: camelCase
           in: "path"
           required: true
           type: "string"
           description: "Name of Model"
-        - name: "model_version"
+        - name: "modelVersion" #CHANGED: camelCase
           in: "path"
           required: true
           type: "string"
@@ -252,17 +252,17 @@ paths:
                 type: "string"
               status:
                 type: "integer"
-  /ai-ml-model-training/v1/training-jobs/get-model-metrics/{trainingjob_id}:
+  /ai-ml-model-training/v1/training-jobs/get-model-metrics/{trainingjobId}: #CHANGED: camelCase
     get:
       tags:
         - Training Job
       summary: "Get Model Metrics"
       description: "Returns the Model-Metrics corresponding to trainingjob_id."
       parameters:
-        - name: "trainingjob_id"
+        - name: "trainingJobId" #CHANGED: camelCase
           in: "path"
           required: true
-          type: "integer"
+          type: "string" #CHANGED: type string
           description: "Id of TrainingJob"
       responses:
         200:
@@ -280,17 +280,17 @@ paths:
                 type: "string"
               status:
                 type: "integer"
-  /ai-ml-model-training/v1/training-jobs/update-model-metrics/{trainingjob_id}:
+  /ai-ml-model-training/v1/training-jobs/update-model-metrics/{trainingJobId}: #CHANGED: camelCase
     post:
       tags:
         - Training Job
       summary: "Update Model Metrics"
       description: "Updates the Model-Metrics corresponding to given trainingjob_id with provided data"
       parameters:
-        - name: "trainingjob_id"
+        - name: "trainingJobId" #CHANGED: camelCase
           in: "path"
           required: true
-          type: "integer"
+          type: "string" #CHANGED: type string
           description: "Id of TrainingJob"
         - name: "body"
           in: "body"
@@ -301,7 +301,7 @@ paths:
         200:
           description: "Model-Metrics are saved successfully"
           schema:
-            type: "object"     
+            type: "object"
         500:
           description: "Internal server error"
           schema:
@@ -313,24 +313,24 @@ paths:
                 type: "string"
               status:
                 type: "integer"
-  /model/{modelname}/{modelversion}/{artifactversion}/Model.zip:
+  /model/{modelName}/{modelVersion}/{artifactVersion}/Model.zip: #CHANGED: camelCase
     get:
       tags:
         - Training Job
       summary: "Download model zip file corresponding to ModelName, ModelVersion and ArtifactVersion"
       description: "Returns the model zip file for a specific training job identified by its name and version."
       parameters:
-        - name: "modelname"
+        - name: "modelName" #CHANGED: camelCase
           in: "path"
           required: true
           type: "string"
           description: "Name of the Model"
-        - name: "modelversion"
+        - name: "modelVersion" #CHANGED: camelCase
           in: "path"
           required: true
           type: "string"
           description: "Version of the Model"
-        - name: "artifactversion"
+        - name: "artifactVersion" #CHANGED: camelCase
           in: "path"
           required: true
           type: "string"
@@ -367,7 +367,7 @@ paths:
           schema:
             type: "object"
             properties:
-              trainingjob_id:
+              trainingJobId:  #CHANGED: camelCase
                 type: "string"
           description: "JSON object containing the id of the training job"
       responses:
@@ -405,10 +405,10 @@ paths:
           schema:
             type: "object"
             properties:
-              trainingjob_id:
+              trainingJobId: #CHANGED: camelCase
                 type: "string"
                 description: "Id of the training job"
-              run_status:
+              runStatus: #CHANGED: camelCase
                 type: "string"
                 description: "Status of the run"
       responses:
@@ -754,12 +754,12 @@ paths:
           schema:
             type: "object"
             properties:
-              featuregroups_list:
+              featureGroupsList: #CHANGED: camelCase
                 type: "array"
                 items:
                   type: "object"
                   properties:
-                    featureGroup_name:
+                    featureGroupName: #CHANGED: camelCase
                       type: "string"
                       description: "Name of the feature group to be deleted"
       responses:
@@ -876,42 +876,42 @@ definitions:
   ModelTrainingRequest:
     type: object
     required:
-      - training_config
-      - model_id
+      - trainingConfig   #CHANGED: camelCase
+      - modelId   #CHANGED: camelCase
     properties:
-      model_location:
+      modelLocation: #CHANGED: camelCase
         type: string
         description: Path to the model location
-      training_dataset:
+      trainingDataset: #CHANGED: camelCase
         type: string
         description: Path to the training dataset
-      validation_dataset:
+      validationDataset: #CHANGED: camelCase
         type: string
         description: Path to the validation dataset
-      training_config:
+      trainingConfig: #CHANGED: camelCase
         $ref: '#/definitions/TrainingConfig'
-      notification_url:
+      notificationDestination: #CHANGED: camelCase
         type: string
         description: Callback URL to notify after training or after any failure
-      consumer_rapp_id:
+      consumerRappId: #CHANGED: camelCase
         type: string
         description: Consumer RAPP ID
-      producer_rapp_id:
+      producerRappId: #CHANGED: camelCase
         type: string
         description: Producer RAPP ID
-      model_id:
+      modelId: #CHANGED: camelCase
         $ref: '#/definitions/ModelID'
   ModelID:
     type: object
     required:
-      - modelname
-      - modelversion
+      - modelName #CHANGED: camelCase
+      - modelVersion #CHANGED: camelCase
     properties:
-      modelname:
+      modelName: #CHANGED: camelCase
         type: string
-      modelversion:
+      modelVersion: #CHANGED: camelCase
         type: string
-      artifactversion:
+      artifactVersion: #CHANGED: camelCase
         type: string
   TrainingConfig:
     type: object
@@ -925,13 +925,13 @@ definitions:
       dataPipeline:
         type: object
         required:
-        - feature_group_name
-        - query_filter
+        - featureGroupName #CHANGED: camelCase
+        - queryFilter #CHANGED: camelCase
         - arguments
         properties:
-          feature_group_name:
+          featureGroupName: #CHANGED: camelCase
             type: string
-          query_filter:
+          queryFilter: #CHANGED: camelCase
             type: string
           arguments:
             type: object
@@ -939,40 +939,40 @@ definitions:
       trainingPipeline:
         type: object
         required:
-        - pipeline_name
-        - pipeline_version
-        - retraining_pipeline_name
-        - retraining_pipeline_version
+        - pipelineName #CHANGED: camelCase
+        - pipelineVersion #CHANGED: camelCase
+        - retrainingPipelineName #CHANGED: camelCase
+        - retrainingPipelineVersion #CHANGED: camelCase
         properties:
-          pipeline_name:
+          pipelineName: #CHANGED: camelCase
             type: string
-          pipeline_version:
+          pipelineVersion: #CHANGED: camelCase
             type: string
-          retraining_pipeline_name:
+          retrainingPipelineName: #CHANGED: camelCase
             type: string
-          retraining_pipeline_version:
+          retrainingPipelineVersion: #CHANGED: camelCase
             type: string
   FeatureGroupConfig:
     type: object
     required:
-    - featuregroup_name
-    - feature_list
-    - datalake_source
+    - featureGroupName #CHANGED: camelCase
+    - featureList #CHANGED: camelCase
+    - datalakeSource #CHANGED: camelCase
     - host
     - port
     - bucket
     - token
-    - db_org
+    - dbOrg #CHANGED: camelCase
     - measurement
-    - enable_dme
+    - enableDme #CHANGED: camelCase
     properties:
-      featuregroup_name:
+      featureGroupName: #CHANGED: camelCase
         type: string
         description: Name of the feature group
-      feature_list:
+      featureList: #CHANGED: camelCase
         type: string
         description: Comma-separated list of features
-      datalake_source:
+      datalakeSource: #CHANGED: camelCase
         type: string
         description: "Datalake source (E.g:'InfluxSource')"
       host:
@@ -983,21 +983,21 @@ definitions:
         type: string
       token:
         type: string
-      db_org:
+      dbOrg: #CHANGED: camelCase
         type: string
       measurement:
         type: string
         description: InfluxDB measurement name
-      enable_dme:
+      enableDme: #CHANGED: camelCase
         type: boolean
         description: Enable DME flag for NonRtRIc
-      measured_obj_class:
+      measuredObjClass: #CHANGED: camelCase
         type: string
         description: Optional class of measured object
-      dme_port:
+      dmePort: #CHANGED: camelCase
         type: string
         description: Optional DME port
-      source_name:
+      sourceName: #CHANGED: camelCase
         type: string
         description: Optional name of the data source
   PipelineInfo:
@@ -1006,14 +1006,14 @@ definitions:
       pipeline_info:
           type: object
           properties:
-            created_at:
+            createdAt: #CHANGED: camelCase
               type: string
               format: date-time
               description: Timestamp when the pipeline was created
             description:
               type: string
-            display_name:
+            displayName: #CHANGED: camelCase
               type: string
-            pipeline_id:
+            pipelineId: #CHANGED: camelCase
               type: string
               format: uuid
