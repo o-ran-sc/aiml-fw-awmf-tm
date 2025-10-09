@@ -3,12 +3,12 @@ info:
   description: "This file contains all REST endpoints exposed by Training Manager."
   version: "1.0.0"
   title: "Training Manager API"
-  
+
 host: "localhost:32002"
 basePath: "/"
 schemes:
   - "http"
-  
+
 consumes:
   - "application/json"
 produces:
@@ -114,14 +114,14 @@ paths:
             properties:
               Exception:
                 type: "string"
-  /ai-ml-model-training/v1/training-jobs/{training_job_id}/status:
+  /ai-ml-model-training/v1/training-jobs/{trainingJobId}/status:
     get:
       tags:
         - Training Job
       summary: "Get steps state information for a training job"
       description: "Returns the state of each step in the training job process."
       parameters:
-        - name: "training_job_id"
+        - name: "trainingJobId"
           in: "path"
           required: true
           type: "string"
@@ -142,17 +142,17 @@ paths:
                 type: "integer"
               title:
                 type: "string"
-  /ai-ml-model-training/v1/training-jobs/{training_job_id}:
+  /ai-ml-model-training/v1/training-jobs/{trainingJobId}:
     get:
       tags:
         - Training Job
       summary: "Get training job"
       description: "Returns the trainingjob corresponding to trainingjob_id."
       parameters:
-        - name: "training_job_id"
+        - name: "trainingJobId"
           in: "path"
           required: true
-          type: "integer"
+          type: "string"
           description: "Id of TrainingJob"
       responses:
         200:
@@ -187,10 +187,10 @@ paths:
       summary: "Delete training job"
       description: "Deletes the trainingjob corresponding to trainingjob_id."
       parameters:
-        - name: "training_job_id"
+        - name: "trainingJobId"
           in: "path"
           required: true
-          type: "integer"
+          type: "string"
           description: "Id of TrainingJob"
       responses:
         204:
@@ -218,20 +218,20 @@ paths:
               title:
                 type: "string"
               status:
-                type: "integer" 
-  /ai-ml-model-training/v1/training-jobs/{model_name}/{model_version}:
+                type: "integer"
+  /ai-ml-model-training/v1/training-jobs/{modelName}/{modelVersion}:
     get:
       tags:
         - Training Job
       summary: "Get All trainingjobs linked to the provided model_name and model_version"
       description: "Returns the trainingjob corresponding to trainingjob_id."
       parameters:
-        - name: "model_name"
+        - name: "modelName"
           in: "path"
           required: true
           type: "string"
           description: "Name of Model"
-        - name: "model_version"
+        - name: "modelVersion"
           in: "path"
           required: true
           type: "string"
@@ -252,23 +252,23 @@ paths:
                 type: "string"
               status:
                 type: "integer"
-  /ai-ml-model-training/v1/training-jobs/get-model-metrics/{trainingjob_id}:
+  /ai-ml-model-training/v1/training-jobs/get-model-metrics/{trainingjobId}:
     get:
       tags:
         - Training Job
       summary: "Get Model Metrics"
       description: "Returns the Model-Metrics corresponding to trainingjob_id."
       parameters:
-        - name: "trainingjob_id"
+        - name: "trainingJobId"
           in: "path"
           required: true
-          type: "integer"
+          type: "string"
           description: "Id of TrainingJob"
       responses:
         200:
           description: "Successful response with the requested model-metrics"
           schema:
-            type: "object"     
+            type: "object"
         500:
           description: "Internal server error"
           schema:
@@ -280,17 +280,17 @@ paths:
                 type: "string"
               status:
                 type: "integer"
-  /ai-ml-model-training/v1/training-jobs/update-model-metrics/{trainingjob_id}:
+  /ai-ml-model-training/v1/training-jobs/update-model-metrics/{trainingJobId}:
     post:
       tags:
         - Training Job
       summary: "Update Model Metrics"
       description: "Updates the Model-Metrics corresponding to given trainingjob_id with provided data"
       parameters:
-        - name: "trainingjob_id"
+        - name: "trainingJobId"
           in: "path"
           required: true
-          type: "integer"
+          type: "string"
           description: "Id of TrainingJob"
         - name: "body"
           in: "body"
@@ -301,7 +301,7 @@ paths:
         200:
           description: "Model-Metrics are saved successfully"
           schema:
-            type: "object"     
+            type: "object"
         500:
           description: "Internal server error"
           schema:
@@ -313,24 +313,24 @@ paths:
                 type: "string"
               status:
                 type: "integer"
-  /model/{modelname}/{modelversion}/{artifactversion}/Model.zip:
+  /model/{modelName}/{modelVersion}/{artifactVersion}/Model.zip:
     get:
       tags:
         - Training Job
       summary: "Download model zip file corresponding to ModelName, ModelVersion and ArtifactVersion"
       description: "Returns the model zip file for a specific training job identified by its name and version."
       parameters:
-        - name: "modelname"
+        - name: "modelName"
           in: "path"
           required: true
           type: "string"
           description: "Name of the Model"
-        - name: "modelversion"
+        - name: "modelVersion"
           in: "path"
           required: true
           type: "string"
           description: "Version of the Model"
-        - name: "artifactversion"
+        - name: "artifactVersion"
           in: "path"
           required: true
           type: "string"
@@ -367,7 +367,7 @@ paths:
           schema:
             type: "object"
             properties:
-              trainingjob_id:
+              trainingJobId:
                 type: "string"
           description: "JSON object containing the id of the training job"
       responses:
@@ -391,7 +391,7 @@ paths:
             type: "object"
             properties:
               Exception:
-                type: "string" 
+                type: "string"
   /trainingjob/pipelineNotification:
     post:
       tags:
@@ -405,10 +405,10 @@ paths:
           schema:
             type: "object"
             properties:
-              trainingjob_id:
+              trainingJobId:
                 type: "string"
                 description: "Id of the training job"
-              run_status:
+              runStatus:
                 type: "string"
                 description: "Status of the run"
       responses:
@@ -594,7 +594,7 @@ paths:
                 type: "string"
               status:
                 type: "integer"
-            
+
         500:
           description: "Internal server error"
           schema:
@@ -754,12 +754,12 @@ paths:
           schema:
             type: "object"
             properties:
-              featuregroups_list:
+              featureGroupsList:
                 type: "array"
                 items:
                   type: "object"
                   properties:
-                    featureGroup_name:
+                    featureGroupName:
                       type: "string"
                       description: "Name of the feature group to be deleted"
       responses:
@@ -865,7 +865,7 @@ paths:
             properties:
               Exception:
                 type: "string"
-          
+
 
 definitions:
   ErrorResponse:
@@ -876,42 +876,42 @@ definitions:
   ModelTrainingRequest:
     type: object
     required:
-      - training_config
-      - model_id
+      - trainingConfig
+      - modelId
     properties:
-      model_location:
+      modelLocation:
         type: string
         description: Path to the model location
-      training_dataset:
+      trainingDataset:
         type: string
         description: Path to the training dataset
-      validation_dataset:
+      validationDataset:
         type: string
         description: Path to the validation dataset
-      training_config:
+      trainingConfig:
         $ref: '#/definitions/TrainingConfig'
-      notification_url:
+      notificationDestination:
         type: string
         description: Callback URL to notify after training or after any failure
-      consumer_rapp_id:
+      consumerRappId:
         type: string
         description: Consumer RAPP ID
-      producer_rapp_id:
+      producerRappId:
         type: string
         description: Producer RAPP ID
-      model_id:
+      modelId:
         $ref: '#/definitions/ModelID'
   ModelID:
     type: object
     required:
-      - modelname
-      - modelversion
+      - modelName
+      - modelVersion
     properties:
-      modelname:
+      modelName:
         type: string
-      modelversion:
+      modelVersion:
         type: string
-      artifactversion:
+      artifactVersion:
         type: string
   TrainingConfig:
     type: object
@@ -925,13 +925,13 @@ definitions:
       dataPipeline:
         type: object
         required:
-        - feature_group_name
-        - query_filter
+        - featureGroupName
+        - queryFilter
         - arguments
         properties:
-          feature_group_name:
+          featureGroupName:
             type: string
-          query_filter:
+          queryFilter:
             type: string
           arguments:
             type: object
@@ -939,40 +939,40 @@ definitions:
       trainingPipeline:
         type: object
         required:
-        - pipeline_name
-        - pipeline_version
-        - retraining_pipeline_name
-        - retraining_pipeline_version
+        - pipelineName
+        - pipelineVersion
+        - retrainingPipelineName
+        - retrainingPipelineVersion
         properties:
-          pipeline_name:
+          pipelineName:
             type: string
-          pipeline_version:
+          pipelineVersion:
             type: string
-          retraining_pipeline_name:
+          retrainingPipelineName:
             type: string
-          retraining_pipeline_version:
+          retrainingPipelineVersion:
             type: string
   FeatureGroupConfig:
     type: object
     required:
-    - featuregroup_name
-    - feature_list
-    - datalake_source
+    - featureGroupName
+    - featureList
+    - datalakeSource
     - host
     - port
     - bucket
     - token
-    - db_org
+    - dbOrg
     - measurement
-    - enable_dme
+    - enableDme
     properties:
-      featuregroup_name:
+      featureGroupName:
         type: string
         description: Name of the feature group
-      feature_list:
+      featureList:
         type: string
         description: Comma-separated list of features
-      datalake_source:
+      datalakeSource:
         type: string
         description: "Datalake source (E.g:'InfluxSource')"
       host:
@@ -983,21 +983,21 @@ definitions:
         type: string
       token:
         type: string
-      db_org:
+      dbOrg:
         type: string
       measurement:
         type: string
         description: InfluxDB measurement name
-      enable_dme:
+      enableDme:
         type: boolean
         description: Enable DME flag for NonRtRIc
-      measured_obj_class:
+      measuredObjClass:
         type: string
         description: Optional class of measured object
-      dme_port:
+      dmePort:
         type: string
         description: Optional DME port
-      source_name:
+      sourceName:
         type: string
         description: Optional name of the data source
   PipelineInfo:
@@ -1006,14 +1006,14 @@ definitions:
       pipeline_info:
           type: object
           properties:
-            created_at:
+            createdAt:
               type: string
               format: date-time
               description: Timestamp when the pipeline was created
             description:
               type: string
-            display_name:
+            displayName:
               type: string
-            pipeline_id:
+            pipelineId:
               type: string
               format: uuid
