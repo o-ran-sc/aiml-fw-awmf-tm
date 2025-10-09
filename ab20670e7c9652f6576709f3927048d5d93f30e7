@@ -50,6 +50,24 @@
       "message": "Please update : https://github.com/o-ran-sc/aiml-fw-aimlfw-dep/blob/master/docs/installation-guide.rst#training-job-creation-with-dme-or-standalone-influxdb-as-data-source",
       "revId": "ab20670e7c9652f6576709f3927048d5d93f30e7",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6d40e10d_c5d74651",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-10-09T10:01:15Z",
+      "side": 1,
+      "message": ".",
+      "parentUuid": "b8b0bf4a_f62c5ee9",
+      "revId": "ab20670e7c9652f6576709f3927048d5d93f30e7",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ],
   "submitRequirementResults": [
