@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "10df6c0b_80a3d5d2",
+        "filename": "trainingmgr/schemas/agent_schema.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1002764
+      },
+      "writtenOn": "2025-10-09T13:31:10Z",
+      "side": 1,
+      "message": "I added artifact_version as optional field. Thank you!",
+      "parentUuid": "db34dd0d_7207c05a",
+      "revId": "f768bbfe6a3374db632f54a3c2c9be752d517b40",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0779551c_636261c6",
         "filename": "trainingmgr/service/agent_service.py",
         "patchSetId": 1
@@ -48,6 +66,24 @@
       "writtenOn": "2025-10-09T10:52:44Z",
       "side": 1,
       "message": "If the user provides `artifact_version`, it should be added under the modelId.",
+      "revId": "f768bbfe6a3374db632f54a3c2c9be752d517b40",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "555ea99b_cb4d9910",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1002764
+      },
+      "writtenOn": "2025-10-09T13:31:10Z",
+      "side": 1,
+      "message": "Thank you for your comment and noticing that artifact_version is missing. I\u0027ve made those changes.",
+      "parentUuid": "0779551c_636261c6",
       "revId": "f768bbfe6a3374db632f54a3c2c9be752d517b40",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
