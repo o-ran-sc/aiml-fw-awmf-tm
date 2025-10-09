@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "30e2f0df_e200c87b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-10-09T10:52:44Z",
+      "side": 1,
+      "message": "Verified. It’s working.",
+      "revId": "f768bbfe6a3374db632f54a3c2c9be752d517b40",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "db34dd0d_7207c05a",
+        "filename": "trainingmgr/schemas/agent_schema.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-10-09T10:52:44Z",
+      "side": 1,
+      "message": "I think `artifact_version` can be added as an optional field.",
+      "revId": "f768bbfe6a3374db632f54a3c2c9be752d517b40",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0779551c_636261c6",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-10-09T10:52:44Z",
+      "side": 1,
+      "message": "If the user provides `artifact_version`, it should be added under the modelId.",
+      "revId": "f768bbfe6a3374db632f54a3c2c9be752d517b40",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
