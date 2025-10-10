@@ -33,6 +33,24 @@
       "message": "please resolve the merge conflict.",
       "revId": "df41284b7bae5ff76a72fbdeeee408be3ff2b4eb",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "02eea973_3ca0093d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-10-10T07:03:08Z",
+      "side": 1,
+      "message": "`API_docs/training-manager.yaml` reflects current status of code.\nSo, I would suggest to change the code and in parallel modify the API yaml.",
+      "parentUuid": "c41ab15f_d86c0fca",
+      "revId": "df41284b7bae5ff76a72fbdeeee408be3ff2b4eb",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
