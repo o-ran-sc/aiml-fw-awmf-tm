@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c41ab15f_d86c0fca",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-10-10T01:32:25Z",
+      "side": 1,
+      "message": "@daniel9456@khu.ac.kr Please resolve the conflict.\n@subh.singh@samsung.com What do you think of this CL? It looks like quite a few code changes might be required. Would it make sense to start with the yaml file before updating source code?",
+      "revId": "df41284b7bae5ff76a72fbdeeee408be3ff2b4eb",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
