@@ -148,12 +148,13 @@ def data_extraction_notification():
     """
     LOGGER.debug("Data extraction notification...")
     try:
-        if not check_key_in_dictionary(["trainingjob_id"], request.json) :
-            err_msg = "featuregroup_name or trainingjob_id key not available in request"
+        if (not check_key_in_dictionary(["trainingJobId"], request.json)
+                and not check_key_in_dictionary(["trainingjob_id"], request.json)):
+            err_msg = "trainingJobId (or legacy trainingjob_id) key not available in request"
             LOGGER.error(err_msg)
             return {"Exception":err_msg}, status.HTTP_400_BAD_REQUEST
             
-        trainingjob_id = request.json["trainingjob_id"]
+        trainingjob_id = request.json.get("trainingJobId") or request.json.get("trainingjob_id")
         trainingjob = get_training_job(trainingjob_id)
         featuregroup_name = getField(trainingjob.training_config, "feature_group_name")
         argument_dict = getField(trainingjob.training_config, "arguments")
@@ -211,9 +212,9 @@ def data_extraction_notification():
         json_data = response.json()
         
         if not check_key_in_dictionary(["run_status", "run_id"], json_data):
-            err_msg = "Kf adapter invalid response from , key not present ,run_status or  run_id for " + str(trainingjob_id)
-            Logger.error(err_msg)
-            raise TMException(err_msg)
+            err_msg = "Kf adapter invalid response: missing run_status or run_id for " + str(trainingjob_id)
+            LOGGER.error(err_msg)
+             raise TMException(err_msg)
 
         if json_data["run_status"] == 'scheduled':
             change_status_tj(trainingjob.id,
@@ -283,9 +284,15 @@ def pipeline_notification():
 
     LOGGER.debug("Pipeline Notification response from kf_adapter: %s", json.dumps(request.json))
     try:
-        check_key_in_dictionary(["trainingjob_id", "run_status"], request.json)
-        trainingjob_id = request.json["trainingjob_id"]
-        run_status = request.json["run_status"]
+        has_tid = (check_key_in_dictionary(["trainingJobId"], request.json)
+                   or check_key_in_dictionary(["trainingjob_id"], request.json))
+        has_status = (check_key_in_dictionary(["run_status"], request.json)
+                      or check_key_in_dictionary(["runStatus"], request.json))
+        if not (has_tid and has_status):
+            return jsonify({"Exception": "trainingJobId (or trainingjob_id) and run_status are required"}), 400
+
+        trainingjob_id = request.json.get("trainingJobId") or request.json.get("trainingjob_id")
+        run_status = request.json.get("run_status") or request.json.get("runStatus")
 
         if run_status == 'SUCCEEDED':
 
@@ -340,9 +347,8 @@ def pipeline_notification():
                             Steps.TRAINING.name,
                             States.FAILED.name)
             notification_rapp(trainingjob.id)
-            raise TMException("Pipeline not successful for " + \
-                                        str(trainingjob_id) + \
-                                        ",request json from kf adapter is: " + json.dumps(request.json))      
+            raise TMException("Pipeline not successful for " + str(trainingjob_id) +
+                              ", request json from kf adapter is: " + json.dumps(request.json))
     except Exception as err:
         #Training failure response
         LOGGER.error("Pipeline notification failed" + str(err))
