@@ -16,7 +16,8 @@
 #
 # ==================================================================================
 from flask import Blueprint, request, jsonify
-from trainingmgr.service.agent_service import AgentClient
+from trainingmgr.service.agent_service import AgentClient, get_agent_model
+from trainingmgr.common.exceptions_utls import TMException
 
 agent_controller = Blueprint("agent_controller", __name__)
 
@@ -28,11 +29,25 @@ _agent_client.initialize_agent()
 
 @agent_controller.route("/modelInfo", methods=["GET"])
 def model_info():
-    return jsonify({
-        "llm": {
-            "model": "",
-        }
-    }), 200
+    try:
+        model = get_agent_model()
+        return jsonify({
+            "llm": {
+                "model": model,
+            }
+        }), 200
+    except TMException as e:
+        return jsonify({
+            "title": "Service Unavailable",
+            "status": 503,
+            "detail": str(e)
+        }), 503
+    except Exception as e:
+        return jsonify({
+            "title": "Internal Server Error",
+            "status": 500,
+            "detail": str(e)
+        }), 500
 
 @agent_controller.route("/generate-content", methods=["POST"])
 def generate_content():
