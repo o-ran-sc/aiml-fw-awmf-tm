@@ -105,8 +105,8 @@ class AgentClient:
             return True
 
         try:
-            agent_model = os.getenv("LLM_AGENT_MODEL_FOR_TM")
-            agent_token = os.getenv("LLM_AGENT_MODEL_TOKEN_FOR_TM")
+            agent_model = CONFIG.llm_agent_model_for_tm
+            agent_token = CONFIG.llm_agent_model_token_for_tm
 
             if not agent_model:
                 LOGGER.error("LLM_AGENT_MODEL_FOR_TM not specified")
@@ -151,3 +151,12 @@ class AgentClient:
                 'success': False,
                 'error': str(err),
             }
+    
+def get_agent_model() -> str:
+    """
+    Return the configured LLM agent model name for TM via TrainingMgrConfig.
+    """
+    model = CONFIG.llm_agent_model_for_tm
+    if not model:
+        raise TMException("LLM agent model not configured")
+    return model
