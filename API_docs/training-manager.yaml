@@ -114,14 +114,14 @@ paths:
             properties:
               Exception:
                 type: "string"
-  /ai-ml-model-training/v1/training-jobs/{training_job_id}/status:
+  /ai-ml-model-training/v1/training-jobs/{trainingJobId}/status:
     get:
       tags:
         - Training Job
       summary: "Get steps state information for a training job"
       description: "Returns the state of each step in the training job process."
       parameters:
-        - name: "training_job_id"
+        - name: "trainingJobId"
           in: "path"
           required: true
           type: "string"
@@ -142,14 +142,14 @@ paths:
                 type: "integer"
               title:
                 type: "string"
-  /ai-ml-model-training/v1/training-jobs/{training_job_id}:
+  /ai-ml-model-training/v1/training-jobs/{trainingJobId}:
     get:
       tags:
         - Training Job
       summary: "Get training job"
       description: "Returns the trainingjob corresponding to trainingjob_id."
       parameters:
-        - name: "training_job_id"
+        - name: "trainingJobId"
           in: "path"
           required: true
           type: "integer"
@@ -187,7 +187,7 @@ paths:
       summary: "Delete training job"
       description: "Deletes the trainingjob corresponding to trainingjob_id."
       parameters:
-        - name: "training_job_id"
+        - name: "trainingJobId"
           in: "path"
           required: true
           type: "integer"
@@ -229,7 +229,7 @@ paths:
         - name: "model_name"
           in: "path"
           required: true
-          type: "string"
+          type: "integer"
           description: "Name of Model"
         - name: "model_version"
           in: "path"
