@@ -39,6 +39,30 @@
       },
       "revId": "b08afa036f90afff6c2e2eb0fd219b515811a14b",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "daf27313_c4f590ab",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-10-10T15:56:31Z",
+      "side": 1,
+      "message": "@jain.ashish@samsung.com @subh.singh@samsung.com I\u0027m a bit curious why the `mme_mgr.py` file is located under the pipeline folder since it\u0027s not related to pipeline.\nAlso, is it correct to have the `pipeline` folder under trainingmgr?",
+      "parentUuid": "9b6b45bd_2caf534a",
+      "range": {
+        "startLine": 129,
+        "startChar": 8,
+        "endLine": 129,
+        "endChar": 17
+      },
+      "revId": "b08afa036f90afff6c2e2eb0fd219b515811a14b",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
