@@ -51,6 +51,24 @@
       "parentUuid": "c41ab15f_d86c0fca",
       "revId": "df41284b7bae5ff76a72fbdeeee408be3ff2b4eb",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fe9d550e_dc0a829c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002724
+      },
+      "writtenOn": "2025-10-10T12:28:20Z",
+      "side": 1,
+      "message": "Thanks for the guidance! For this patchset I made a single, minimal change, aligned only trainingJobId(camelCase and string type) in API_docs/training-manager.yaml to match the current TM implementation.",
+      "parentUuid": "02eea973_3ca0093d",
+      "revId": "df41284b7bae5ff76a72fbdeeee408be3ff2b4eb",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
