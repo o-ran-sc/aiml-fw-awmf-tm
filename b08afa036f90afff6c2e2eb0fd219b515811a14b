@@ -63,6 +63,30 @@
       },
       "revId": "b08afa036f90afff6c2e2eb0fd219b515811a14b",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "68b6249d_3d17c3f4",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-10-11T12:52:27Z",
+      "side": 1,
+      "message": "I think adding `register_model` in the `MmeMgr` class makes sense.\nHowever, since the agent is still experimental, I’d prefer not to extend `ModelRegistrationIntent` outside the agent code for now, as it could introduce unnecessary complexity.\nHow about merging the current implementation first and discussing this part further later on?",
+      "parentUuid": "daf27313_c4f590ab",
+      "range": {
+        "startLine": 129,
+        "startChar": 8,
+        "endLine": 129,
+        "endChar": 17
+      },
+      "revId": "b08afa036f90afff6c2e2eb0fd219b515811a14b",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
