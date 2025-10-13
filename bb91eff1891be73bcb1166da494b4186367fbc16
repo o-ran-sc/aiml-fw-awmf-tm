@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c9e57620_c82be17b",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1002724
+      },
+      "writtenOn": "2025-10-13T12:02:27Z",
+      "side": 1,
+      "message": "Thanks for the review! For this CL, I’ve removed the changes in trainingmgr_main.py to avoid any runtime/behavior change in TM.",
+      "parentUuid": "a94a7b5e_b6fffcc9",
+      "range": {
+        "startLine": 151,
+        "startChar": 12,
+        "endLine": 152,
+        "endChar": 66
+      },
+      "revId": "bb91eff1891be73bcb1166da494b4186367fbc16",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "09b2dd6d_1ac48f44",
         "filename": "trainingmgr/trainingmgr_main.py",
         "patchSetId": 8
