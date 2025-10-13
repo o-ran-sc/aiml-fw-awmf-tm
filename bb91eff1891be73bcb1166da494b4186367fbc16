@@ -16,6 +16,52 @@
       "message": "LGTM",
       "revId": "bb91eff1891be73bcb1166da494b4186367fbc16",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a94a7b5e_b6fffcc9",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-10-13T08:58:04Z",
+      "side": 1,
+      "message": "Here it is not correct to have two keys :\n- `trainingJobId`\n- `trainingjob_id`\n\n\nReference: https://github.com/o-ran-sc/aiml-fw-awmf-tm/blob/master/trainingmgr/handler/async_handler.py#L77-L81\n\nYou could keep it same as it does not impact R1AP changes.",
+      "range": {
+        "startLine": 151,
+        "startChar": 12,
+        "endLine": 152,
+        "endChar": 66
+      },
+      "revId": "bb91eff1891be73bcb1166da494b4186367fbc16",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09b2dd6d_1ac48f44",
+        "filename": "trainingmgr/trainingmgr_main.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-10-13T08:58:04Z",
+      "side": 1,
+      "message": "This change should be on the basis of kfadapter:\n```\n│ 2025-10-13 07:55:15,538 | kfadapter_util.py 123 wait_status_thread() |  INFO | POSTING to training manager                                                                                                                           │\n│ 2025-10-13 07:55:15,538 | kfadapter_util.py 124 wait_status_thread() |  INFO | {\u0027run_id\u0027: \u0027555960a9-58e9-40df-aeaa-18015a0fd488\u0027, \u0027run_status\u0027: \u0027SUCCEEDED\u0027, \u0027trainingjob_id\u0027: \u00276\u0027}  \n```",
+      "range": {
+        "startLine": 288,
+        "startChar": 45,
+        "endLine": 288,
+        "endChar": 58
+      },
+      "revId": "bb91eff1891be73bcb1166da494b4186367fbc16",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
