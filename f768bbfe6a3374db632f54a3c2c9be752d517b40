@@ -53,6 +53,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5382264a_8757c365",
+        "filename": "trainingmgr/schemas/agent_schema.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-10-13T09:22:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "10df6c0b_80a3d5d2",
+      "revId": "f768bbfe6a3374db632f54a3c2c9be752d517b40",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0779551c_636261c6",
@@ -84,6 +102,24 @@
       "side": 1,
       "message": "Thank you for your comment and noticing that artifact_version is missing. I\u0027ve made those changes.",
       "parentUuid": "0779551c_636261c6",
+      "revId": "f768bbfe6a3374db632f54a3c2c9be752d517b40",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f0bc4bc8_cd13f1a1",
+        "filename": "trainingmgr/service/agent_service.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-10-13T09:22:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "555ea99b_cb4d9910",
       "revId": "f768bbfe6a3374db632f54a3c2c9be752d517b40",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
