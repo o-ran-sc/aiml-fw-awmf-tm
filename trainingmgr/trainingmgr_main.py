@@ -315,25 +315,7 @@ def pipeline_notification():
 
             modelinfo = get_modelinfo_by_modelId_service(model_name, model_version)[0]
             artifactversion = modelinfo["modelId"]["artifactVersion"]
-            if MM_SDK.check_object(model_name, model_version, artifactversion, "Model.zip"):
-                model_url = "http://" + str(TRAININGMGR_CONFIG_OBJ.my_ip) + ":" + \
-                            str(TRAININGMGR_CONFIG_OBJ.my_port) + "/model/" + \
-                            model_name + "/" + str(model_version) + "/" + str(artifactversion) + "/Model.zip"
-
-                change_update_field_value(trainingjob_id, "model_url" , model_url)
-                
-                change_status_tj(trainingjob_id,
-                                Steps.TRAINED_MODEL.name,
-                                States.FINISHED.name)
-                notification_rapp(trainingjob.id)
-            else:
-                errMsg = "Trained model is not available  "
-                LOGGER.error(errMsg + str(trainingjob_id))
-                change_status_tj(trainingjob_id,
-                                Steps.TRAINED_MODEL.name,
-                                States.FAILED.name)
-                notification_rapp(trainingjob.id)
-                raise TMException(errMsg + str(trainingjob_id))
+            
         else:
             LOGGER.error("Pipeline notification -Training failed " + str(trainingjob_id)) 
             change_status_tj(trainingjob_id,
