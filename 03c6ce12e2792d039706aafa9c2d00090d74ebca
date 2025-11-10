@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e371500_d9bf8468",
+        "filename": ".github/workflows/gerrit-verify.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-11-10T13:17:53Z",
+      "side": 1,
+      "message": "this will be removed",
+      "range": {
+        "startLine": 102,
+        "startChar": 6,
+        "endLine": 103,
+        "endChar": 33
+      },
+      "revId": "03c6ce12e2792d039706aafa9c2d00090d74ebca",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
