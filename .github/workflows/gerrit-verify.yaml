@@ -218,7 +218,7 @@ jobs:
   vote:
     if: ${{ always() }}
     # yamllint enable rule:line-length
-    needs: [prepare, call-gerrit-tox-verify]
+    needs: [prepare, call-gerrit-tox-verify,component-test]
     runs-on: ubuntu-latest
     steps:
       - uses: technote-space/workflow-conclusion-action@v3
