@@ -84,7 +84,7 @@ jobs:
       PYTHON_VERSION: '3.10'
 
   component-test:
-    needs: prepare
+    needs: [prepare, call-gerrit-tox-verify]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     
