@@ -198,6 +198,23 @@ jobs:
           kubectl get pods -n traininghost
           kubectl get svc -n traininghost
 
+      - name: run regression test
+        run: |
+          cd $GITHUB_WORKSPACE
+          pip install -r component-testing/tests/requirements.txt
+
+          kubectl port-forward svc/tm -n traininghost  32002:32002 & PF_PID=$!
+          sleep 1
+          python3 -m pytest component-testing/tests/ --maxfail=1 --disable-warnings -q --html=pytest_report.html
+
+          # Stop port-forwarding
+          kill $PF_PID
+      
+      - name: Upload Test Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-report
+          path: pytest_report.html
   vote:
     if: ${{ always() }}
     # yamllint enable rule:line-length
