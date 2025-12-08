@@ -212,7 +212,7 @@ jobs:
           kill $PF_PID
       
       - name: Upload Test Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: pytest-report
           path: pytest_report.html
