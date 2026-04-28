@@ -64,7 +64,7 @@ L Release
 |                                      |                                           |
 +--------------------------------------+-------------------------------------------+
 | **Purpose of the delivery**          | Improved error handling and API stability |
-|                                      |Resolved TM failure issues                 |
+|                                      | Resolved TM failure issues                |
 |                                      |                                           |
 +--------------------------------------+-------------------------------------------+
 
